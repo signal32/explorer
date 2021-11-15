@@ -1,10 +1,14 @@
 package com.curioustrout.explorer.server.auth.config;
 
+import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.ServletRegistration;
+import javax.naming.*;
+import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
 
 @Configuration
@@ -13,8 +17,9 @@ public class EmbeddedKeycloakConfig {
     @Bean
     ServletRegistrationBean keycloakJaxRsApplication(
             KeycloakServerProperties keycloakServerProperties, DataSource dataSource) throws Exception {
+
         mockJndiEnvironment(dataSource);
-        EmbeddedKeycloakApplication.keycloakServerProperties = keycloakServerProperties;
+        EmbeddedKeycloakApplication.serverProperties = keycloakServerProperties;
         ServletRegistrationBean servlet = new ServletRegistrationBean<>(
                 new HttpServlet30Dispatcher());
         servlet.addInitParameter("javax.ws.rs.Application",
@@ -42,29 +47,29 @@ public class EmbeddedKeycloakConfig {
 
     private void mockJndiEnvironment(DataSource dataSource) throws NamingException {
         NamingManager.setInitialContextFactoryBuilder(
-                (env) -> (environment) -> new InitialContext() {
-                    @Override
-                    public Object lookup(Name name) {
-                        return lookup(name.toString());
-                    }
+            (env) -> (environment) -> new InitialContext() {
+                @Override
+                public Object lookup(Name name) {
+                    return lookup(name.toString());
+                }
 
-                    @Override
-                    public Object lookup(String name) {
-                        if ("spring/datasource".equals(name)) {
-                            return dataSource;
-                        }
-                        return null;
+                @Override
+                public Object lookup(String name) {
+                    if ("spring/datasource".equals(name)) {
+                        return dataSource;
                     }
+                    return null;
+                }
 
-                    @Override
-                    public NameParser getNameParser(String name) {
-                        return CompositeName::new;
-                    }
+                @Override
+                public NameParser getNameParser(String name) {
+                    return CompositeName::new;
+                }
 
-                    @Override
-                    public void close() {
-                    }
-                });
+                @Override
+                public void close() {
+            }
+        });
     }
 }
 

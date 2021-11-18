@@ -1,13 +1,13 @@
-package com.curioustrout.explorer.server;
+package com.curioustrout.explorer.server.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ServerApplication {
+public class UserApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ServerApplication.class, args);
+        SpringApplication.run(UserApplication.class, args);
     }
 
 }

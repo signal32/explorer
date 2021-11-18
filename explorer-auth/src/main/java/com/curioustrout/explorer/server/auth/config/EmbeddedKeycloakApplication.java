@@ -44,6 +44,7 @@ public class EmbeddedKeycloakApplication extends KeycloakApplication {
         try {
             LOGGER.info("admin: {}, password: {}", admin.getUsername(), admin.getPassword());
             session.getTransactionManager().begin();
+            LOGGER.info("Master user exists? {}", applianceBootstrap.isNoMasterUser());
             applianceBootstrap.createMasterRealmUser(admin.getUsername(), admin.getPassword());
             session.getTransactionManager().commit();
         }

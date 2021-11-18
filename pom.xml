@@ -35,6 +35,7 @@
     <modules>
         <module>explorer-user</module>
         <module>explorer-auth</module>
+        <module>explorer-keycloak</module>
         <!--module>oauth-authorization-server</module-->
     </modules>
 

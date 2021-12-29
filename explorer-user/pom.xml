@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.curioustrout.explorer</groupId>
-        <version>0.0.1-SNAPSHOT</version>
-        <artifactId>server</artifactId>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.10</version>
+        <relativePath/>
     </parent>
 
     <groupId>com.curioustrout.explorer.server</groupId>

@@ -15,6 +15,15 @@
     </properties>
 
     <build>
+
+        <sourceDirectory>/src</sourceDirectory>
+        <testSourceDirectory>/tests</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>/public</directory>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>com.github.eirslett</groupId>

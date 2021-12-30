@@ -3,19 +3,22 @@
      <ion-header :translucent="true">
          <ion-toolbar>
              <ion-title>{{ t("auth.authentication") }}</ion-title>
+             <ion-buttons slot="start">
+                 <ion-back-button></ion-back-button>
+             </ion-buttons>
          </ion-toolbar>
      </ion-header>
 
      <ion-content :fullscreen="true">
-         <ion-card>
+         <ion-card >
+
+             <div style="display: flex; align-items: center; justify-content: center;">
              <ion-card-header>
-                 <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
-                 <ion-card-title>Card Title</ion-card-title>
+                 <ion-card-title>Explorer</ion-card-title>
              </ion-card-header>
+             </div>
 
              <ion-card-content>
-                 Keep close to Nature's heart... and break clear away, once in awhile,
-                 and climb a mountain or spend a week in the woods. Wash your spirit clean.
                  <form @submit.prevent="submitForm">
                      <ion-item>
                          <ion-label position="stacked">{{ t("auth.username") }}</ion-label>
@@ -27,7 +30,9 @@
                          <ion-input type="password"></ion-input>
                      </ion-item>
 
-                     <ion-button expand="block" type="submit">{{ t("auth.login") }}</ion-button>
+                     <ion-button expand="block" type="submit">
+                         {{ t("auth.login") }}
+                     </ion-button>
                      <p>{{ t("auth.forgot") }} <a>{{ t("auth.help") }}</a>.</p>
                  </form>
              </ion-card-content>
@@ -48,12 +53,13 @@ import {
     IonCard,
     IonCardContent,
     IonCardTitle,
-    IonCardSubtitle,
     IonCardHeader,
     IonItem,
     IonLabel,
     IonInput,
-    IonButton} from "@ionic/vue";
+    IonButton,
+    IonButtons,
+    IonBackButton} from "@ionic/vue";
 import { defineComponent} from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -67,12 +73,13 @@ export default defineComponent({
         IonCard,
         IonCardContent,
         IonCardTitle,
-        IonCardSubtitle,
         IonCardHeader,
         IonItem,
         IonLabel,
         IonInput,
         IonButton,
+        IonButtons,
+        IonBackButton,
     },
 
     setup() {

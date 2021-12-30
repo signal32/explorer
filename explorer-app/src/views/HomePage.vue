@@ -16,6 +16,7 @@
       <div id="container">
         <strong>Mapping Placeholder</strong>
         <p>Space for map view using <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">leaflet</a>.</p>
+          <button @click="router.push('/auth')">big button</button>
       </div>
     </ion-content>
   </ion-page>
@@ -24,15 +25,31 @@
 <script lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { defineComponent } from 'vue';
+import {useRouter} from 'vue-router';
+import router from '@/router';
 
 export default defineComponent({
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-  }
+    components: {
+        IonContent,
+        IonHeader,
+        IonPage,
+        IonTitle,
+        IonToolbar,
+    },
+
+    setup() {
+        const router = useRouter();
+
+        return {router};
+    },
+
+    methods: {
+        movePage: () => {
+            router.push('/auth');
+        }
+    }
+
+
 });
 </script>
 

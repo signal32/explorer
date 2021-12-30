@@ -19,15 +19,15 @@
              </div>
 
              <ion-card-content>
-                 <form @submit.prevent="submitForm">
+                 <form @submit.prevent="login">
                      <ion-item>
                          <ion-label position="stacked">{{ t("auth.username") }}</ion-label>
-                         <ion-input></ion-input>
+                         <ion-input v-model="user.username"></ion-input>
                      </ion-item>
 
                      <ion-item>
                          <ion-label position="stacked">{{ t("auth.password") }}</ion-label>
-                         <ion-input type="password"></ion-input>
+                         <ion-input v-model="user.password" type="password"></ion-input>
                      </ion-item>
 
                      <ion-button expand="block" type="submit">
@@ -37,6 +37,15 @@
                  </form>
              </ion-card-content>
          </ion-card>
+
+         <ion-loading
+             :is-open="isOpenRef"
+             cssClass="my-custom-class"
+             message="Please wait..."
+             :duration="10000"
+             @didDismiss="isOpenRef = false"
+         >
+         </ion-loading>
 
      </ion-content>
  </ion-page>
@@ -59,9 +68,15 @@ import {
     IonInput,
     IonButton,
     IonButtons,
-    IonBackButton} from "@ionic/vue";
-import { defineComponent} from "vue";
+    IonBackButton,
+    IonLoading,
+    alertController
+} from "@ionic/vue";
+import {defineComponent, ref} from "vue";
 import { useI18n } from "vue-i18n";
+import User from '@/modules/user/user';
+import authService from '@/modules/auth/auth.service';
+import router from '@/router';
 
 export default defineComponent({
     components: {
@@ -80,11 +95,45 @@ export default defineComponent({
         IonButton,
         IonButtons,
         IonBackButton,
+        IonLoading,
     },
 
     setup() {
-        const { t } = useI18n<{message: MessageSchema}, 'en-US'>();
-        return { t };
-    }
+        // translation
+        const {t} = useI18n<{ message: MessageSchema }, 'en-US'>();
+        const user = ref<User>(new User("", "", "", ""));
+
+        const isOpenRef = ref(false);
+
+        return {t, isOpenRef, user};
+    },
+
+    methods: {
+        login() {
+            console.log(`username: ${this.user.username}, password: ${this.user.password}`);
+            this.isOpenRef = true
+            authService.login(this.user)
+            .then(() => {
+                this.isOpenRef = false;
+                router.back();
+            })
+            .catch(err => {
+                this.isOpenRef = false;
+                this.presentAlert(err.toString());
+            })
+            //console.log(this.store.user);
+        },
+        async presentAlert(msg: string) {
+            const alert = await alertController
+                .create({
+                    cssClass: 'my-custom-class',
+                    header: 'Authentication Failure',
+                    subHeader: msg,
+                    message: 'Please check your login details are correct and try again.',
+                    buttons: ['OK'],
+                });
+            await alert.present();
+        },
+    },
 })
 </script>

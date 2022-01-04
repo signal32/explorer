@@ -37,6 +37,7 @@
         <module>explorer-auth</module>
         <module>explorer-keycloak</module>
         <module>explorer-app</module>
+        <module>explorer-gis</module>
         <!--module>oauth-authorization-server</module-->
     </modules>
 

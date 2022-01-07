@@ -11,9 +11,11 @@
         <relativePath>../explorer-common</relativePath>
     </parent>
 
-    <artifactId>gis</artifactId>
-    <name>explorer-gis</name>
+    <groupId>com.curioustrout.explorer</groupId>
+    <artifactId>query</artifactId>
+    <name>explorer-query</name>
     <version>0.0.1-SNAPSHOT</version>
-    <description>GIS related services</description>
+    <description>Services for querying information on locations</description>
+
 
 </project>

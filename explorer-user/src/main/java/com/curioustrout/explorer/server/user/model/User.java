@@ -1,27 +1,56 @@
 package com.curioustrout.explorer.server.user.model;
 
-public class User {
-    private long id;
-    private String name;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
-    public User(long id, String name) {
+
+@Entity
+public class User {
+
+    @Id
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_resource_id")
+    private UserResource profileImage;
+
+    @OneToMany(mappedBy = "id")
+    private List<UserResource> resources = new ArrayList<>();
+
+    public User(UUID id, String fName, String lName, String username, String email, UserResource profileImage, List<UserResource> resources) {
         this.id = id;
-        this.name = name;
+        this.profileImage = profileImage;
+        this.resources = resources;
     }
 
-    public long getId() {
+    public User(String fname, String lName, String username) {
+        this(UUID.randomUUID(), fname, lName, username, "", null, null);
+    }
+
+    public User() { }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Optional<UserResource> getProfileImage() {
+        return Optional.ofNullable(profileImage);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProfileImage(UserResource profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public Optional<List<UserResource>> getResources() {
+        return Optional.ofNullable(resources);
+    }
+
+    public void setResources(List<UserResource> resources) {
+        this.resources = resources;
     }
 }

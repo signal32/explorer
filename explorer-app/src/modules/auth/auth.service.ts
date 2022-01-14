@@ -3,16 +3,19 @@ import {pinia} from '@/main';
 import User from '@/modules/user/user';
 import {getUserStore} from '@/modules/user/userStore';
 
-const API_URL = "http://localhost:8083/auth/realms/Explorer/protocol/openid-connect/";
+const API_URL = process.env.VUE_APP_EXPLORER_AUTH_API;
 const LOGIN_PATH = "token/";
 const LOGOUT_PATH = "logout/";
 const REGISTER_PATH = "";
 const INFO_PATH = 'userinfo/';
 
+
 const instance = axios.create({
     baseURL: API_URL,
     timeout: 15000,
 });
+
+console.log(API_URL);
 
 class AuthService {
     /**

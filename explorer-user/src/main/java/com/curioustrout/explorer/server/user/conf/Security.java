@@ -60,8 +60,8 @@ public class Security extends KeycloakWebSecurityConfigurerAdapter {
 
         http.cors().and().csrf().disable()/*.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()*/.authorizeRequests()
-                .antMatchers("/res/**").hasRole("explorer-user")
-                .antMatchers("/api/public/**").permitAll()
+                .antMatchers("/secured/user/**").hasRole("explorer-user")
+                .antMatchers("/public/**").permitAll()
                 .anyRequest().authenticated();
     }
 

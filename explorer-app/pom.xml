@@ -16,13 +16,13 @@
 
     <build>
 
-        <sourceDirectory>/src</sourceDirectory>
+<!--        <sourceDirectory>/src</sourceDirectory>
         <testSourceDirectory>/tests</testSourceDirectory>
         <resources>
             <resource>
                 <directory>/public</directory>
             </resource>
-        </resources>
+        </resources>-->
 
         <plugins>
             <plugin>

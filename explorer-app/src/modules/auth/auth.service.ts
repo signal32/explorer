@@ -3,12 +3,13 @@ import {pinia} from '@/main';
 import User from '@/modules/user/user';
 import {getUserStore} from '@/modules/user/userStore';
 
-const API_URL = process.env.VUE_APP_EXPLORER_AUTH_API;
+const API_URL = process.env.VUE_APP_EXPLORER_AUTH_API + "protocol/openid-connect/";
 const LOGIN_PATH = "token/";
 const LOGOUT_PATH = "logout/";
 const REGISTER_PATH = "";
 const INFO_PATH = 'userinfo/';
 
+const CLIENT_ID = 'explorer-user-app';
 
 const instance = axios.create({
     baseURL: API_URL,
@@ -24,7 +25,7 @@ class AuthService {
      */
     public login(user: User): Promise<User> {
         const params = new URLSearchParams();
-        params.append('client_id', 'explorer-user-app');
+        params.append('client_id', CLIENT_ID);
         params.append('username', user.username);
         params.append('password', user.password ? user.password : '');
         params.append('grant_type', 'password');
@@ -38,7 +39,7 @@ class AuthService {
                     console.log(`Authentication success: Token = ${token}\nRefresh Token = ${refreshToken}`);
                     user = await this.userInfo(token)
                     const store = getUserStore(pinia);
-                    store.setUser(user, token);
+                    store.setUser({ user, token, refreshToken, loggedIn: true});
                 }
                 return user;
             })
@@ -52,9 +53,9 @@ class AuthService {
      * Ends the current session
      */
     public logout() {
-        const token = getUserStore().token;
+        const token = getUserStore().refreshToken;
         return instance
-            .post(LOGOUT_PATH, `access_token=${token}`)
+            .post(LOGOUT_PATH, `client_id=${CLIENT_ID}&refresh_token=${token}`)
             .then( res => {
                 console.log("logged out");
                 getUserStore().clearUser();

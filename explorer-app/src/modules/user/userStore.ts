@@ -2,25 +2,36 @@ import {defineStore} from 'pinia';
 import User from '@/modules/user/user';
 
 interface UserStoreState {
+    loggedIn: boolean
     user?: User,
-    token?: string
+    token?: string,
+    refreshToken?: string,
+}
+
+const defaultState:UserStoreState = {
+    loggedIn: false,
+    user: undefined,
+    token: undefined,
+    refreshToken: undefined
 }
 
 export const getUserStore = defineStore('userStore', {
-    state: () => ({
-    } as UserStoreState),
+    state: () => (defaultState),
 
     getters: {
     },
 
     actions: {
-        setUser(user: User, token: string) {
-            this.user = user;
-            this.token = token;
+        setUser(user: UserStoreState) {
+            this.loggedIn = user.loggedIn
+            this.user = user.user;
+            this.token = user.token;
+            this.refreshToken = user.refreshToken;
         },
         clearUser() {
-            this.user = undefined;
-            this.token = undefined;
+            this.user = new User();
+            this.token = "none";
+            this.loggedIn = false;
         }
     }
 })

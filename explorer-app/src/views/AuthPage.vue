@@ -27,13 +27,13 @@
 
                      <ion-item>
                          <ion-label position="stacked">{{ t("auth.password") }}</ion-label>
-                         <ion-input v-model="user.password" type="password"></ion-input>
+                         <ion-input v-model="user.password" type="password" @keyup.enter="login"></ion-input>
                      </ion-item>
 
                      <ion-button expand="block" type="submit">
                          {{ t("auth.login") }}
                      </ion-button>
-                     <p>{{ t("auth.forgot") }} <a>{{ t("auth.help") }}</a>.</p>
+                     <p>{{ t("auth.forgot") }} <a v-bind:href="authPage">{{ t("auth.help") }}</a>.</p>
                  </form>
              </ion-card-content>
          </ion-card>
@@ -102,10 +102,11 @@ export default defineComponent({
         // translation
         const {t} = useI18n<{ message: MessageSchema }, 'en-US'>();
         const user = ref<User>(new User("", "", "", ""));
+        const authPage = process.env.VUE_APP_EXPLORER_AUTH_API + "account/";
 
         const isOpenRef = ref(false);
 
-        return {t, isOpenRef, user};
+        return {t, isOpenRef, user, authPage};
     },
 
     methods: {
@@ -116,6 +117,7 @@ export default defineComponent({
             .then(() => {
                 this.isOpenRef = false;
                 router.back();
+                this.user = new User();
             })
             .catch(err => {
                 this.isOpenRef = false;

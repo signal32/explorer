@@ -4,8 +4,8 @@
     "username": "Username",
     "email": "Email Address",
     "password": "Password",
-    "forgot": "Forgotten your login details?",
-    "help": "Get help",
+    "forgot": "Need an account or forgotten your login details?",
+    "help": "Account Administration",
     "login": "Login",
     "register": "Register"
   }

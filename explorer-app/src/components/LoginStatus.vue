@@ -27,27 +27,38 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, toRef } from 'vue';
 import { IonAvatar, IonCol, IonRow, IonButton, IonPopover, IonContent, IonList, IonListHeader, IonItem } from '@ionic/vue';
 import { getUserStore } from '@/modules/user/userStore';
 import AuthService from '@/modules/auth/auth.service';
 import { useRouter } from 'vue-router';
 import router from '@/router';
+import {getNotificationStore} from '@/modules/notify/notificationStore'
+import {Notification, NotificationType} from '@/modules/notify/notification'
 
 export default defineComponent({
     components: {IonAvatar, IonCol, IonRow, IonButton, IonPopover, IonList, IonListHeader, IonItem},
     setup() {
         const store = getUserStore();
         const router = useRouter();
-        return {store, router};
+        const notificationStore = getNotificationStore();
+
+        function logout() {
+            AuthService.logout()
+            .then(() => {
+                notificationStore.pushNotification({title: "You have been logged Out.", type: NotificationType.TOAST})
+            })
+            .catch(() => {
+                notificationStore.pushNotification({title: "An error occurred while logging out. Please try again.", type: NotificationType.TOAST})
+            })
+        }
+
+        return {store, router, logout};
     },
     methods: {
-        logout: () => {
-            AuthService.logout();
-        },
         debug: () => {
             router.push('/debug')
-        }
+        },
     
     },
 })

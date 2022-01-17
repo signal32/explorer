@@ -32,6 +32,7 @@ export const getUserStore = defineStore('userStore', {
             this.user = new User();
             this.token = "none";
             this.loggedIn = false;
+            this.refreshToken = "none";
         }
     }
 })

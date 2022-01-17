@@ -62,6 +62,7 @@ class AuthService {
             })
             .catch( err => {
                 console.log(`Logout failed: ${err}`)
+                throw(err);
             })
     }
 

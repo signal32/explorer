@@ -23,7 +23,29 @@ const routes: Array<RouteRecordRaw> = [
     path: '/debug',
     name: 'DebugPage',
     component: DebugPage
-  }
+  },
+  {
+    path: '/tabs/',
+    component: HomePage,
+    children: [
+      {
+        path: '',
+        redirect: 'tab1',
+      },
+      {
+        path: 'tab1',
+        component: () => import('@/views/AuthPage.vue'),
+      },
+      {
+        path: 'tab2',
+        component: () => import('@/views/DebugPage.vue'),
+      },
+      {
+        path: 'tab3',
+        component: () => import('@/views/AuthPage.vue'),
+      },
+    ],
+  },
 ]
 
 const router = createRouter({

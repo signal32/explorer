@@ -29,7 +29,7 @@ export const getUserStore = defineStore('userStore', {
             this.refreshToken = user.refreshToken;
         },
         clearUser() {
-            this.user = new User();
+            this.user = undefined;
             this.token = "none";
             this.loggedIn = false;
             this.refreshToken = "none";

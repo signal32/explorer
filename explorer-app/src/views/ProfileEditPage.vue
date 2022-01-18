@@ -45,7 +45,7 @@ import User from '@/modules/user/user';
 export default defineComponent({
     setup() {
         const userStore = getUserStore();
-        const user = ref(userStore?.user || new User());
+        const user = ref(userStore?.user || {});
 
         return { user }
         

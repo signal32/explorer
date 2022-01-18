@@ -26,8 +26,8 @@ class AuthService {
     public login(user: User): Promise<User> {
         const params = new URLSearchParams();
         params.append('client_id', CLIENT_ID);
-        params.append('username', user.username);
-        params.append('password', user.password ? user.password : '');
+        params.append('username', user?.username || '');
+        params.append('password', user?.password || '');
         params.append('grant_type', 'password');
 
         return instance
@@ -88,11 +88,12 @@ class AuthService {
             .post(INFO_PATH, `access_token=${token}`)
             .then( res => {
                 console.log("Retrieved user info");
-                return new User(res.data?.preferred_username, res.data?.email, '', '');
+                return {username: res.data?.preferred_username, email: res.data?.email}
+                //return new User(res.data?.preferred_username, res.data?.email, '', '');
             })
             .catch( err => {
                 console.log(`Error loading user info: ${err} `);
-                return new User();
+                return {};
             })
     }
 }

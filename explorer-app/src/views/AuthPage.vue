@@ -101,7 +101,7 @@ export default defineComponent({
     setup() {
         // translation
         const {t} = useI18n<{ message: MessageSchema }, 'en-US'>();
-        const user = ref<User>(new User("", "", "", ""));
+        const user = ref<User>({});
         const authPage = process.env.VUE_APP_EXPLORER_AUTH_API + "account/";
 
         const isOpenRef = ref(false);
@@ -117,7 +117,7 @@ export default defineComponent({
             .then(() => {
                 this.isOpenRef = false;
                 router.back();
-                this.user = new User();
+                this.user = {};
             })
             .catch(err => {
                 this.isOpenRef = false;

@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  user-server:
+    container_name: user-server
+    build:
+      context: explorer-user
+      

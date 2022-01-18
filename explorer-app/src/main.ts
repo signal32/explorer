@@ -1,8 +1,9 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+import App from './App.vue';
 import router from './router';
 
-import { IonicVue } from '@ionic/vue';
+import {IonButton, IonicVue, IonInput} from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -22,11 +23,34 @@ import '@ionic/vue/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import {createI18n} from "vue-i18n";
+import enUS from './locales/en-us.json';
+
+// Internationalization
+export type MessageSchema = typeof enUS;
+const i18n = createI18n<[MessageSchema], 'en-US'>(
+    {
+      legacy: false,
+      locale: "en-US",
+      messages: {
+        'en-US': enUS,
+      }
+    }
+);
+
+/* Init global data store */
+export const pinia = createPinia();
 
 const app = createApp(App)
-  .use(IonicVue)
-  .use(router);
-  
+    .use(IonicVue, {
+      //mode: 'ios'
+    })
+    .use(router)
+    .use(pinia)
+    .use(i18n)
+    .component("IonButton", IonButton); //todo move global registration to separate file and add more
+
+
 router.isReady().then(() => {
-  app.mount('#app');
+    app.mount('#app');
 });

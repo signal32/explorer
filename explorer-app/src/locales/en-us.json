@@ -1,0 +1,12 @@
+{
+  "auth": {
+    "authentication": "Authentication",
+    "username": "Username",
+    "email": "Email Address",
+    "password": "Password",
+    "forgot": "Need an account or forgotten your login details?",
+    "help": "Account Administration",
+    "login": "Login",
+    "register": "Register"
+  }
+}

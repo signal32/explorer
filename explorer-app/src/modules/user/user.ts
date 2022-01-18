@@ -6,10 +6,18 @@ export default class User {
     public roles: any;
 
 
-    constructor(username = 'NAN', email = '', password = '', roles: any = undefined) {
+    constructor(username = 'Guest', email = '', password = '', roles: any = undefined) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.roles = roles;
     }
 }
+
+// export default interface User {
+//     username?: string;
+//     email?: string;
+//     password?: string;
+//     fName?: string;
+//     lName?: string;
+// }

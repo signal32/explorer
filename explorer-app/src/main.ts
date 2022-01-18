@@ -42,7 +42,9 @@ const i18n = createI18n<[MessageSchema], 'en-US'>(
 export const pinia = createPinia();
 
 const app = createApp(App)
-    .use(IonicVue)
+    .use(IonicVue, {
+      //mode: 'ios'
+    })
     .use(router)
     .use(pinia)
     .use(i18n)

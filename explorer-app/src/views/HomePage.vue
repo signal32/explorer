@@ -24,33 +24,29 @@
         <ion-router-outlet></ion-router-outlet>
         <ion-tab-bar slot="bottom">
           <ion-tab-button tab="tab1" href="/tabs/tab1">
-            <ion-icon :icon="triangle" />
-            <ion-label>Tab 1</ion-label>
+            <ion-icon :icon="map" />
+            <ion-label>Map</ion-label>
           </ion-tab-button>
 
           <ion-tab-button tab="tab2" href="/tabs/tab2">
-            <ion-icon :icon="ellipse" />
-            <ion-label>Tab 2</ion-label>
+            <ion-icon :icon="compass" />
+            <ion-label>Discover</ion-label>
           </ion-tab-button>
 
           <ion-tab-button tab="tab3" href="/tabs/tab3">
-            <ion-icon :icon="square" />
-            <ion-label>Tab 3</ion-label>
+            <ion-icon :icon="person" />
+            <ion-label>Profile</ion-label>
           </ion-tab-button>
         </ion-tab-bar>
       </ion-tabs>
     
-      <div id="container">
-        <strong>Mapping Placeholder</strong>
-        <p>Space for map view using <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">leaflet</a>.</p>
-      </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton, toastController } from '@ionic/vue';
-import { ellipse, square, triangle } from 'ionicons/icons';
+import { map, person, compass } from 'ionicons/icons';
 import LoginStatus from '@/components/LoginStatus.vue'
 import { computed, defineComponent } from 'vue';
 import {useRouter} from 'vue-router';
@@ -75,7 +71,7 @@ export default defineComponent({
         const store = getUserStore();
         const {loggedIn, user, token } = storeToRefs(store);
 
-        return {router, store, loggedIn, user, token, ellipse, square, triangle};
+        return {router, store, loggedIn, user, token, map, person, compass};
     },
 
     methods: {
@@ -90,33 +86,3 @@ export default defineComponent({
 
 });
 </script>
-
-<style scoped>
-#container {
-  text-align: center;
-  
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  
-  color: #8c8c8c;
-  
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-</style>

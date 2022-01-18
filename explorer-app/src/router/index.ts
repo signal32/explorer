@@ -34,15 +34,15 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'tab1',
-        component: () => import('@/views/AuthPage.vue'),
+        component: () => import('@/views/tabs/MapTab.vue'),
       },
       {
         path: 'tab2',
-        component: () => import('@/views/DebugPage.vue'),
+        component: () => import('@/views/tabs/BlankTab.vue'),
       },
       {
         path: 'tab3',
-        component: () => import('@/views/AuthPage.vue'),
+        component: () => import('@/views/tabs/ProfileTab.vue'),
       },
     ],
   },

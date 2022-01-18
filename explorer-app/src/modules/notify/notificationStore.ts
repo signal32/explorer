@@ -15,7 +15,7 @@ async function openToast(notification: Notification) {
         .create({
             header: notification.title,
             message: notification.description,
-            duration: 1000
+            duration: 2000
         })  
     return toast.present();
 }
@@ -35,7 +35,6 @@ export const getNotificationStore = defineStore('notificationStore', {
 
     actions: {
         pushNotification(notification: Notification) {
-            console.log("pushed notifiaction")
             const temp = this.notifications
             temp.get(notification.type)?.push(notification);
             this.notifications = temp;

@@ -9,10 +9,11 @@
         <!-- <div id="mybox">hi</div> -->
         <div class="map-wrap">
             <a href="https://www.maptiler.com" class="watermark">
-                <img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"/>
+                <!-- <img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"/> -->
             </a>
             <div class="map" ref="mapContainer"></div>
         </div>
+        <button id="bottomButton" @click="resetMap()" >Oops</button>
 
     </ion-content>
   </ion-page>
@@ -25,6 +26,8 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue
 import { Map, MapLayerEventType } from 'maplibre-gl';
 import { defineComponent, onMounted, shallowRef, markRaw } from 'vue'; 
 
+const TILE_API = process.env.VUE_APP_EXPLORER_TILE_API;
+
 export default defineComponent({
     components: {
         IonContent,
@@ -36,22 +39,26 @@ export default defineComponent({
 
     setup() {
         const mapContainer = shallowRef("");
-        const map = shallowRef("");
+        const map = shallowRef<Map>();
         
         onMounted(() => {
             console.log("mounted")
             const map = new Map({
                 container: mapContainer.value,
-                style: 'https://demotiles.maplibre.org/style.json',
-                center: [-74.5, 40],
+                style: TILE_API + 'styles/basic-preview/style.json',
+                center: [-2.2568, 57.0348535],
                 zoom: 9,
             });
-            map.on('load', () => map.resize())
+            map.on('load', () => map.resize());
             map.resize()
         })
+
+        async function resetMap () {
+            map.value?.resize();
+        }
         
 
-        return { map, mapContainer }
+        return { map, mapContainer, resetMap }
     }
 });
 </script>
@@ -78,9 +85,8 @@ export default defineComponent({
   z-index: 999;
 }
 
-/* #mybox {
-    width: 100vw;
-    height: 100vh;
-    background-color: red;
-} */
+#bottomButton {
+  position: fixed;
+  bottom: 0px;
+}
 </style>

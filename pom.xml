@@ -17,6 +17,7 @@
         <module>explorer-gis</module>
         <module>explorer-query</module>
         <module>explorer-common</module>
+        <module>explorer-containers</module>
     </modules>
 
 </project>

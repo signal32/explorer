@@ -23,8 +23,8 @@ public class AuthTestController {
     //@Secured("ROLE_explorer-user")
     public ResponseEntity<User> test(Principal principal){
         System.out.println(principal.getName());
-        new UserResource(UUID.randomUUID(), "name", UserResource.ResourceType.SHARED, URI.create("ok"));
-        return ResponseEntity.ok(new User("John", "Smith", "johnyboy69"));
+        //new UserResource(UUID.randomUUID(), "name", UserResource.ResourceType.SHARED, URI.create("ok"));
+        return ResponseEntity.ok(new User());
     }
 
     @GetMapping(path = "/hello")

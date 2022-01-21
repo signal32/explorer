@@ -9,7 +9,11 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.Optional;
 import java.util.UUID;
-//https://stackoverflow.com/questions/49105290/how-to-get-userinfo-in-springboot-using-keycloak
+
+
+/**
+ * Convenience bean to map user details from Keycloak to Explorer friendly types.
+ */
 @Component
 @RequestScope
 public class ExplorerUserDetails {
@@ -22,17 +26,24 @@ public class ExplorerUserDetails {
 
 
     public ExplorerUserDetails() {
-        var context = SecurityContextHolder.getContext();
-        var authToken = (KeycloakAuthenticationToken) context.getAuthentication();
-        var accessToken = authToken.getAccount().getKeycloakSecurityContext().getToken();
+        try {
+            var context = SecurityContextHolder.getContext();
+            var authToken = (KeycloakAuthenticationToken) context.getAuthentication();
+            var accessToken = authToken.getAccount().getKeycloakSecurityContext().getToken();
 
-        this.id = UUID.fromString(accessToken.getId());
-        this.username = accessToken.getPreferredUsername();
-        this.email = accessToken.getEmail();
+            this.id = UUID.fromString(accessToken.getId());
+            this.username = accessToken.getPreferredUsername();
+            this.email = accessToken.getEmail();
+        }
+        catch (Exception e) {
+            this.id = null;
+            this.username = null;
+            this.email = null;
+        }
     }
 
-    public UUID getId() {
-        return id;
+    public Optional<UUID> getId() {
+        return Optional.ofNullable(id);
     }
 
     public void setId(UUID id) {
@@ -55,13 +66,4 @@ public class ExplorerUserDetails {
         this.email = email;
     }
 
-/*    @Bean
-    @RequestScope
-    public UserDetails sessionUserDetails() {
-        var context = SecurityContextHolder.getContext();
-        var authToken = (KeycloakAuthenticationToken) context.getAuthentication();
-        var accessToken = authToken.getAccount().getKeycloakSecurityContext().getToken();
-
-        LOGGER.info("Running user bean");
-    }*/
 }

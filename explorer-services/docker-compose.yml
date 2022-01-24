@@ -37,9 +37,9 @@ services:
   tileServer:
     image: maptiler/tileserver-gl:${TILESERVER_VERSION:-v3.1.1}
     restart: on-failure
-    command: --verbose --config /config/tileserver/tileserver.json --mbtiles /tile_data/tiles/tiles.mbtiles
+    command: --verbose --config /config/tileserver/tileserver.json --mbtiles /tile_data/tiles/tiles.mbtiles --port 8090
     volumes:
       - ./config:/config
       - ${TILESERVER_TILE_DIR:-./data/tileserver}:/tile_data
     ports:
-      - "${TILESERVER_PORT:-8090}:8080"
+      - "${TILESERVER_PORT:-8090}:8090"

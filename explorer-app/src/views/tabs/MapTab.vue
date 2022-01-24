@@ -24,7 +24,9 @@
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { Map, MapLayerEventType } from 'maplibre-gl';
-import { defineComponent, onMounted, shallowRef, markRaw } from 'vue'; 
+import { defineComponent, onMounted, shallowRef, markRaw, watch, toRef, reactive } from 'vue'; 
+import router from '@/router'
+
 
 const TILE_API = process.env.VUE_APP_EXPLORER_TILE_API;
 
@@ -40,18 +42,41 @@ export default defineComponent({
     setup() {
         const mapContainer = shallowRef("");
         const map = shallowRef<Map>();
+        let pos = reactive({
+          lng: router.currentRoute.value.query?.lng as unknown as number || -2.2568,
+          lat: router.currentRoute.value.query?.lat as unknown as number || 57.0348535,
+          zoom: router.currentRoute.value.query?.zoom as unknown as number || 16,
+        });
         
         onMounted(() => {
             console.log("mounted")
             const map = new Map({
                 container: mapContainer.value,
                 style: TILE_API + 'styles/basic-preview/style.json',
-                center: [-2.2568, 57.0348535],
-                zoom: 9,
+                center: [pos.lng, pos.lat],
+                zoom: pos.zoom,
+                
             });
             map.on('load', () => map.resize());
+            map.on('moveend', () => {
+              const { lng, lat} = map.getCenter();
+              router.replace({query: {zoom: map.getZoom().toFixed(2), lat, lng}})
+              // history.replaceState({}, '', router.currentRoute.value.path + `?lng=${lng}&lat=${lat}&zoom=${map.getZoom()}`)
+            })
             map.resize()
+            
         })
+
+        watch(pos, (now, prev) => {
+          console.log("position changed to " + now);
+          map.value?.flyTo({
+            center: [now.lng, now.lat],
+            zoom: now.zoom,
+            speed: 0.2,
+            curve: 1,
+          });
+        });
+
 
         async function resetMap () {
             map.value?.resize();

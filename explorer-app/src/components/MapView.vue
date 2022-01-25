@@ -1,4 +1,10 @@
 <template>
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button v-if="details.bearing !== 0" color="light" @click="orientate()">
+            <ion-icon class="compass-icon" :icon="navigateSharp"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
     <div class="map-wrap">
         <div class="map" ref="mapContainer"></div>
     </div>
@@ -10,6 +16,8 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { Map, MapLayerEventType } from 'maplibre-gl';
 import {defineComponent, onMounted, shallowRef, computed, PropType, watch, ref} from 'vue';
 import {debounce} from 'lodash';
+import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
+import {navigateSharp} from 'ionicons/icons';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -20,6 +28,9 @@ const DEFAULT_ZOOM = 12;
 
 export default defineComponent({
     components: {
+        IonFab,
+        IonFabButton,
+        IonIcon
     },
 
     props: {
@@ -35,6 +46,10 @@ export default defineComponent({
         const style = props.style || `basic-preview`;
         const position = ref<MapPosition>({
             lng: DEFAULT_LNG, lat: DEFAULT_LAT, zoom: DEFAULT_ZOOM
+        });
+
+        const details = ref({
+            bearing: 0
         });
 
         const updateExternalPosition = debounce(async () => {
@@ -79,6 +94,7 @@ export default defineComponent({
                     position.value = newPos;
                     updateExternalPosition();
                 }
+                details.value.bearing = map1.getBearing() || 0
             });
             map1.resize();
 
@@ -90,8 +106,13 @@ export default defineComponent({
             //map.value?.resize();
         }
 
-        return { map, mapContainer, resetMap }
-    }
+        async function orientate() {
+            map.value?.resetNorthPitch();
+        }
+
+        const x = map.value?.getBearing()
+        return { map, mapContainer, resetMap, orientate, navigateSharp, details}
+    },
 });
 
 export interface MapPosition {
@@ -115,4 +136,10 @@ export interface MapPosition {
     width: 100%;
     height: 100%;
 }
+
+.compass-icon {
+    rotate: v-bind(details.bearing + "deg") !important;
+    animation: ease;
+}
+
 </style>

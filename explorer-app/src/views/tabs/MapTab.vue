@@ -5,16 +5,14 @@
         <ion-title>Home</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content id="yeet">
-        <!-- <div id="mybox">hi</div> -->
-        <div class="map-wrap">
-            <a href="https://www.maptiler.com" class="watermark">
-                <!-- <img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"/> -->
-            </a>
-            <div class="map" ref="mapContainer"></div>
-        </div>
-        <button id="bottomButton" @click="resetMap()" >Oops</button>
-
+    <ion-content>
+        <ion-fab vertical="top" horizontal="end" slot="fixed">
+            <ion-fab-button color="light" @click="move()">
+                <ion-icon :icon="locateOutline"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
+        <MapView v-model:position="position" @update:position="position = $event">
+        </MapView>
     </ion-content>
   </ion-page>
 </template>
@@ -22,13 +20,12 @@
 <script lang="ts">
 // Inspired by https://documentation.maptiler.com/hc/en-us/articles/4413873409809-Display-a-map-in-Vue-js-using-MapLibre-GL-JS
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import { Map, MapLayerEventType } from 'maplibre-gl';
-import { defineComponent, onMounted, shallowRef, markRaw, watch, toRef, reactive } from 'vue'; 
+import {IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonPage, IonTitle, IonToolbar} from '@ionic/vue';
+import {locateOutline} from 'ionicons/icons';
+import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
-
-
-const TILE_API = process.env.VUE_APP_EXPLORER_TILE_API;
+import MapView from '@/components/MapView.vue';
+import {MapPosition} from '@/components/MapView.vue';
 
 export default defineComponent({
     components: {
@@ -37,81 +34,33 @@ export default defineComponent({
         IonPage,
         IonTitle,
         IonToolbar,
+        MapView,
+        IonFab,
+        IonFabButton,
+        IonIcon
     },
 
     setup() {
-        const mapContainer = shallowRef("");
-        const map = shallowRef<Map>();
-        let pos = reactive({
-          lng: router.currentRoute.value.query?.lng as unknown as number || -2.2568,
-          lat: router.currentRoute.value.query?.lat as unknown as number || 57.0348535,
-          zoom: router.currentRoute.value.query?.zoom as unknown as number || 16,
+        let position = ref<MapPosition>({
+            lng: router.currentRoute.value.query?.lng as unknown as number,
+            lat: router.currentRoute.value.query?.lat as unknown as number,
+            zoom: router.currentRoute.value.query?.zoom as unknown as number,
         });
-        
-        onMounted(() => {
-            console.log("mounted")
-            const map = new Map({
-                container: mapContainer.value,
-                style: TILE_API + 'styles/basic-preview/style.json',
-                center: [pos.lng, pos.lat],
-                zoom: pos.zoom,
-                
-            });
-            map.on('load', () => map.resize());
-            map.on('moveend', () => {
-              const { lng, lat} = map.getCenter();
-              router.replace({query: {zoom: map.getZoom().toFixed(2), lat, lng}})
-              // history.replaceState({}, '', router.currentRoute.value.path + `?lng=${lng}&lat=${lat}&zoom=${map.getZoom()}`)
-            })
-            map.resize()
-            
+
+        watch(position, ({zoom, lat, lng}) => {
+            router.replace({query: {zoom, lat, lng}})
         })
 
-        watch(pos, (now, prev) => {
-          console.log("position changed to " + now);
-          map.value?.flyTo({
-            center: [now.lng, now.lat],
-            zoom: now.zoom,
-            speed: 0.2,
-            curve: 1,
-          });
-        });
-
-
-        async function resetMap () {
-            map.value?.resize();
+        function move() {
+            position.value = {
+                lng: -2.371366618261618,
+                lat: 57.28271220381899,
+                zoom: 13.3,
+            }
         }
-        
 
-        return { map, mapContainer, resetMap }
-    }
+        return { position, move, locateOutline };
+    },
+
 });
 </script>
-
-<style scoped>
-@import '~maplibre-gl/dist/maplibre-gl.css';
-
-.map-wrap {
-  position: relative;
-  width: 100%;
-  height: 100%  /* calculate height of the screen minus the heading: calc(100vh - 77px);*/
-}
-
-.map {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.watermark {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  z-index: 999;
-}
-
-#bottomButton {
-  position: fixed;
-  bottom: 0px;
-}
-</style>

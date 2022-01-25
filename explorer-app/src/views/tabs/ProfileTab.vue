@@ -42,6 +42,7 @@
   import {getUserStore} from '@/modules/user/userStore';
   import {getNotificationStore} from '@/modules/notify/notificationStore';
 import { NotificationType } from '@/modules/notify/notification';
+  import { createAxios } from '@/modules/axios/setup';
 
   export default defineComponent({
     components: {
@@ -53,7 +54,23 @@ import { NotificationType } from '@/modules/notify/notification';
         const userStore = getUserStore();
         const notificationStore = getNotificationStore();
         async function notImplementedAlert() {
-            notificationStore.pushNotification({title: "Not implemented", type: NotificationType.TOAST})
+          const axios = createAxios({
+              baseURL: "http://10.1.0.20:8081/",
+              timeout: 1500
+            });
+
+          const config = {
+              headers: { Authorization: `Bearer ${userStore.token}` }
+          };
+          axios.post("public/user/bio/", prompt('Type here'), config)
+          .then(() => {
+            axios.get('public/user', config).then((res) => {
+                console.log(res.data);
+                alert(res?.data?.biography)
+            })
+          });
+
+          notificationStore.pushNotification({title: "Not implemented", type: NotificationType.TOAST})
         }
 
 

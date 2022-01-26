@@ -6,6 +6,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
+        <ion-grid fixed>
 
         <ion-row class="ion-align-items-center">
             <ion-col size="3" class="">
@@ -31,12 +32,28 @@
                 <ion-icon :icon="savedIcon"></ion-icon>
             </ion-segment-button>
         </ion-segment>
+        </ion-grid>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-  import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonCol, IonRow, IonAvatar, IonButton } from '@ionic/vue';
+import {
+    IonContent,
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonIcon,
+    IonCol,
+    IonRow,
+    IonAvatar,
+    IonButton,
+    IonGrid
+} from '@ionic/vue';
   import { analytics, bookmarkOutline, pencilOutline } from 'ionicons/icons';
   import { defineComponent } from 'vue';
   import {getUserStore} from '@/modules/user/userStore';
@@ -46,7 +63,7 @@ import { NotificationType } from '@/modules/notify/notification';
 
   export default defineComponent({
     components: {
-      IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonRow, IonCol, IonAvatar, IonButton
+      IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonRow, IonCol, IonAvatar, IonButton, IonGrid,
     },
 
     setup() {

@@ -10,6 +10,7 @@
      </ion-header>
 
      <ion-content :fullscreen="true">
+         <ion-grid fixed >
          <ion-card >
 
              <div style="display: flex; align-items: center; justify-content: center;">
@@ -37,6 +38,7 @@
                  </form>
              </ion-card-content>
          </ion-card>
+         </ion-grid>
 
          <ion-loading
              :is-open="isOpenRef"
@@ -70,7 +72,7 @@ import {
     IonButtons,
     IonBackButton,
     IonLoading,
-    alertController
+    alertController, IonGrid
 } from "@ionic/vue";
 import {defineComponent, ref} from "vue";
 import { useI18n } from "vue-i18n";
@@ -96,6 +98,7 @@ export default defineComponent({
         IonButtons,
         IonBackButton,
         IonLoading,
+        IonGrid,
     },
 
     setup() {

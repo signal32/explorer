@@ -3,6 +3,9 @@
         <ion-fab-button v-if="details.bearing !== 0" color="light" @click="orientate()">
             <ion-icon class="compass-icon" :icon="navigateSharp"></ion-icon>
         </ion-fab-button>
+        <ion-fab-button color="light" @click="resetMap()">
+            <ion-icon class="compass-icon" :icon="hammerSharp"></ion-icon>
+        </ion-fab-button>
     </ion-fab>
 
     <div class="map-wrap">
@@ -17,7 +20,7 @@ import { Map, MapLayerEventType } from 'maplibre-gl';
 import {defineComponent, onMounted, shallowRef, computed, PropType, watch, ref} from 'vue';
 import {debounce} from 'lodash';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import {navigateSharp} from 'ionicons/icons';
+import {navigateSharp, hammerSharp} from 'ionicons/icons';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -103,7 +106,7 @@ export default defineComponent({
         })
 
         async function resetMap () {
-            //map.value?.resize();
+            map.value?.resize();
         }
 
         async function orientate() {
@@ -111,7 +114,7 @@ export default defineComponent({
         }
 
         const x = map.value?.getBearing()
-        return { map, mapContainer, resetMap, orientate, navigateSharp, details}
+        return { map, mapContainer, resetMap, orientate, navigateSharp, hammerSharp, details}
     },
 });
 

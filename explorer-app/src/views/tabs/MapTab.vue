@@ -2,10 +2,11 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Home</ion-title>
+        <ion-title>Map</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content :fullscreen="true">
+
         <ion-fab vertical="top" horizontal="end" slot="fixed">
             <ion-fab-button color="light" @click="move()">
                 <ion-icon :icon="locateOutline"></ion-icon>

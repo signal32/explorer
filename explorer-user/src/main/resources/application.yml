@@ -10,7 +10,7 @@ server:
 #          jwk-set-uri: http://localhost:8083/auth/realms/baeldung/protocol/openid-connect/certs
 
 keycloak:
-  auth-server-url: http://localhost:8083/auth
+  auth-server-url: http://10.1.0.20:8083/auth
   realm: Explorer
   resource: explorer-user-app
   ssl-required: external

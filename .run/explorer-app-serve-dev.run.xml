@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="explorer-app-serve-dev" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/explorer-app/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="serve" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs>
+      <env name="VUE_APP_EXPLORER_AUTH_API" value="http://10.1.0.20:8083/auth/realms/Explorer/" />
+      <env name="VUE_APP_EXPLORER_USER_API" value="http://10.1.0.20:8081/" />
+      <env name="VUE_APP_EXPLORER_TILE_API" value="http://10.1.0.20:8090/" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

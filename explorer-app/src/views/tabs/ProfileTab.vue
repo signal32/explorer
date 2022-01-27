@@ -6,6 +6,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
+        <ion-grid fixed>
 
         <ion-row class="ion-align-items-center">
             <ion-col size="3" class="">
@@ -31,21 +32,38 @@
                 <ion-icon :icon="savedIcon"></ion-icon>
             </ion-segment-button>
         </ion-segment>
+        </ion-grid>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-  import { IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonCol, IonRow, IonAvatar, IonButton } from '@ionic/vue';
+import {
+    IonContent,
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonIcon,
+    IonCol,
+    IonRow,
+    IonAvatar,
+    IonButton,
+    IonGrid
+} from '@ionic/vue';
   import { analytics, bookmarkOutline, pencilOutline } from 'ionicons/icons';
   import { defineComponent } from 'vue';
   import {getUserStore} from '@/modules/user/userStore';
   import {getNotificationStore} from '@/modules/notify/notificationStore';
 import { NotificationType } from '@/modules/notify/notification';
+  import { createAxios } from '@/modules/axios/setup';
 
   export default defineComponent({
     components: {
-      IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonRow, IonCol, IonAvatar, IonButton
+      IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonRow, IonCol, IonAvatar, IonButton, IonGrid,
     },
 
     setup() {
@@ -53,7 +71,23 @@ import { NotificationType } from '@/modules/notify/notification';
         const userStore = getUserStore();
         const notificationStore = getNotificationStore();
         async function notImplementedAlert() {
-            notificationStore.pushNotification({title: "Not implemented", type: NotificationType.TOAST})
+          const axios = createAxios({
+              baseURL: "http://10.1.0.20:8081/",
+              timeout: 1500
+            });
+
+          const config = {
+              headers: { Authorization: `Bearer ${userStore.token}` }
+          };
+          axios.post("public/user/bio/", prompt('Type here'), config)
+          .then(() => {
+            axios.get('public/user', config).then((res) => {
+                console.log(res.data);
+                alert(res?.data?.biography)
+            })
+          });
+
+          notificationStore.pushNotification({title: "Not implemented", type: NotificationType.TOAST})
         }
 
 

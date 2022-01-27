@@ -1,0 +1,21 @@
+PREFIX geo: ?geo
+PREFIX wikibase: ?wikibase
+PREFIX wdt: ?wdt
+PREFIX bd: ?bd
+SELECT ?place ?placeLabel ?location WHERE {
+    # Select the coordinate location(P625) of Berlin(Q64) as the centeral coordinate ?mainLoc
+    ?_entity wdt:P625 ?mainLoc .
+    # Use the around service
+    SERVICE wikibase:around {
+        # Looking for items with coordinate locations(P625)
+        ?place wdt:P625 ?location .
+        # That are in a circle with a centre of ?mainLoc(The coordinate location of Berlin)
+        bd:serviceParam wikibase:center ?mainLoc .
+        # Where the circle has a radius of 100km
+        bd:serviceParam wikibase:radius ?_radius .
+    }
+    # Use the label service to get the English label
+    SERVICE wikibase:label {
+        bd:serviceParam wikibase:language "en" .
+    }
+}

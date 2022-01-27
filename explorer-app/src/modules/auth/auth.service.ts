@@ -2,6 +2,9 @@ import axios from 'axios';
 import {pinia} from '@/main';
 import User from '@/modules/user/user';
 import {getUserStore} from '@/modules/user/userStore';
+import { getNotificationStore } from '../notify/notificationStore';
+import { createAxios } from '../axios/setup';
+import { NotificationType } from '../notify/notification';
 
 const API_URL = process.env.VUE_APP_EXPLORER_AUTH_API + "protocol/openid-connect/";
 const LOGIN_PATH = "token/";
@@ -11,9 +14,14 @@ const INFO_PATH = 'userinfo/';
 
 const CLIENT_ID = 'explorer-user-app';
 
-const instance = axios.create({
+// const instance = axios.create({
+//     baseURL: API_URL,
+//     timeout: 15000,
+// }).interceptors.response.use;
+
+const instance = createAxios({
     baseURL: API_URL,
-    timeout: 15000,
+    timeout: 1500
 });
 
 console.log(API_URL);
@@ -95,6 +103,38 @@ class AuthService {
                 console.log(`Error loading user info: ${err} `);
                 return {};
             })
+    }
+
+    public refreshLogin(){
+        const store = getUserStore();
+        console.log("refreshing token");
+        const params = new URLSearchParams();
+        params.append('client_id', CLIENT_ID);
+        //params.append('username', store.user?.username || '');
+        params.append('refresh_token', store.refreshToken || '');
+        params.append('grant_type', 'refresh_token');
+
+        return instance
+            .post(LOGIN_PATH, params)
+            .then(async res => {
+                const token = res.data?.access_token;
+                const refreshToken = res.data?.refresh_token;
+                if (token) {
+                    console.log(`Re-authentication success: Token = ${token}\nRefresh Token = ${refreshToken}`);
+                    const user = await this.userInfo(token)
+                    const store = getUserStore(pinia);
+                    store.refreshToken = refreshToken
+                    store.setUser({ user: user, token, refreshToken, loggedIn: true});
+                    return user;
+                }
+                else return {};
+            })
+            .catch( err => {
+                console.log(`Re-authentication failed: ${err}`);
+                getNotificationStore().pushNotification({title: "Authentication failed", type: NotificationType.TOAST});
+                throw err;
+            })
+
     }
 }
 

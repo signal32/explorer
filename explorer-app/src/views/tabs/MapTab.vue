@@ -2,18 +2,18 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Home</ion-title>
+        <ion-title>Map</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content id="yeet">
-        <!-- <div id="mybox">hi</div> -->
-        <div class="map-wrap">
-            <a href="https://www.maptiler.com" class="watermark">
-                <img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"/>
-            </a>
-            <div class="map" ref="mapContainer"></div>
-        </div>
+    <ion-content :fullscreen="true">
 
+        <ion-fab vertical="top" horizontal="end" slot="fixed">
+            <ion-fab-button color="light" @click="move()">
+                <ion-icon :icon="locateOutline"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
+        <MapView v-model:position="position" @update:position="position = $event">
+        </MapView>
     </ion-content>
   </ion-page>
 </template>
@@ -21,9 +21,12 @@
 <script lang="ts">
 // Inspired by https://documentation.maptiler.com/hc/en-us/articles/4413873409809-Display-a-map-in-Vue-js-using-MapLibre-GL-JS
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import { Map, MapLayerEventType } from 'maplibre-gl';
-import { defineComponent, onMounted, shallowRef, markRaw } from 'vue'; 
+import {IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonPage, IonTitle, IonToolbar} from '@ionic/vue';
+import {locateOutline} from 'ionicons/icons';
+import {defineComponent, ref, watch} from 'vue';
+import router from '@/router'
+import MapView from '@/components/MapView.vue';
+import {MapPosition} from '@/components/MapView.vue';
 
 export default defineComponent({
     components: {
@@ -32,55 +35,33 @@ export default defineComponent({
         IonPage,
         IonTitle,
         IonToolbar,
+        MapView,
+        IonFab,
+        IonFabButton,
+        IonIcon
     },
 
     setup() {
-        const mapContainer = shallowRef("");
-        const map = shallowRef("");
-        
-        onMounted(() => {
-            console.log("mounted")
-            const map = new Map({
-                container: mapContainer.value,
-                style: 'https://demotiles.maplibre.org/style.json',
-                center: [-74.5, 40],
-                zoom: 9,
-            });
-            map.on('load', () => map.resize())
-            map.resize()
-        })
-        
+        let position = ref<MapPosition>({
+            lng: router.currentRoute.value.query?.lng as unknown as number,
+            lat: router.currentRoute.value.query?.lat as unknown as number,
+            zoom: router.currentRoute.value.query?.zoom as unknown as number,
+        });
 
-        return { map, mapContainer }
-    }
+        watch(position, ({zoom, lat, lng}) => {
+            router.replace({query: {zoom, lat, lng}})
+        })
+
+        function move() {
+            position.value = {
+                lng: -2.371366618261618,
+                lat: 57.28271220381899,
+                zoom: 13.3,
+            }
+        }
+
+        return { position, move, locateOutline };
+    },
+
 });
 </script>
-
-<style scoped>
-@import '~maplibre-gl/dist/maplibre-gl.css';
-
-.map-wrap {
-  position: relative;
-  width: 100%;
-  height: 100%  /* calculate height of the screen minus the heading: calc(100vh - 77px);*/
-}
-
-.map {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.watermark {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  z-index: 999;
-}
-
-/* #mybox {
-    width: 100vw;
-    height: 100vh;
-    background-color: red;
-} */
-</style>

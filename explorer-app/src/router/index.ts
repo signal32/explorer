@@ -25,23 +25,23 @@ const routes: Array<RouteRecordRaw> = [
     component: DebugPage
   },
   {
-    path: '/tabs/',
+    path: '/view/',
     component: HomePage,
     children: [
       {
         path: '',
-        redirect: 'tab1',
+        redirect: 'map',
       },
       {
-        path: 'tab1',
+        path: 'map',
         component: () => import('@/views/tabs/MapTab.vue'),
       },
       {
-        path: 'tab2',
+        path: 'discover',
         component: () => import('@/views/tabs/BlankTab.vue'),
       },
       {
-        path: 'tab3',
+        path: 'profile',
         component: () => import('@/views/tabs/ProfileTab.vue'),
       },
     ],

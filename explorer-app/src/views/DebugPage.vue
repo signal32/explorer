@@ -22,6 +22,7 @@
                             User Details
                             <p>{{store.user}}</p>
                             <p>loggedIn: {{store.loggedIn}}</p>
+                            <button @click="reAuthUser">Re-Authenticate</button>
                         </ion-label>
                     </ion-item>
                     <ion-item>
@@ -69,6 +70,8 @@ import { defineComponent } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonLabel, IonList, IonItem, IonBackButton, IonAccordion, IonAccordionGroup } from '@ionic/vue';
 import { getUserStore } from '@/modules/user/userStore';
 import AuthService from '@/modules/auth/auth.service';
+import { getNotificationStore } from '@/modules/notify/notificationStore';
+import { NotificationType } from '@/modules/notify/notification';
 
 export default defineComponent({
     components: {IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonLabel, IonList, IonItem, IonBackButton, IonAccordion, IonAccordionGroup },
@@ -76,7 +79,15 @@ export default defineComponent({
         const store = getUserStore();
         const env = process.env;
         console.log(env)
-        return {store, env};
+
+        async function reAuthUser() {
+            AuthService.refreshLogin()
+            .then(() => {
+                getNotificationStore().pushNotification({title: "Re-Authentication Success!", type: NotificationType.TOAST});
+            })            
+        }
+
+        return {store, env, reAuthUser};
     },
 })
 </script>

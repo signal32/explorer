@@ -1,0 +1,17 @@
+PREFIX geo: ?geo
+PREFIX wikibase: ?wikibase
+PREFIX wdt: ?wdt
+PREFIX bd: ?bd
+SELECT * WHERE {
+    # Select the two corners for the box, San Jose & Sacramento
+    values ?pointSW {"Point(-2.1501791,57.1132776)"^^geo:wktLiteral}.
+    values ?pointNE {"Point(-2.096472,57.1443733)"^^geo:wktLiteral} .
+    # Use the box service
+    SERVICE wikibase:box {
+        # Looking for items with coordinate locations(P625)
+        ?place wdt:P625 ?location .
+        # Set the south west and north east corners of the box
+        bd:serviceParam wikibase:cornerSouthWest ?pointSW .
+        bd:serviceParam wikibase:cornerNorthEast ?pointNE .
+    }
+}

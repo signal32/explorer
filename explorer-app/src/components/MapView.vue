@@ -19,7 +19,7 @@
 <script lang="ts">
 // Inspired by https://documentation.maptiler.com/hc/en-us/articles/4413873409809-Display-a-map-in-Vue-js-using-MapLibre-GL-JS
 import 'maplibre-gl/dist/maplibre-gl.css'
-import {Map} from 'maplibre-gl';
+import {LngLat, Map} from 'maplibre-gl';
 import {computed, defineComponent, onMounted, PropType, ref, shallowRef, watch} from 'vue';
 import {debounce} from 'lodash';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
@@ -54,6 +54,7 @@ export default defineComponent({
         const position = ref<MapPosition>({
             lng: DEFAULT_LNG, lat: DEFAULT_LAT, zoom: DEFAULT_ZOOM
         });
+        let lastUpdateCenter = new LngLat(0.0, 0.0);
 
         const details = ref({
             bearing: 0
@@ -102,6 +103,13 @@ export default defineComponent({
                     updateExternalPosition();
                 }
                 details.value.bearing = map1.getBearing() || 0
+
+                if (!map1.getBounds().contains(lastUpdateCenter)) {
+                    console.log('Radius of viewport: ' + map1.getCenter().distanceTo(map1.getBounds().getNorthEast()));
+                    //updateMap();
+                    lastUpdateCenter = map1.getCenter();
+                }
+
             });
 
             map1.on('load', () => {

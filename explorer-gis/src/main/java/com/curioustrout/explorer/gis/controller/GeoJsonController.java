@@ -38,5 +38,6 @@ public class GeoJsonController {
 
         return ResponseEntity.ok(FeatureCollection.fromFeatures(features).toJson());
     }
+
 }
 

@@ -2,6 +2,9 @@ package com.curioustrout.explorer.gis.service;
 
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryException;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -31,6 +34,7 @@ public class QueryProvider {
     private String prefixDefinitionPath = "classpath:sparql.properties";
 
     private final Map<String, ParameterizedSparqlString> queryStrings;
+    private final Model model = ModelFactory.createDefaultModel();
 
 
     public QueryProvider(ResourceLoader resourceLoader) throws IOException {
@@ -59,12 +63,24 @@ public class QueryProvider {
      * @param name Filename of the query
      * @param config Values to be injected into query
      */
-    public Query getQuery(String name, Map<String, String> config) {
+    public Query getQuery(String name, Map<String, Object> config) {
+
         var queryString = queryStrings.get(name).copy();
         for (var entry : config.entrySet()) {
-            queryString.setLiteral(entry.getKey(), entry.getValue());
+            queryString.setLiteral(entry.getKey(), model.createTypedLiteral(entry.getValue()));
         }
-        return queryString.asQuery();
+
+        try {
+            return queryString.asQuery();
+        }
+        catch (QueryException e) {
+            var message = e.getMessage();
+            if (message.contains("don't know how to parse")) {
+                var offendingClass = message.substring(message.lastIndexOf('.') + 1);
+                throw new IllegalArgumentException("Could not convert Java Object <" + offendingClass + "> to TypedLiteral as it is not referenced within a registered RDFDataType instance", e);
+            }
+        }
+        return null;
     }
 
     private Resource[] loadQueries() throws IOException {

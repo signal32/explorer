@@ -9,7 +9,7 @@ PREFIX wdt: ?wdt
 PREFIX bd: ?bd
 SELECT ?place ?placeLabel ?location WHERE {
     # By convention variable with ?_... syntax will be injected at runime
-    values ?midPoint {?_pointValue^^geo:wktLiteral}
+    values ?midPoint {?_pointValue}
     # Use the around service
     SERVICE wikibase:around {
         ?place wdt:P625 ?location .

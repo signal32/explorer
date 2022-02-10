@@ -1,107 +1,93 @@
 package com.curioustrout.explorer.gis.util;
 
-import org.locationtech.jts.geom.Coordinate;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Simple QuadTree implementation.
  * @implNote  Does not support bottom -> top searching or dynamic re-ordering of Quads
  *
- * @param <S> Abstract size of quad
- * @param <D> Abstract data associated with quad
+ * @param <T> type of data stored in quadtree
  */
-public class Quad<S extends Comparable<S>, D>{
+public class Quad<T> /*implements Iterable<T>*/{
 
     private static final int DEFAULT_MAX_DEPTH = 25;
 
-    private Quad<S, D> parent;
-    private Quad<S, D> ne;
-    private Quad<S, D> se;
-    private Quad<S, D> sw;
-    private Quad<S, D> nw;
+    public enum Section {
+        NE, SE, SW, NW
+    }
+
+    private Quad<T> parent;
+    private Quad<T> ne;
+    private Quad<T> se;
+    private Quad<T> sw;
+    private Quad<T> nw;
 
     private int maxDepth;
-    private final Coordinate coordinate; // x lng, y lat, z zoom
-    private S size;
-    private D data;
+    private int depth;
+    //private final Position position; // x lng, y lat, z zoom
+    private GeoArea area;
+
+    private T value;
 
 
-    /**
-     * Create a new Quad node with parent and children quads
-     * @param parent Non nullable parent
-     * @param ne North-east quad
-     * @param se South-east quad
-     * @param sw South-west quad
-     * @param nw North-west quad
-     */
-    public Quad(Quad<S, D> parent, Quad<S, D> ne, Quad<S, D> se, Quad<S, D> sw, Quad<S, D> nw, Coordinate coordinate) {
+    protected Quad(T value, Quad<T> parent, Quad<T> ne, Quad<T> se, Quad<T> sw, Quad<T> nw, int maxDepth, int depth, GeoArea area) {
         this.parent = parent;
         this.ne = ne;
         this.se = se;
         this.sw = sw;
         this.nw = nw;
-
-        this.coordinate = coordinate;
-        this.maxDepth = parent.maxDepth - 1;
-    }
-
-    /**
-     * Create a new root Quad node with no parent and children quads
-     * @param ne North-east quad
-     * @param se South-east quad
-     * @param sw South-west quad
-     * @param nw North-west quad
-     */
-    public Quad(Quad<S, D> ne, Quad<S, D> se, Quad<S, D> sw, Quad<S, D> nw, int maxDepth) {
-        this.ne = ne;
-        this.se = se;
-        this.sw = sw;
-        this.nw = nw;
         this.maxDepth = maxDepth;
-        this.coordinate = new Coordinate(0,0, 0);
+        this.depth = depth;
+        this.area = area;
+        this.value = value;
     }
 
-    /**
-     * Create new leaf Quad node with parent only and no children
-     * @param parent Parent node
-     */
-    public Quad(Quad<S, D> parent, Coordinate coordinate) {
-        this(parent, null, null, null, null, coordinate);
+    protected Quad(T value, GeoArea area, int maxDepth) {
+        this.value = value;
+        this.area = area;
+        this.maxDepth = maxDepth;
+        //todo divide area
     }
 
-    /**
-     * Create new root Quad.
-     * @param maxDepth The maximum premised depth of this tree
-     */
-    public Quad(int maxDepth){
-        this(null, null, null, null, maxDepth);
+    public Quad(T value) {
+        this(value, DEFAULT_MAX_DEPTH);
     }
 
-
-    public S getSize() {
-        return size;
+    public Quad(T value, int maxDepth) {
+        this.value = value;
+        this.maxDepth = maxDepth;
+        this.depth = 0;
     }
 
-    public void setSize(S size) {
-        this.size = size;
+    public GeoArea getArea() {
+        return area;
     }
 
-    public D getData() {
-        return data;
+    public void setArea(GeoArea area) {
+        this.area = area;
     }
 
-    public void setData(D data) {
-        this.data = data;
+    public int getDepth() {
+        return depth;
+    }
+
+    public T get() {
+        return value;
+    }
+
+    public void set(T data) {
+        this.value = data;
     }
 
     /**
      * Find the lowest quad in Quadtree which encapsulates the given coordinate.
      * If the coordinate is outside the Quadtree bounds then the closes tile will be returned.
      */
-    public Quad<S, D> find(Coordinate coordinate) {
+    public Quad<T> find(Position coordinate) {
         var tile = this;
-        while (tile.coordinate.z < maxDepth) {
+        while (tile.depth < maxDepth) {
             var child = tile.getChild(coordinate);
             if (child.isPresent()){
                 tile = child.get();
@@ -113,16 +99,112 @@ public class Quad<S extends Comparable<S>, D>{
         return tile;
     }
 
-    public void insert(Quad<S, D> quad) {
-        var destination = find(quad.coordinate); // get deepest existing quad
+    /**
+     * Find the smallest quads that intersect with the target area.
+     */
+    public List<Quad<T>> find(GeoArea targetArea, int minDepth) {
+        var quadList = new ArrayList<Quad<T>>();
+
+        if (depth >= minDepth && area.intersects(targetArea) && getChildrenContaining(area).isEmpty()) {
+            quadList.add(this);
+        }
+
+        // Recurse over child quads
+        for (var child : getChildrenContaining(targetArea)) {
+            quadList.addAll(child.find(targetArea, minDepth));
+        }
+
+        return quadList;
+    }
+
+    public List<Quad<T>> find(GeoArea targetArea) {
+        return find(targetArea, 0);
+    }
+
+    /**
+     * Create new quads to contain an area at given depth
+     */
+    public List<Quad<T>> findOrCreate(GeoArea targetArea, int targetDepth) {
+        var quadList = new ArrayList<Quad<T>>();
+
+        if (area.intersects(targetArea) && depth == targetDepth) {
+            return List.of(this);
+        }
+
+        // if we are in right area but children are empty
+        if (area.intersects(targetArea) && getChildrenContaining(targetArea).isEmpty()) {
+            initChildQuads();
+        }
+
+        for (var child : getChildrenContaining(targetArea)) {
+            quadList.addAll(child.findOrCreate(targetArea, targetDepth));
+        }
+
+        return quadList;
+    }
+
+    /**
+     * Insert a Quad into the tree structure.
+     */
+    public void insert(Quad<T> quad) {
+        var destination = find(quad.area.midPoint()); // get deepest existing quad
         destination.setChild(quad);
+    }
+
+    /**
+     * Set child Quad in one of the current Quads sections.
+     */
+    public void setQuad(Quad<T> quad, Section section) {
+
+        quad.parent = this;
+        quad.depth = this.depth + 1;
+
+        // Recalculate the quads' area as subsection of parents.
+        switch (section) {
+            case NE -> {
+                quad.area = new GeoArea(this.area.getNe(), this.area.midPoint());
+                ne = quad;
+            }
+            case SE -> {
+                var sePos = this.area.se();
+                var newNe = this.area.getNe().midpoint(sePos);
+                var newSw = new Position(this.area.getSw().lat, this.area.midPoint().lng);//this.area.getSw().midpoint(sePos);
+                quad.area = new GeoArea(newNe, newSw);
+                se = quad;
+            }
+            case SW -> {
+                quad.area = new GeoArea(this.area.midPoint(), this.area.getSw());
+                sw = quad;
+            }
+            case NW -> {
+                var nwPos = this.area.nw();
+                var newNe = new Position(this.area.getNe().lat, this.area.midPoint().lng);//this.area.getNe().midpoint(nwPos);
+                var newSw = this.area.getSw().midpoint(nwPos);
+                quad.area = new GeoArea(newNe, newSw);
+                nw = quad;
+            }
+        }
+    }
+
+    /**
+     * Break up Quad into 4 sub nodes. Skips existing children.
+     */
+    private void initChildQuads() {
+        if (ne == null) setQuad(new Quad<T>(null), Section.NE);
+        if (se == null) setQuad(new Quad<T>(null), Section.SE);
+        if (sw == null) setQuad(new Quad<T>(null), Section.SW);
+        if (nw == null) setQuad(new Quad<T>(null), Section.NW);
+    }
+
+    public boolean isLeaf() {
+        return (ne == null && se == null && sw == null && nw == null);
     }
 
     /**
      * Get the child quad which occupies the given coordinate
      */
-    private Optional<Quad<S, D>> getChild(Coordinate coordinate) {
-        var angle = Math.atan2(coordinate.y - this.coordinate.y, coordinate.x - this.coordinate.y); //radians
+    private Optional<Quad<T>> getChild(Position coordinate) {
+        var angle = Math.atan2(coordinate.lat - this.area.midPoint().lat, coordinate.lng - this.area.midPoint().lng); //radians
 
         if (angle > 0 && angle < Math.PI/2){
             return Optional.ofNullable(ne);
@@ -136,13 +218,22 @@ public class Quad<S extends Comparable<S>, D>{
         else return Optional.ofNullable(nw);
     }
 
+    private List<Quad<T>> getChildrenContaining(GeoArea targetArea) {
+        var quadList = new ArrayList<Quad<T>>();
+        if (ne != null && targetArea.intersects(ne.area)) quadList.add(ne);
+        if (se != null && targetArea.intersects(se.area)) quadList.add(se);
+        if (sw != null && targetArea.intersects(sw.area)) quadList.add(sw);
+        if (nw != null && targetArea.intersects(nw.area)) quadList.add(nw);
+        return quadList;
+    }
+
     /**
      * Sets new child quad into correct quadrant.
      */
-    private void setChild(Quad<S, D> quad) {
-        var angle = Math.atan2(quad.coordinate.y - this.coordinate.y, quad.coordinate.x - this.coordinate.y); //radians
+    private void setChild(Quad<T> quad) {
+        var angle = Math.atan2(quad.area.midPoint().lat - this.area.midPoint().lat, quad.area.midPoint().lng - this.area.midPoint().lng); //radians
         quad.maxDepth = this.maxDepth - 1;
-        quad.coordinate.z = this.coordinate.z + 1;
+        quad.depth = this.depth + 1;
 
         if (angle > 0 && angle < Math.PI/2){
             ne = quad;
@@ -155,6 +246,19 @@ public class Quad<S extends Comparable<S>, D>{
         }
         else nw = quad;
 
+    }
+
+    public Quad<T> getChild(Section section){
+        return switch (section) {
+            case NE -> ne;
+            case NW -> nw;
+            case SE -> se;
+            case SW -> sw;
+        };
+    }
+
+    public static <T> Quad<T> createRoot(T value, GeoArea area, int maxDepth) {
+        return new Quad<>(value, area, maxDepth);
     }
 
 }

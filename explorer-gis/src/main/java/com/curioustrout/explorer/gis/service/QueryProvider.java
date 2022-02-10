@@ -1,8 +1,10 @@
 package com.curioustrout.explorer.gis.service;
 
+import com.curioustrout.explorer.gis.util.QueryConfig;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryException;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
@@ -81,6 +83,15 @@ public class QueryProvider {
             }
         }
         return null;
+    }
+
+    public Query getQuery(QueryConfig queryConfig) {
+        try {
+            return getQuery(QueryConfig.getQueryName(queryConfig), QueryConfig.getConfig(queryConfig));
+        } catch (IllegalAccessException e) {
+            LOGGER.warn("Could not parse query config {}: {}", queryConfig, e.getMessage());
+            return QueryFactory.create();
+        }
     }
 
     private Resource[] loadQueries() throws IOException {

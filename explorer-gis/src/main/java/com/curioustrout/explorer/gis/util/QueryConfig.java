@@ -34,7 +34,7 @@ public interface QueryConfig {
 
         Field[] fields = object.getClass().getDeclaredFields();
         for (var field : fields) {
-            //field.setAccessible(true);
+            field.setAccessible(true);
             Object value = field.get(object);
             map.put(field.getName(), value);
         }

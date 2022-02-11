@@ -21,7 +21,7 @@ public class WikiDataDescribeFetcher implements Fetcher<Model, GeoQueryConfig> {
     /**
      * Query used by this fetcher.
      */
-    @SparqlQuery(fileName = "somewhere/over/the/rainbow")
+    @SparqlQuery(fileName = "describe_geobox.sparql")
     public record WikiDataDescribeQuery(
             Position pointSw,
             Position pointNe

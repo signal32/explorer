@@ -1,0 +1,18 @@
+PREFIX geo: ?geo
+PREFIX wikibase: ?wikibase
+PREFIX wdt: ?wdt
+PREFIX bd: ?bd
+DESCRIBE ?_place WHERE {
+    # Select the two corners for the box, San Jose & Sacramento
+    values ?_pointSW {?pointSw} .
+    values ?_pointNE {?pointNe} .
+    # Use the box service
+    SERVICE wikibase:box {
+        # Looking for items with coordinate locations(P625)
+        ?_place wdt:P625 ?_location .
+        # Set the south west and north east corners of the box
+        bd:serviceParam wikibase:cornerSouthWest ?_pointSW .
+        bd:serviceParam wikibase:cornerNorthEast ?_pointNE .
+    }
+}
+#LIMIT 100 TODO investigate why limit causes server error

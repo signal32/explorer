@@ -1,15 +1,15 @@
 package com.curioustrout.explorer.gis.model;
 
+import com.curioustrout.explorer.gis.util.Position;
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.impl.LiteralLabel;
-import org.locationtech.jts.geom.Coordinate;
 
 import java.util.regex.Pattern;
 
 /**
- * Custom RDF DataType use to automaticaly translate between a {@link Coordinate}
+ * Custom RDF DataType use to automaticaly translate between a {@link Position}
  * and wktliteral ("Point(lng, lat)" syntax) in Apache Jena.
  */
 public class Point extends BaseDatatype {
@@ -28,24 +28,24 @@ public class Point extends BaseDatatype {
 
     @Override
     public String unparse(Object value) {
-        Coordinate coord = (Coordinate) value;
-        return String.format("Point(%s,%s)", coord.x,coord.y);
+        Position pos = (Position) value;
+        return String.format("Point(%s,%s)", pos.lat, pos.lng);
     }
 
     @Override
-    public Coordinate parse(String lexicalForm) throws DatatypeFormatException {
+    public Position parse(String lexicalForm) throws DatatypeFormatException {
         var matcher = pattern.matcher(lexicalForm);
         double[] vec = {0,0};
         int i = -1;
         while (matcher.find() && 2 > ++i) {
             vec[i] = Double.parseDouble(matcher.group(0));
         }
-        return new Coordinate(vec[0], vec[1]);
+        return new Position(vec[0], vec[1]);
     }
 
     @Override
     public Class<?> getJavaClass() {
-        return Coordinate.class;
+        return Position.class;
     }
 
     @Override

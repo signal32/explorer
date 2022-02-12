@@ -1,10 +1,13 @@
 package com.curioustrout.explorer.gis.service;
 
+import com.curioustrout.explorer.gis.geo.Area;
+import com.curioustrout.explorer.gis.geo.GeoPosition;
 import com.curioustrout.explorer.gis.model.LocationInfo;
 import com.curioustrout.explorer.gis.model.SimpleLocationInfo;
+import com.curioustrout.explorer.gis.service.query.LocationInformationFetcher;
 import com.curioustrout.explorer.gis.service.query.LocationQuery;
 import com.curioustrout.explorer.gis.service.query.QueryResultParser;
-import com.curioustrout.explorer.gis.service.query.WikidataFetcher;
+import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,25 +18,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+@Deprecated
 @Service
 public class LocationInfoService {
 
     private static final String WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
 
     private final QueryProvider queryProvider;
-    private final SessionRdfModel sessionModel;
+    private final ModelProvider modelProvider;
 
 
     @Autowired
     QueryResultParser queryResultParser;
 
     @Autowired
-    WikidataFetcher wikidataFetcher;
+    LocationInformationFetcher locationInformationFetcher;
 
-    public LocationInfoService(QueryProvider queryProvider, SessionRdfModel sessionModel) {
+    public LocationInfoService(QueryProvider queryProvider, ModelProvider modelProvider) {
         this.queryProvider = queryProvider;
-        this.sessionModel = sessionModel;
+        this.modelProvider = modelProvider;
+    }
+
+    //todo replace this (and class) with a fetcher/formatter combo
+    public List<Map<String, String>> getInRad(double lng, double lat, double radius){
+        var queryConfig = new LocationQuery(new GeoPosition(lng, lat), "1", "en");
+        var query = queryProvider.getQuery(queryConfig);
+        var model = modelProvider.getModel(Area.GEO_TEST_BOX);
+
+        var results = QueryExecutionFactory.create(query, model).execSelect();
+        return queryResultParser.parse(results);
     }
 
     public List<LocationInfo> getInRadius(double lng, double lat, double radius) {
@@ -61,8 +74,8 @@ public class LocationInfoService {
 
             m.contains(0);*/
 
-            var config = new LocationQuery(new Coordinate(lng, lat), "1", "en");
-            var result = wikidataFetcher.fetchAndParse(config, queryResultParser);
+            var config = new LocationQuery(new GeoPosition(lng, lat), "1", "en");
+            //var result = locationInformationFetcher.fetchAndParse(config, queryResultParser);
 
         }
 

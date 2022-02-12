@@ -1,4 +1,4 @@
-package com.curioustrout.explorer.gis.util;
+package com.curioustrout.explorer.gis.geo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +26,12 @@ public class Quad<T> /*implements Iterable<T>*/{
 
     private int maxDepth;
     private int depth;
-    //private final Position position; // x lng, y lat, z zoom
-    private GeoArea area;
+    private Area area;
 
     private T value;
 
 
-    protected Quad(T value, Quad<T> parent, Quad<T> ne, Quad<T> se, Quad<T> sw, Quad<T> nw, int maxDepth, int depth, GeoArea area) {
+    protected Quad(T value, Quad<T> parent, Quad<T> ne, Quad<T> se, Quad<T> sw, Quad<T> nw, int maxDepth, int depth, Area area) {
         this.parent = parent;
         this.ne = ne;
         this.se = se;
@@ -44,7 +43,7 @@ public class Quad<T> /*implements Iterable<T>*/{
         this.value = value;
     }
 
-    protected Quad(T value, GeoArea area, int maxDepth) {
+    protected Quad(T value, Area area, int maxDepth) {
         this.value = value;
         this.area = area;
         this.maxDepth = maxDepth;
@@ -61,11 +60,11 @@ public class Quad<T> /*implements Iterable<T>*/{
         this.depth = 0;
     }
 
-    public GeoArea getArea() {
+    public Area getArea() {
         return area;
     }
 
-    public void setArea(GeoArea area) {
+    public void setArea(Area area) {
         this.area = area;
     }
 
@@ -102,7 +101,7 @@ public class Quad<T> /*implements Iterable<T>*/{
     /**
      * Find the smallest quads that intersect with the target area.
      */
-    public List<Quad<T>> find(GeoArea targetArea, int minDepth) {
+    public List<Quad<T>> find(Area targetArea, int minDepth) {
         var quadList = new ArrayList<Quad<T>>();
 
         if (depth >= minDepth && area.intersects(targetArea) && getChildrenContaining(area).isEmpty()) {
@@ -117,14 +116,14 @@ public class Quad<T> /*implements Iterable<T>*/{
         return quadList;
     }
 
-    public List<Quad<T>> find(GeoArea targetArea) {
+    public List<Quad<T>> find(Area targetArea) {
         return find(targetArea, 0);
     }
 
     /**
      * Create new quads to contain an area at given depth
      */
-    public List<Quad<T>> findOrCreate(GeoArea targetArea, int targetDepth) {
+    public List<Quad<T>> findOrCreate(Area targetArea, int targetDepth) {
         var quadList = new ArrayList<Quad<T>>();
 
         if (area.intersects(targetArea) && depth == targetDepth) {
@@ -162,25 +161,29 @@ public class Quad<T> /*implements Iterable<T>*/{
         // Recalculate the quads' area as subsection of parents.
         switch (section) {
             case NE -> {
-                quad.area = new GeoArea(this.area.getNe(), this.area.midPoint());
+                quad.area = new Area(this.area.getNe(), this.area.midPoint());
                 ne = quad;
             }
             case SE -> {
-                var sePos = this.area.se();
-                var newNe = this.area.getNe().midpoint(sePos);
-                var newSw = new Position(this.area.getSw().lat, this.area.midPoint().lng);//this.area.getSw().midpoint(sePos);
-                quad.area = new GeoArea(newNe, newSw);
+                //var sePos = this.area.se();
+                //var newNe = this.area.getNe().midpoint(sePos);
+                var newSw = new Position(this.area.midPoint().x, this.area.getSw().y);//this.area.getSw().midpoint(sePos);
+                var newNe = new Position(this.area.getNe().x, this.area.midPoint().y);
+                quad.area = new Area(newNe, newSw);
                 se = quad;
             }
             case SW -> {
-                quad.area = new GeoArea(this.area.midPoint(), this.area.getSw());
+                quad.area = new Area(this.area.midPoint(), this.area.getSw());
                 sw = quad;
             }
             case NW -> {
-                var nwPos = this.area.nw();
-                var newNe = new Position(this.area.getNe().lat, this.area.midPoint().lng);//this.area.getNe().midpoint(nwPos);
-                var newSw = this.area.getSw().midpoint(nwPos);
-                quad.area = new GeoArea(newNe, newSw);
+/*                var nwPos = this.area.nw();
+                var newNe = new Position(this.area.getNe().x, this.area.midPoint().y);//this.area.getNe().midpoint(nwPos);
+                var newSw = this.area.getSw().midpoint(nwPos);*/
+                var newSw = new Position(this.area.getSw().x,this.area.midPoint().y);
+                var newNe = new Position(this.area.midPoint().x, this.area.getNe().y);
+
+                quad.area = new Area(newNe, newSw);
                 nw = quad;
             }
         }
@@ -204,7 +207,7 @@ public class Quad<T> /*implements Iterable<T>*/{
      * Get the child quad which occupies the given coordinate
      */
     private Optional<Quad<T>> getChild(Position coordinate) {
-        var angle = Math.atan2(coordinate.lat - this.area.midPoint().lat, coordinate.lng - this.area.midPoint().lng); //radians
+        var angle = Math.atan2(coordinate.y - this.area.midPoint().y, coordinate.x - this.area.midPoint().x); //radians
 
         if (angle > 0 && angle < Math.PI/2){
             return Optional.ofNullable(ne);
@@ -218,7 +221,7 @@ public class Quad<T> /*implements Iterable<T>*/{
         else return Optional.ofNullable(nw);
     }
 
-    private List<Quad<T>> getChildrenContaining(GeoArea targetArea) {
+    private List<Quad<T>> getChildrenContaining(Area targetArea) {
         var quadList = new ArrayList<Quad<T>>();
         if (ne != null && targetArea.intersects(ne.area)) quadList.add(ne);
         if (se != null && targetArea.intersects(se.area)) quadList.add(se);
@@ -231,7 +234,7 @@ public class Quad<T> /*implements Iterable<T>*/{
      * Sets new child quad into correct quadrant.
      */
     private void setChild(Quad<T> quad) {
-        var angle = Math.atan2(quad.area.midPoint().lat - this.area.midPoint().lat, quad.area.midPoint().lng - this.area.midPoint().lng); //radians
+        var angle = Math.atan2(quad.area.midPoint().y - this.area.midPoint().y, quad.area.midPoint().x - this.area.midPoint().x); //radians
         quad.maxDepth = this.maxDepth - 1;
         quad.depth = this.depth + 1;
 
@@ -257,7 +260,7 @@ public class Quad<T> /*implements Iterable<T>*/{
         };
     }
 
-    public static <T> Quad<T> createRoot(T value, GeoArea area, int maxDepth) {
+    public static <T> Quad<T> createRoot(T value, Area area, int maxDepth) {
         return new Quad<>(value, area, maxDepth);
     }
 

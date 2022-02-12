@@ -1,6 +1,5 @@
-package com.curioustrout.explorer.gis.model;
+package com.curioustrout.explorer.gis.geo;
 
-import com.curioustrout.explorer.gis.util.Position;
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -29,7 +28,7 @@ public class Point extends BaseDatatype {
     @Override
     public String unparse(Object value) {
         Position pos = (Position) value;
-        return String.format("Point(%s,%s)", pos.lat, pos.lng);
+        return String.format("Point(%s,%s)", pos.y, pos.x);
     }
 
     @Override

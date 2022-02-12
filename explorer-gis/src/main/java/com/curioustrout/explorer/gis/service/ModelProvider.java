@@ -1,9 +1,9 @@
 package com.curioustrout.explorer.gis.service;
 
+import com.curioustrout.explorer.gis.geo.Area;
+import com.curioustrout.explorer.gis.geo.Quad;
 import com.curioustrout.explorer.gis.service.query.GeoQueryConfig;
 import com.curioustrout.explorer.gis.util.Fetcher;
-import com.curioustrout.explorer.gis.util.GeoArea;
-import com.curioustrout.explorer.gis.util.Quad;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class ModelProvider {
 
     public ModelProvider(List<Fetcher<Model, GeoQueryConfig>> retrievers) {
         this.retrievers = retrievers;
-        this.modelTree = Quad.createRoot(new ModelData(null), GeoArea.WORLD, 25);
+        this.modelTree = Quad.createRoot(new ModelData(null), Area.GEO_WORLD, 25);
     }
 
     /**
@@ -41,7 +41,7 @@ public class ModelProvider {
      * @param area The area over which this model should have data.
      * @return A potential union of multiple models.
      */
-    public Model getModel(GeoArea area){
+    public Model getModel(Area area){
         // Attempt to fetch existing models from the quad-tree.
         var models = modelTree
                 .find(area, depthFromAreaSize(area))
@@ -59,12 +59,12 @@ public class ModelProvider {
         return mergeModels(models);
     }
 
-    public CompletableFuture<Model> getModelAsync(GeoArea area) {
+    public CompletableFuture<Model> getModelAsync(Area area) {
         return CompletableFuture.supplyAsync( () -> getModel(area));
     }
 
     /**
-     * Updates a {@link Quad<ModelData>} for the given {@link GeoArea},
+     * Updates a {@link Quad<ModelData>} for the given {@link Area},
      * populates with data and adds it to the tree.
      * @param quad Quad to update
      * @return Reference to the Quad.
@@ -72,7 +72,7 @@ public class ModelProvider {
     private Quad<ModelData> updateQuadModel(Quad<ModelData> quad) {
         var modelList = new ArrayList<Model>();
 
-        var config = new GeoQueryConfig(quad.getArea(), quad.getDepth());
+        var config = new GeoQueryConfig(null, quad.getArea(), quad.getDepth());
 
         retrievers.parallelStream().forEach(retriever -> {
             modelList.add(retriever.fetch(config));
@@ -88,7 +88,7 @@ public class ModelProvider {
      * of its cross-section.
      * @return Depth index for use in modelTree
      */
-    private int depthFromAreaSize(GeoArea area){
+    private int depthFromAreaSize(Area area){
         var distance = area.crossSection();
         if (distance > 1000) return 5;
         if (distance >  500) return 10;

@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Endpoint for serving geoJson from WikiData
@@ -37,6 +39,17 @@ public class GeoJsonController {
         }
 
         return ResponseEntity.ok(FeatureCollection.fromFeatures(features).toJson());
+    }
+
+
+    @GetMapping("/test/{z}/{x}/{y}")
+    public ResponseEntity<List<Map<String, String>>> getTileTest(@PathVariable double z, @PathVariable double x, @PathVariable double y) {
+        LOGGER.info("Request recvieved for tile at position z:{} x: {}, y: {}", z,x,y);
+
+        var results = locationInfoService.getInRad(z, x, y);
+
+
+        return ResponseEntity.ok(results);
     }
 
 }

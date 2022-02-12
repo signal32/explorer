@@ -1,9 +1,9 @@
 package com.curioustrout.explorer.gis.service.query;
 
+import com.curioustrout.explorer.gis.geo.Position;
 import com.curioustrout.explorer.gis.service.ModelProvider;
 import com.curioustrout.explorer.gis.service.QueryProvider;
 import com.curioustrout.explorer.gis.util.Fetcher;
-import com.curioustrout.explorer.gis.util.Position;
 import com.curioustrout.explorer.gis.util.QueryConfig;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;

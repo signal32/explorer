@@ -1,9 +1,8 @@
 package com.curioustrout.explorer.gis.service;
 
 import com.curioustrout.explorer.gis.GisServer;
-import com.curioustrout.explorer.gis.service.query.LocationSelect;
+import com.curioustrout.explorer.gis.service.query.LocationInformationFetcher;
 import com.curioustrout.explorer.gis.service.query.QueryResultParser;
-import com.curioustrout.explorer.gis.service.query.WikidataFetcher;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -26,7 +25,7 @@ class QueryTests {
     QueryProvider queryProvider;
 
     @Autowired
-    WikidataFetcher wikidataFetcher;
+    LocationInformationFetcher locationInformationFetcher;
 
     @Autowired
     QueryResultParser queryResultParser;
@@ -45,10 +44,10 @@ class QueryTests {
 
     }
 
-    @Test
+/*    @Test
     void locationQuery() {
-        var config = new LocationSelect(new Coordinate(-2.096472, 57.1443733), "0.1", "en");
-        var result = wikidataFetcher.fetchAndParse(config, queryResultParser);
-    }
+        var config = new LocationSelect(new Position(-2.096472, 57.1443733), "0.1", "en");
+        var result = locationInformationFetcher.fetchAndParse(config, queryResultParser);
+    }*/
 
 }

@@ -1,6 +1,6 @@
 package com.curioustrout.explorer.gis.service;
 
-import com.curioustrout.explorer.gis.model.Point;
+import com.curioustrout.explorer.gis.geo.Point;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.sys.JenaSystem;

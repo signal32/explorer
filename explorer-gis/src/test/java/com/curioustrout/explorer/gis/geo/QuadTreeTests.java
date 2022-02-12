@@ -1,25 +1,24 @@
-package com.curioustrout.explorer.gis.service;
+package com.curioustrout.explorer.gis.geo;
 
-import com.curioustrout.explorer.gis.util.GeoArea;
-import com.curioustrout.explorer.gis.util.Position;
-import com.curioustrout.explorer.gis.util.Quad;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class QuadTreeTests {
 
-    static final GeoArea TEST_AREA = new GeoArea(new Position(10,10), new Position(-10,-10));
-    static final GeoArea TEST_SUB_AREA_NE = new GeoArea(new Position(8,8), new Position(4,4));
+    static final Area TEST_AREA = new Area(new GeoPosition(10,10), new GeoPosition(-10,-10));
+    static final Area TEST_SUB_AREA_NE = new Area(new GeoPosition(8,8), new GeoPosition(4,4));
+
+    static final Area TEST_SUB_AREA_NE_X = new Area(new Position(80,80), new Position(60,60));
 
 
     @Test
     void findThis() {
-        Quad<String> quadTree = Quad.createRoot("root", GeoArea.TEST_BOX, 10);
-        assertEquals(quadTree.find(new Position(0, 0)), quadTree);
-        assertEquals(quadTree.find(new Position(1000, 0)), quadTree);
-        assertEquals(quadTree.find(new Position(0, 1000)), quadTree);
-        assertEquals(quadTree.find(new Position(1000, 1000)), quadTree);
+        Quad<String> quadTree = Quad.createRoot("root", Area.GEO_TEST_BOX, 10);
+        assertEquals(quadTree.find(new GeoPosition(0, 0)), quadTree);
+        assertEquals(quadTree.find(new GeoPosition(1000, 0)), quadTree);
+        assertEquals(quadTree.find(new GeoPosition(0, 1000)), quadTree);
+        assertEquals(quadTree.find(new GeoPosition(1000, 1000)), quadTree);
     }
 
     @Test
@@ -65,7 +64,7 @@ class QuadTreeTests {
     private void childRelationTest(Quad<?> child, Quad<?> parent) {
         var cs = child.getArea().crossSection();
         var parentCs = parent.getArea().crossSection();
-        assertTrue(inRange(cs, parentCs / 2, 10), "Cross-section of child area not half of parents");
+        assertTrue(inRange(cs, parentCs / 2, 1), "Cross-section of child area not half of parents.\nParent: " + parentCs + "\t Child: " + cs);
     }
 
     private boolean inRange(double actual, double target, double range) {
@@ -86,9 +85,9 @@ class QuadTreeTests {
         quads = tree.findOrCreate(TEST_SUB_AREA_NE, 2);
 
         //Anticlockwise from NE. Relies on implicit ordering from findOrCreate() so may fail if you changed something
-        assertTrue(GeoArea.of(11,11,4,4).contains(quads.get(0).getArea()));
-        assertTrue(GeoArea.of(6, 11, -1, 4).contains(quads.get(1).getArea()));
-        assertTrue(GeoArea.of(6, 6, -1, -1).contains(quads.get(2).getArea()));
+        assertTrue(Area.of(11,11,4,4).contains(quads.get(0).getArea()));
+        assertTrue(Area.of(6, 11, -1, 4).contains(quads.get(1).getArea()));
+        assertTrue(Area.of(6, 6, -1, -1).contains(quads.get(2).getArea()));
         //assertTrue(GeoArea.of(12, 7, 3, -2).contains(quads.get(3).getArea())); TODO this fails for some strange reason but looks fine.
     }
 
@@ -103,20 +102,27 @@ class QuadTreeTests {
         }
 
         // Try to get the quad in some top left position (should be named quad_0)
-        var items = tree.find(GeoArea.of(7,7,6,6));
+        var items = tree.find(Area.of(7,7,6,6));
         assertEquals(1, items.size());
         assertEquals("quad_0", items.get(0).get());
 
         // Try to get at lower depth (there should be none as we did not create it)
-        items = tree.find(GeoArea.of(7,7,6,6), 3);
+        items = tree.find(Area.of(7,7,6,6), 3);
         assertEquals(0, items.size());
 
         // If we allow the tree to create new items though, we should find it
         // Note: This system falls apart if world size is small & depth is high, presumably due to rounding issues (especially with lng/lat calc)
-        var newItems = tree.findOrCreate(GeoArea.of(7,7,6,6), 3);
+        var newItems = tree.findOrCreate(Area.of(7,7,6,6), 3);
         newItems.get(0).set("Hello from new quad!");
-        items = tree.find(GeoArea.of(7,7,6,6), 3);
+        items = tree.find(Area.of(7,7,6,6), 3);
         assertEquals(1, items.size());
         assertEquals("Hello from new quad!", items.get(0).get());
+    }
+
+    @Test
+    void worldTest() {
+        var tree = Quad.createRoot("root", Area.WORLD_EUCLIDEAN, 5);
+        var items = tree.findOrCreate(TEST_SUB_AREA_NE_X, 1);
+        assertEquals(1, items.size());
     }
 }

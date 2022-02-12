@@ -1,10 +1,11 @@
 package com.curioustrout.explorer.gis.service.query;
 
-import org.locationtech.jts.geom.Coordinate;
+import com.curioustrout.explorer.gis.geo.Position;
+import com.curioustrout.explorer.gis.util.QueryConfig;
 
 @SparqlQuery(fileName = "radius_from_center.sparql")
 public record LocationSelect(
-        Coordinate center,
+        Position center,
         String radius,
         String language
-) { }
+) implements QueryConfig { }

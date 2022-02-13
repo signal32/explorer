@@ -2,7 +2,6 @@ package com.curioustrout.explorer.gis.geo;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GeoPositionTest {
@@ -50,10 +49,10 @@ class GeoPositionTest {
         assertTrue(mid.alt <= realMid.alt + 1 && mid.alt >= realMid.alt -1, "Midpoint alt out of tolerance by +/- 1m. Got " + mid + " Expected " + realMid);
     }
 
-    @Test
+/*    @Test
     void projectTest() {
         assertEquals(new GeoPosition(44, 22).project(), new Position(2449028.7974520186, 5465442.183322753));
         assertEquals(new GeoPosition(44, 22).projectPrecise(), new Position(2449028.7974520186, 5435749.887511954));
-    }
+    }*/
 
 }

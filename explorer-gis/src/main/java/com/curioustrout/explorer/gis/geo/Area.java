@@ -6,22 +6,17 @@ public class Area implements Comparable<Area>{
     public static final Area GEO_WORLD = new Area(new GeoPosition(89,179),new GeoPosition(-89,-179));
     public static final Area GEO_HALF_WORLD = new Area(new GeoPosition(90,140),new GeoPosition(-90,-140));
 
-    public static final Area TEST_BOX = new Area(new Position(100, 100), new Position(0, 0));
 
-    public static final Area WORLD_EUCLIDEAN = new Area(
-            new GeoPosition(89.9,179.9).project(),
-            new GeoPosition(-89.9,-179.9).project()
-    );
 
-    private Position ne;
-    private Position sw;
+    private GeoPosition ne;
+    private GeoPosition sw;
 
-    public Area(Position ne, Position sw) {
+    public Area(GeoPosition ne, GeoPosition sw) {
         this.ne = ne;
         this.sw = sw;
     }
 
-    public Position getNe() {
+    public GeoPosition getNe() {
         return ne;
     }
 
@@ -29,7 +24,7 @@ public class Area implements Comparable<Area>{
         this.ne = ne;
     }
 
-    public Position getSw() {
+    public GeoPosition getSw() {
         return sw;
     }
 
@@ -37,16 +32,10 @@ public class Area implements Comparable<Area>{
         this.sw = sw;
     }
 
-    public Position nw() {
-        return new Position(ne.x, sw.y);
-    }
-
-    public Position se() {
-        return new Position(sw.x, ne.y);
-    }
-
-    public Position midPoint(){
-        return sw.midpoint(ne);
+    // TODO: 12/02/2022 Fix midpoint calculation for large areas 
+    public GeoPosition midPoint(){
+        var mid = sw.midpoint(ne);
+        return (mid.lng < 179) ? mid : GeoPosition.EQUATOR;
     }
 
     public double crossSection() {
@@ -54,25 +43,25 @@ public class Area implements Comparable<Area>{
     }
 
     public boolean intersects(Area other) {
-        return !(other.ne.x <= this.sw.x ||
-                 other.sw.x >= this.ne.x ||
-                 other.ne.y <= this.sw.y ||
-                 other.sw.y >= this.ne.y );
+        return !(other.ne.lng <= this.sw.lng ||
+                 other.sw.lng >= this.ne.lng ||
+                 other.ne.lat <= this.sw.lat ||
+                 other.sw.lat >= this.ne.lat );
     }
 
     public boolean touches(Area other) {
-        return !(other.ne.x < this.sw.x ||
-                other.sw.x > this.ne.x ||
-                other.ne.y < this.sw.y ||
-                other.sw.y > this.ne.y );
+        return !(other.ne.lng < this.sw.lng ||
+                other.sw.lng > this.ne.lng ||
+                other.ne.lat < this.sw.lat ||
+                other.sw.lat > this.ne.lat );
     }
 
     public boolean contains(Area other) {
         return (
-                other.sw.x <= this.ne.x && other.sw.x >= this.sw.x && // Bottom left horizontal
-                other.sw.y <= this.ne.y && other.sw.x >= this.sw.y && // bottom left vertical
-                other.ne.x <= this.ne.x && other.ne.x >= this.sw.x && // Top right Horizontal
-                other.ne.y <= this.ne.y && other.ne.x >= this.sw.y    // Top right Vertical
+                other.sw.lng <= this.ne.lng && other.sw.lng >= this.sw.lng && // Bottom left horizontal
+                other.sw.lat <= this.ne.lat && other.sw.lng >= this.sw.lat && // bottom left vertical
+                other.ne.lng <= this.ne.lng && other.ne.lng >= this.sw.lng && // Top right Horizontal
+                other.ne.lat <= this.ne.lat && other.ne.lng >= this.sw.lat    // Top right Vertical
         );
     }
 
@@ -101,5 +90,11 @@ public class Area implements Comparable<Area>{
 
     public static Area of(double neLat, double neLng, double swLat, double swLng){
         return new Area(new GeoPosition(neLat,neLng), new GeoPosition(swLat, swLng));
+    }
+
+    public static Area fromPosition(GeoPosition position, double radius) {
+        return new Area(
+                new GeoPosition(position.lat + radius, position.lng + radius),
+                new GeoPosition(position.lat - radius, position.lng - radius));
     }
 }

@@ -33,7 +33,7 @@ public class ModelProvider {
 
     public ModelProvider(List<Fetcher<Model, GeoQueryConfig>> retrievers) {
         this.retrievers = retrievers;
-        this.modelTree = Quad.createRoot(new ModelData(null), Area.GEO_WORLD, 25);
+        this.modelTree = Quad.createRoot(new ModelData(null), 25);
     }
 
     /**
@@ -49,14 +49,15 @@ public class ModelProvider {
 
         // An empty list implies that there are no quadrants for this location, thus we must create them.
         if (models.isEmpty()){
-            models = modelTree.findOrCreate(area, depthFromAreaSize(area))
+            models = modelTree.findOrCreate(area, 12)
                     .parallelStream()
                     .map(this::updateQuadModel)
                     .map(quad -> quad.get().getModel()).toList();
         }
 
         // Models must be merged together for querying
-        return mergeModels(models);
+        return models.get(0);
+        //return mergeModels(models);
     }
 
     public CompletableFuture<Model> getModelAsync(Area area) {
@@ -64,7 +65,7 @@ public class ModelProvider {
     }
 
     /**
-     * Updates a {@link Quad<ModelData>} for the given {@link Area},
+     * Updates a {@link Quad <ModelData>} for the given {@link Area},
      * populates with data and adds it to the tree.
      * @param quad Quad to update
      * @return Reference to the Quad.
@@ -72,13 +73,13 @@ public class ModelProvider {
     private Quad<ModelData> updateQuadModel(Quad<ModelData> quad) {
         var modelList = new ArrayList<Model>();
 
-        var config = new GeoQueryConfig(null, quad.getArea(), quad.getDepth());
+        var config = new GeoQueryConfig(null, quad.asArea(), quad.getDepth());
 
         retrievers.parallelStream().forEach(retriever -> {
             modelList.add(retriever.fetch(config));
         });
 
-        var model = mergeModels(modelList);
+        var model = modelList.get(0);//mergeModels(modelList);
         quad.set(new ModelData(model));
         return quad;
     }

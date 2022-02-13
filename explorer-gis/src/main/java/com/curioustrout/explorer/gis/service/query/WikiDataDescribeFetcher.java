@@ -1,6 +1,6 @@
 package com.curioustrout.explorer.gis.service.query;
 
-import com.curioustrout.explorer.gis.geo.Position;
+import com.curioustrout.explorer.gis.geo.GeoPosition;
 import com.curioustrout.explorer.gis.service.ModelProvider;
 import com.curioustrout.explorer.gis.service.QueryProvider;
 import com.curioustrout.explorer.gis.util.Fetcher;
@@ -11,6 +11,8 @@ import org.apache.jena.rdfconnection.RDFConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.io.FileWriter;
 
 /**
  * Service to provide {@link ModelProvider with data from WikiData}
@@ -23,8 +25,8 @@ public class WikiDataDescribeFetcher implements Fetcher<Model, GeoQueryConfig> {
      */
     @SparqlQuery(fileName = "describe_geobox.sparql")
     public record WikiDataDescribeQuery(
-            Position pointSw,
-            Position pointNe
+            GeoPosition pointSw,
+            GeoPosition pointNe
     ) implements QueryConfig {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataDescribeFetcher.class);
@@ -44,7 +46,24 @@ public class WikiDataDescribeFetcher implements Fetcher<Model, GeoQueryConfig> {
 
         try (var con = RDFConnection.connect(ENDPOINT)) {
             var query = queryProvider.getQuery(queryConfig);
-            return con.query(query).execDescribe();
+/*            System.out.println(query.toString());
+            return ModelFactory.createDefaultModel();*/
+            var m = con.query(query).execDescribe();
+            //var ds = DatasetFactory.create(m);
+            /*var ds = TDBFactory.createDataset("datasets/"+ config.area().toString());
+            ds.begin(ReadWrite.WRITE);
+            ds.setDefaultModel(m);
+            ds.end();
+            ds.begin(ReadWrite.READ);
+            var m2 = ds.getDefaultModel();
+            ds.end();*/
+            var out = new FileWriter("testfuckyou.txt");
+            m.write(out);
+
+            //var m3 = ModelFactory.createRDFSModel(m);
+            var mmm = ModelFactory.createDefaultModel();
+            mmm.read("testfuckyou.txt");
+            return m;
         }
         catch (Exception e){
             LOGGER.error("Error fetching from Wikidata: {} \n QueryConfig: {}", e.getMessage(), queryConfig);

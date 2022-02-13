@@ -2,7 +2,7 @@ PREFIX geo: ?geo
 PREFIX wikibase: ?wikibase
 PREFIX wdt: ?wdt
 PREFIX bd: ?bd
-SELECT ?place ?placeLabel ?location WHERE {
+SELECT * WHERE {
     values ?_center {?center}
     VALUES ?_radius {?radius}
     # Use the around service

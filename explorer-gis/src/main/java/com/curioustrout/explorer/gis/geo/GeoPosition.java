@@ -3,17 +3,15 @@ package com.curioustrout.explorer.gis.geo;
 
 import static java.lang.Math.*;
 
-public class GeoPosition extends Position {
+public class GeoPosition {
 
-    private static final double RADIUS_MAJOR = 6378137.0;
-    private static final double RADIUS_MINOR = 6356752.3142;
+    public static final GeoPosition EQUATOR = new GeoPosition(0,0);
 
     public final double lat;
     public final double lng;
     public final double alt;
 
     public GeoPosition(double lat, double lng, double alt) {
-        super(projectLngToX(lng), projectLatToY(lat), alt);
         this.lat = lat;
         this.lng = lng;
         this.alt = alt;
@@ -56,7 +54,7 @@ public class GeoPosition extends Position {
         return midpoint(this, other);
     }
 
-    private static double projectLngToX(double lng) {
+/*    private static double projectLngToX(double lng) {
         return toRadians(lng) * RADIUS_MAJOR;
     }
 
@@ -64,7 +62,7 @@ public class GeoPosition extends Position {
         return log(tan(PI / 4 + toRadians(lat) / 2)) * RADIUS_MAJOR;
     }
 
-    public Position project() {
+    public Poin project() {
         var x = projectLngToX(lng);
         var y =projectLatToY(lat);
         return new Position(x,y,alt);
@@ -81,7 +79,7 @@ public class GeoPosition extends Position {
         var y = (-1) * RADIUS_MAJOR * log(projLatNorm);
 
         return new Position(x,y,alt);
-    }
+    }*/
 
     @Override
     public String toString() {
@@ -89,9 +87,6 @@ public class GeoPosition extends Position {
                 "lat=" + lat +
                 ", lng=" + lng +
                 ", alt=" + alt +
-                ", x=" + x +
-                ", y=" + y +
-                ", z=" + z +
                 '}';
     }
 

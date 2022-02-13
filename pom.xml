@@ -14,7 +14,6 @@
         <module>explorer-user</module>
         <module>explorer-app</module>
         <module>explorer-gis</module>
-        <module>explorer-query</module>
         <module>explorer-common</module>
         <module>explorer-services</module>
     </modules>

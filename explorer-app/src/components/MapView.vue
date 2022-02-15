@@ -24,7 +24,9 @@ import {computed, defineComponent, onMounted, PropType, ref, shallowRef, watch} 
 import {debounce} from 'lodash';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import {hammerSharp, navigateSharp, searchSharp} from 'ionicons/icons';
-import GisService from '@/modules/gis/gisService';
+import {defineQueryPluginManager} from '@/modules/query/pluginManager';
+import {defineWikiDataPlugin} from '@/modules/query/WikidataPlugin';
+import {LatLngBounds} from '@/modules/geo/types';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -32,6 +34,9 @@ const TILE_API = process.env.VUE_APP_EXPLORER_TILE_API;
 const DEFAULT_LNG = -2.2568;
 const DEFAULT_LAT = 57.0348535;
 const DEFAULT_ZOOM = 12;
+
+const wikidataPlugin = defineWikiDataPlugin({sparqlEndpoints: ['https://query.wikidata.org/sparql'], });
+const geoQueryService = defineQueryPluginManager([wikidataPlugin]);
 
 export default defineComponent({
     components: {
@@ -113,7 +118,7 @@ export default defineComponent({
             });
 
             map1.on('load', () => {
-                GisService.getGeoJson(map1.getCenter(), map1.getZoom())
+                geoQueryService.getAbstractArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
                     .then( data => {
                         map1.addSource('wikidata', {
                             type: 'geojson',
@@ -164,7 +169,7 @@ export default defineComponent({
 
         async function updateMap() {
             if ((map.value?.getSource('wikidata'))) {
-                GisService.getGeoJson(map.value?.getCenter(), map.value?.getZoom())
+                geoQueryService.getAbstractArea(LatLngBounds.fromMapBox(map.value?.getCenter().toBounds(500)))
                     .then( data => {
                         (map.value?.getSource('wikidata') as any).setData(data, map.value?.getZoom());
                     });

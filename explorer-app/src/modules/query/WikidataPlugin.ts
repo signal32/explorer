@@ -82,7 +82,6 @@ export function defineWikiDataPlugin(config: Config): WikiDataPlugin {
             }
 
             if (result.type == 'bindings') {
-                console.log('Is bindings type!');
                 result.bindingsStream.on('data', b => {
                     collection.features.push(asFeature({
                         position: wktLiteralToLatLng(b.get('?location').value),

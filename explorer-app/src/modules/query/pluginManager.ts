@@ -1,76 +1,73 @@
-import {newEngine} from '@comunica/actor-init-sparql';
-import {IEntityAbstract, IQueryPlugin} from '@/modules/query/interfaces';
+import {IEntityAbstract, IEntityDetails, IQueryPlugin} from '@/modules/query/interfaces';
 import {Quad} from '@/modules/geo/quadtree';
 import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
 
-export const queryEngine = newEngine();
-
-/*export async function get(query: string): Promise<IQueryResultBindings> {
-    let res = <IQueryResultBindings> await engine.query(query, {
-        sources: [{ type: 'sparql', value: 'https://query.wikidata.org/sparql'}],
-    });
-/!*    await res.bindingsStream.forEach(x => {
-        console.log(x);
-    })*!/
-}*/
 
 interface QuadInfo {
-    queryCache: Map<IQueryPlugin, IEntityAbstract>,
+    name?: string
+    queryCache: Map<IQueryPlugin, FeatureCollection<Geometry, IEntityAbstract>>,
 }
 
-class QueryPluginManager implements IQueryPlugin{
+interface QueryPluginManager extends IQueryPlugin{
+    plugins: IQueryPlugin[],
+    _tree: Quad<QuadInfo>,
 
-    private tree: Quad<QuadInfo>;
-    private plugins: IQueryPlugin[];
+}
 
+async function updateQuad(quad: Quad<QuadInfo>, plugins: IQueryPlugin[], area: LatLngBounds) {
 
-    constructor(...plugins: IQueryPlugin[]) {
-        this.tree = new Quad<QuadInfo>();
-        this.plugins = plugins;
+    if (!quad.value) quad.value = {queryCache: new Map<IQueryPlugin, FeatureCollection<Geometry, IEntityAbstract>>()};
+
+    for (const plugin of plugins) {
+        quad.value?.queryCache.set(plugin, await plugin.getAbstractArea(area));
     }
+    const quadArea = quad.asArea();
+    console.log(`Updated quad with name = ${quad.value?.name}, cs = ${quadArea.crossSection().toFixed(3)}m, values = `, quad.value);
+}
 
-    /**
-     * Return all plugins
-     * @param items
-     */
-    getAbstract(...items: [string]): Promise<IEntityAbstract[]> {
-        let abstracts: IEntityAbstract[] = [];
+export function defineQueryPluginManager(plugins: IQueryPlugin[]): QueryPluginManager {
+    // Commented out experiment to save cache tree in local storage (to avoid re-fetching external data on each browser refresh. Did not work, needs more time.
+/*    const treeString = localStorage.getItem('geoQueryCache');
+    let tree: Quad<QuadInfo>;
+    if(treeString) tree = JSON.parse(treeString) as Quad<QuadInfo>;
+    else tree = new Quad<QuadInfo>({name: 'root', queryCache: new Map<IQueryPlugin, FeatureCollection<Geometry, IEntityAbstract>>()});*/
 
-        this.plugins.forEach(plugin => {
-            if (plugin.getAbstract) {
-                plugin.getAbstract(...items)
-                    .then(res => abstracts.push(...res))
+    return {
+        //_tree: tree,
+        _tree: new Quad<QuadInfo>({name: 'root', queryCache: new Map<IQueryPlugin, FeatureCollection<Geometry, IEntityAbstract>>()}),
+        plugins,
+
+        getAbstract(...items: [string]): Promise<IEntityAbstract[]> {
+            return Promise.reject(undefined);
+        },
+
+        async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>> {
+            const collection: FeatureCollection<Geometry, IEntityAbstract> = {
+                type: 'FeatureCollection',
+                features: [],
+            };
+
+            for (const quad of this._tree.findOrCreate(area, 12)) {
+                // Plugins are called to update quads which have been newly created and are still empty.
+                if (!quad.value) {
+                    await updateQuad(quad, this.plugins, area); //todo Parcelize quad updates
+                    //localStorage.setItem('geoQueryCache', );
+                    console.log(JSON.stringify(this._tree))
+                }
+
+                // Then geoJson is merged together from each quad
+                quad.value?.queryCache.forEach(item => {
+                    collection.features.push(...item.features)
+                })
             }
-        })
 
-        return Promise.resolve(abstracts);
-    }
+            return Promise.resolve(collection);
+        },
 
-    getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>> {
-        let collection: FeatureCollection<Geometry, IEntityAbstract> = {
-            type: 'FeatureCollection',
-            features: []
-        };
-
-        this.plugins.forEach(plugin => {
-            if (plugin.getAbstractArea) {
-                plugin.getAbstractArea(area)
-                    .then(res => collection.features.push(...res.features)) //todo Improve merging to conform with geoJson standards (i.e bounding box merge)
-            }
-        })
-
-        return Promise.resolve(collection);
-    }
-
-    private updateQuad(quad: Quad<QuadInfo>) {
+        getDetails(...items: [string]): Promise<IEntityDetails> {
+            return Promise.reject(undefined);
+        },
 
     }
 }
-
-
-/*
-export const getStore = store;
-const { type, items } = <IQueryResultBindings> await store.sparql(`
-  SELECT * WHERE { ?s <ex://knows> <ex://alice> . }
-`);*/

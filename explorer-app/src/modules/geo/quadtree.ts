@@ -40,7 +40,7 @@ export class Quad<T> {
             return [this];
         }
 
-        let quads: Quad<T>[] = [];
+        const quads: Quad<T>[] = [];
         this.childrenWithinArea(area).forEach(child => {
             quads.push(...child.find(area, depth));
         })
@@ -52,7 +52,7 @@ export class Quad<T> {
 
         if (this.withinArea(area) && this.childrenWithinArea(area).length == 0) { this.initChildren() }
 
-        let quads: Quad<T>[] = [];
+        const quads: Quad<T>[] = [];
         this.childrenWithinArea(area).forEach(child => {
             quads.push(...child.findOrCreate(area, depth));
         })
@@ -98,7 +98,7 @@ export class Quad<T> {
     }
 
     private childrenWithinArea(area: LatLngBoundsLike): Quad<T>[] {
-        let quads: Quad<T>[] = [];
+        const quads: Quad<T>[] = [];
         this.children.forEach(quad => {
             if (quad.withinArea(area)) quads.push(quad);
         })

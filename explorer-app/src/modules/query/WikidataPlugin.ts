@@ -10,7 +10,7 @@ PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
-SELECT ?place ?location WHERE {
+SELECT ?place ?placeLabel ?location ?instanceOf ?instanceOfLabel WHERE {
   # Select the two corners for the box, San Jose & Sacramento
   #values ?pointSW {?pointSw}.
   #values ?pointNE {?pointNe} .
@@ -22,6 +22,11 @@ SELECT ?place ?location WHERE {
       bd:serviceParam wikibase:cornerSouthWest ?pointSW .
       bd:serviceParam wikibase:cornerNorthEast ?pointNE .
     }
+ ?place wdt:P31 ?instanceOf .
+ ?instanceOf rdfs:label ?instanceOfLabel FILTER (LANG(?instanceOfLabel) = "en") .
+     SERVICE wikibase:label {
+ bd:serviceParam wikibase:language "en" . 
+ }
 }LIMIT 100`
 
 const engine = newEngine();
@@ -83,10 +88,11 @@ export function defineWikiDataPlugin(config: Config): WikiDataPlugin {
 
             if (result.type == 'bindings') {
                 result.bindingsStream.on('data', b => {
+                    console.log(b.get('?instanceOfLabel').value)
                     collection.features.push(asFeature({
                         position: wktLiteralToLatLng(b.get('?location').value),
-                        category: {name: 'NONE!'},
-                        name: b.get('?place').value,
+                        category: {name: b.get('?instanceOfLabel').value},
+                        name: b.get('?placeLabel').value,
                     }))
                 });
 

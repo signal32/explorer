@@ -53,7 +53,6 @@ export function defineQueryPluginManager(plugins: IQueryPlugin[]): QueryPluginMa
                 if (!quad.value) {
                     await updateQuad(quad, this.plugins, area); //todo Parcelize quad updates
                     //localStorage.setItem('geoQueryCache', );
-                    console.log(JSON.stringify(this._tree))
                 }
 
                 // Then geoJson is merged together from each quad

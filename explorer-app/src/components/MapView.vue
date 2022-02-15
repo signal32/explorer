@@ -81,7 +81,10 @@ export default defineComponent({
 
         const _selected = computed({
             get: () => props.selected,
-            set: value => emit('update:selected', value)
+            set: value => {
+                console.log(value)
+                emit('update:selected', value)
+            }
         });
 
         // If position is changed externally, we animate to the new position.
@@ -118,7 +121,7 @@ export default defineComponent({
                 details.value.bearing = map1.getBearing() || 0
 
                 if (!map1.getBounds().contains(lastUpdateCenter)) {
-                    console.log('Radius of viewport: ' + map1.getCenter().distanceTo(map1.getBounds().getNorthEast()));
+                    //console.log('Radius of viewport: ' + map1.getCenter().distanceTo(map1.getBounds().getNorthEast()));
                     //updateMap();
                     lastUpdateCenter = map1.getCenter();
                 }
@@ -128,6 +131,8 @@ export default defineComponent({
             map1.on('load', () => {
                 geoQueryService.getAbstractArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
                     .then( data => {
+                        data.features = [...new Set(data.features)] //todo fix data duplicates
+                        console.log('data', data);
                         map1.addSource('wikidata', {
                             type: 'geojson',
                             data:  data});

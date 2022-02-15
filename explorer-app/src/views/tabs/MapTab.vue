@@ -23,10 +23,13 @@
                     <ion-toolbar>
                         <ion-title>{{selectedEntityAbstractRef.name}}</ion-title>
                         <ion-buttons slot="end">
-                            <ion-button @onclick="setModalOpen(false)">Close</ion-button>
+                            <ion-button @click="setModalOpen(false)">Close</ion-button>
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>
+
+                <h3>Hello</h3>
+                <h3>{{selectedEntityAbstractRef.category}}</h3>
             </ion-content>
         </ion-modal>
 
@@ -53,6 +56,12 @@ import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {IEntityAbstract} from '@/modules/query/interfaces';
+
+const defaultAbstract: IEntityAbstract = {
+    position: {lat: 0, lng: 0},
+    name: 'No selection',
+    category: {name: ''}
+}
 
 export default defineComponent({
     components: {
@@ -90,9 +99,10 @@ export default defineComponent({
 
         const isModalOpenRef = ref(false);
         const selectedEntityAbstractRef = ref<IEntityAbstract>();
-        function setModalOpen(state: boolean, item: IEntityAbstract) {
+        function setModalOpen(state: boolean, item?: IEntityAbstract) {
             isModalOpenRef.value = state;
-            selectedEntityAbstractRef.value = item;
+            if (item)
+                selectedEntityAbstractRef.value = item;
         }
 
         return { position, move, locateOutline, isModalOpenRef, setModalOpen, selectedEntityAbstractRef };

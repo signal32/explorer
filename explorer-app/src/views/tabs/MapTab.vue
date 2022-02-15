@@ -7,26 +7,52 @@
     </ion-header>
     <ion-content :fullscreen="true">
 
+
+
         <ion-fab vertical="top" horizontal="end" slot="fixed">
             <ion-fab-button color="light" @click="move()">
                 <ion-icon :icon="locateOutline"></ion-icon>
             </ion-fab-button>
         </ion-fab>
-        <MapView v-model:position="position" @update:position="position = $event">
+        <MapView v-model:position="position" @update:position="position = $event" @update:selected="setModalOpen(true, $event)">
         </MapView>
+
+        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,1]" :initialBreakpoint="0.1" :backdropBreakpoint="0.5" @didDismiss="setModalOpen(false)">
+            <ion-content>
+                <ion-header translucent>
+                    <ion-toolbar>
+                        <ion-title>{{selectedEntityAbstractRef.name}}</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button @onclick="setModalOpen(false)">Close</ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+            </ion-content>
+        </ion-modal>
+
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-// Inspired by https://documentation.maptiler.com/hc/en-us/articles/4413873409809-Display-a-map-in-Vue-js-using-MapLibre-GL-JS
 import 'maplibre-gl/dist/maplibre-gl.css'
-import {IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonPage, IonTitle, IonToolbar} from '@ionic/vue';
+import {
+    IonButtons,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonHeader,
+    IonIcon,
+    IonModal,
+    IonPage,
+    IonTitle,
+    IonToolbar
+} from '@ionic/vue';
 import {locateOutline} from 'ionicons/icons';
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
-import MapView from '@/components/MapView.vue';
-import {MapPosition} from '@/components/MapView.vue';
+import MapView, {MapPosition} from '@/components/MapView.vue';
+import {IEntityAbstract} from '@/modules/query/interfaces';
 
 export default defineComponent({
     components: {
@@ -38,7 +64,9 @@ export default defineComponent({
         MapView,
         IonFab,
         IonFabButton,
-        IonIcon
+        IonIcon,
+        IonModal,
+        IonButtons,
     },
 
     setup() {
@@ -60,7 +88,14 @@ export default defineComponent({
             }
         }
 
-        return { position, move, locateOutline };
+        const isModalOpenRef = ref(false);
+        const selectedEntityAbstractRef = ref<IEntityAbstract>();
+        function setModalOpen(state: boolean, item: IEntityAbstract) {
+            isModalOpenRef.value = state;
+            selectedEntityAbstractRef.value = item;
+        }
+
+        return { position, move, locateOutline, isModalOpenRef, setModalOpen, selectedEntityAbstractRef };
     },
 
 });

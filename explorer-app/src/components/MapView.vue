@@ -27,6 +27,8 @@ import {hammerSharp, navigateSharp, searchSharp} from 'ionicons/icons';
 import {defineQueryPluginManager} from '@/modules/query/pluginManager';
 import {defineWikiDataPlugin} from '@/modules/query/WikidataPlugin';
 import {LatLngBounds} from '@/modules/geo/types';
+import {IEntityAbstract} from '@/modules/query/interfaces';
+import {Feature, Geometry} from 'geojson';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -47,10 +49,11 @@ export default defineComponent({
 
     props: {
         position: Object as PropType<MapPosition>,
-        style: Object as PropType<MapStyle>
+        style: Object as PropType<MapStyle>,
+        selected: Object as PropType<IEntityAbstract>,
     },
 
-    emits: ['update:position'],
+    emits: ['update:position', 'update:selected'],
 
     setup(props, {emit}) {
         const mapContainer = shallowRef("");
@@ -74,6 +77,11 @@ export default defineComponent({
             set: (value) => {
                 emit(`update:position`, value);
             }
+        });
+
+        const _selected = computed({
+            get: () => props.selected,
+            set: value => emit('update:selected', value)
         });
 
         // If position is changed externally, we animate to the new position.
@@ -134,6 +142,10 @@ export default defineComponent({
                             paint: {
                                 "text-color": "#ffffff"
                             }
+                        });
+                        map1.on('click', 'wikidata', (clicked) => {
+                            if (clicked.features)
+                                _selected.value = (clicked.features[0] as unknown as Feature<Geometry, IEntityAbstract>).properties; //todo Use stronger typing within MapView
                         })
                     })
 /*                map1.addSource('wikidata', {

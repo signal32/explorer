@@ -3,6 +3,7 @@ import {Bindings} from '@comunica/bus-query-operation';
 import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {newEngine} from '@comunica/actor-init-sparql';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
+import {Feature, FeatureCollection, Geometry} from 'geojson';
 
 const QUERY_TEMPLATE = `
 PREFIX wd: <http://www.wikidata.org/entity/>
@@ -42,49 +43,68 @@ interface WikiDataPlugin extends IQueryPlugin {
 function wktLiteralToLatLng(literal: string): LatLng {
     const values = literal.match(/-?\d+.\d*/gm);
     if (values) {
-        return new LatLng(parseFloat(values[1]), parseInt(values[0]));
+        return new LatLng(parseFloat(values[1]), parseFloat(values[0]));
     }
     else {
         console.warn(`Could not convert wktLiteral to LatLng. Value: ${literal}`);
         return new LatLng(0,0);
     }
-
 }
+
+function asFeature(feature: IEntityAbstract): Feature<Geometry, IEntityAbstract> {
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [feature.position.lng, feature.position.lat],
+        },
+        properties: feature,
+    }
+}
+
 
 export function defineWikiDataPlugin(config: Config): WikiDataPlugin {
     return {
         config,
-        async getAbstractArea(area: LatLngBounds): Promise<IEntityAbstract[]> {
-
-            factory.literal(`Point(${area.ne.lat},${area.ne.lng})`, `geo:wktLiteral`)
+        async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>> {
 
             const result = await engine.query(QUERY_TEMPLATE, {
-                sources: [{ type: 'sparql', value: config.sparqlEndpoints[0]}], //todo unbodge
-                initialBindings: new (Bindings as any) ({
-                    '?pointNE' : factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
-                    '?pointSW' : factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral'))
+                sources: [{type: 'sparql', value: config.sparqlEndpoints[0]}], //todo unbodge
+                initialBindings: new (Bindings as any)({
+                    '?pointNE': factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
+                    '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral'))
                 })
             })
 
-            const abstracts: IEntityAbstract[] = [];
+            const collection: FeatureCollection<Geometry, IEntityAbstract> = {
+                type: 'FeatureCollection',
+                features: []
+            }
 
             if (result.type == 'bindings') {
                 console.log('Is bindings type!');
                 result.bindingsStream.on('data', b => {
-                    abstracts.push({
+                    collection.features.push(asFeature({
                         position: wktLiteralToLatLng(b.get('?location').value),
                         category: {name: 'NONE!'},
                         name: b.get('?place').value,
+                    }))
+                });
+
+                return new Promise(( function (resolve, reject) {
+
+                    result.bindingsStream.on('end', () => {
+                        resolve(collection);
+                    });
+                    result.bindingsStream.on('error', (error) => {
+                        console.error('WikiData retrieval failed: ' + error)
+                        reject(error);
                     })
-                    wktLiteralToLatLng(b.get('?location').value);
-                    console.log(`Place id: ${b.get('?place').value}`);
-                    console.log(`Location id: ${b.get('?location').value}`);
-                })
-                console.log('Abstracts b', abstracts);
-                return abstracts;
+                }));
             }
-            console.log('Abstracts', abstracts);
-            return Promise.resolve(abstracts);
+
+            else return Promise.reject('Result type is not == bindings');
+
         }
     };
 }

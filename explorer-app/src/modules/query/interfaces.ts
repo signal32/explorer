@@ -1,9 +1,10 @@
 import {LatLngBounds, LatLngLike} from '@/modules/geo/types';
+import {FeatureCollection, Geometry} from 'geojson';
 
 export interface IQueryPlugin {
 
     getAbstract?(... items: [string]): Promise<IEntityAbstract[]>,
-    getAbstractArea?(area: LatLngBounds): Promise<IEntityAbstract[]>
+    getAbstractArea?(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>>,
 
     getDetails?(... items: [string]): Promise<IEntityDetails>,
 }

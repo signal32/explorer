@@ -2,6 +2,7 @@ import {newEngine} from '@comunica/actor-init-sparql';
 import {IEntityAbstract, IQueryPlugin} from '@/modules/query/interfaces';
 import {Quad} from '@/modules/geo/quadtree';
 import {LatLngBounds} from '@/modules/geo/types';
+import {FeatureCollection, Geometry} from 'geojson';
 
 export const queryEngine = newEngine();
 
@@ -46,17 +47,20 @@ class QueryPluginManager implements IQueryPlugin{
         return Promise.resolve(abstracts);
     }
 
-    getAbstractArea(area: LatLngBounds): Promise<IEntityAbstract[]> {
-        let abstracts: IEntityAbstract[] = [];
+    getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>> {
+        let collection: FeatureCollection<Geometry, IEntityAbstract> = {
+            type: 'FeatureCollection',
+            features: []
+        };
 
         this.plugins.forEach(plugin => {
             if (plugin.getAbstractArea) {
                 plugin.getAbstractArea(area)
-                    .then(res => abstracts.push(...res))
+                    .then(res => collection.features.push(...res.features)) //todo Improve merging to conform with geoJson standards (i.e bounding box merge)
             }
         })
 
-        return Promise.resolve(abstracts);
+        return Promise.resolve(collection);
     }
 
     private updateQuad(quad: Quad<QuadInfo>) {

@@ -1,4 +1,4 @@
-import {IEntityAbstract, IQueryPlugin} from '@/modules/query/interfaces';
+import {IEntityAbstract, IEntityDetails, IQueryPlugin} from '@/modules/query/interfaces';
 import {Bindings} from '@comunica/bus-query-operation';
 import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {newEngine} from '@comunica/actor-init-sparql';
@@ -105,6 +105,15 @@ export function defineWikiDataPlugin(config: Config): WikiDataPlugin {
 
             else return Promise.reject('Result type is not == bindings');
 
+        },
+
+        getAbstract(...items): Promise<IEntityAbstract[]> {
+            return Promise.reject('not implemented');
+        },
+
+
+        getDetails(...items): Promise<IEntityDetails> {
+            return Promise.reject('not implemented')
         }
     };
 }

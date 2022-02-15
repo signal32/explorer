@@ -3,10 +3,10 @@ import {FeatureCollection, Geometry} from 'geojson';
 
 export interface IQueryPlugin {
 
-    getAbstract?(... items: [string]): Promise<IEntityAbstract[]>,
-    getAbstractArea?(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>>,
+    getAbstract(... items: [string]): Promise<IEntityAbstract[]>,
+    getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>>,
 
-    getDetails?(... items: [string]): Promise<IEntityDetails>,
+    getDetails(... items: [string]): Promise<IEntityDetails>,
 }
 
 export interface IEntityAbstract {

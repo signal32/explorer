@@ -1,7 +1,8 @@
-import {IEntityAbstract, IEntityDetails, IQueryPlugin} from '@/modules/query/interfaces';
+import {IQueryPlugin} from '@/modules/plugin/interfaces/queryPlugin';
 import {Quad} from '@/modules/geo/quadtree';
 import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
+import {IEntityAbstract, IEntityDetails} from '@/modules/geo/entity';
 
 
 interface QuadInfo {

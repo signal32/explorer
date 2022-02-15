@@ -1,5 +1,5 @@
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import authService from "../auth/auth.service";
+import {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
+import authService from "./authService";
 
 
 export const onRequest = (config: AxiosRequestConfig): AxiosRequestConfig => {

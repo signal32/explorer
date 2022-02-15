@@ -1,10 +1,9 @@
-import axios from 'axios';
 import {pinia} from '@/main';
-import User from '@/modules/user/user';
-import {getUserStore} from '@/modules/user/userStore';
-import { getNotificationStore } from '../notify/notificationStore';
-import { createAxios } from '../axios/setup';
-import { NotificationType } from '../notify/notification';
+import User from '@/modules/auth/user';
+import {getUserStore} from '@/modules/auth/userStore';
+import {getNotificationStore} from '../app/notificationStore';
+import {createAxios} from './setup';
+import {NotificationType} from '../app/notification';
 
 const API_URL = process.env.VUE_APP_EXPLORER_AUTH_API + "protocol/openid-connect/";
 const LOGIN_PATH = "token/";

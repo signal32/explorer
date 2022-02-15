@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import User from '@/modules/user/user';
+import User from '@/modules/auth/user';
 
 interface UserStoreState {
     loggedIn: boolean

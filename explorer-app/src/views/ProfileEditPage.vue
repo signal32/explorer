@@ -37,10 +37,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent } from '@ionic/vue';
-import { getUserStore } from '@/modules/user/userStore';
-import User from '@/modules/user/user';
+import {defineComponent, ref} from 'vue';
+import {getUserStore} from '@/modules/auth/userStore';
 
 export default defineComponent({
     setup() {

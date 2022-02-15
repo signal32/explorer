@@ -66,12 +66,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonLabel, IonList, IonItem, IonBackButton, IonAccordion, IonAccordionGroup } from '@ionic/vue';
-import { getUserStore } from '@/modules/user/userStore';
-import AuthService from '@/modules/auth/auth.service';
-import { getNotificationStore } from '@/modules/notify/notificationStore';
-import { NotificationType } from '@/modules/notify/notification';
+import {defineComponent} from 'vue';
+import {
+    IonAccordion,
+    IonAccordionGroup,
+    IonBackButton,
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonPage,
+    IonTitle,
+    IonToolbar
+} from '@ionic/vue';
+import {getUserStore} from '@/modules/auth/userStore';
+import AuthService from '@/modules/auth/authService';
+import {getNotificationStore} from '@/modules/app/notificationStore';
+import {NotificationType} from '@/modules/app/notification';
 
 export default defineComponent({
     components: {IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonLabel, IonList, IonItem, IonBackButton, IonAccordion, IonAccordionGroup },

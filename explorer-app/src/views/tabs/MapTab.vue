@@ -55,7 +55,7 @@ import {locateOutline} from 'ionicons/icons';
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
-import {IEntityAbstract} from '@/modules/query/interfaces';
+import {IEntityAbstract} from '@/modules/geo/entity';
 
 const defaultAbstract: IEntityAbstract = {
     position: {lat: 0, lng: 0},

@@ -40,15 +40,28 @@
 </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton, toastController, IonButtons } from '@ionic/vue';
-import { map, person, compass } from 'ionicons/icons';
+import {
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonLabel,
+    IonPage,
+    IonRouterOutlet,
+    IonTabBar,
+    IonTabButton,
+    IonTabs,
+    IonTitle,
+    IonToolbar
+} from '@ionic/vue';
+import {compass, map, person} from 'ionicons/icons';
 import LoginStatus from '@/components/LoginStatus.vue'
-import { computed, defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 import {useRouter} from 'vue-router';
 import router from '@/router';
-import {getUserStore} from '@/modules/user/userStore';
-import AuthService from '@/modules/auth/auth.service';
-import { storeToRefs } from 'pinia';
+import {getUserStore} from '@/modules/auth/userStore';
+import AuthService from '@/modules/auth/authService';
+import {storeToRefs} from 'pinia';
 
 export default defineComponent({
     components: {

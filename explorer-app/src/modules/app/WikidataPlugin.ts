@@ -1,9 +1,10 @@
-import {IEntityAbstract, IEntityDetails, IQueryPlugin} from '@/modules/query/interfaces';
+import {IQueryPlugin} from '@/modules/plugin/interfaces/queryPlugin';
 import {Bindings} from '@comunica/bus-query-operation';
 import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {newEngine} from '@comunica/actor-init-sparql';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
+import {IEntityAbstract, IEntityDetails} from '@/modules/geo/entity';
 
 const QUERY_TEMPLATE = `
 PREFIX wd: <http://www.wikidata.org/entity/>

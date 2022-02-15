@@ -39,29 +39,29 @@
 
 <script lang="ts">
 import {
-    IonContent,
-    IonPage,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonSegment,
-    IonSegmentButton,
-    IonLabel,
-    IonIcon,
-    IonCol,
-    IonRow,
     IonAvatar,
     IonButton,
-    IonGrid
+    IonCol,
+    IonContent,
+    IonGrid,
+    IonHeader,
+    IonIcon,
+    IonLabel,
+    IonPage,
+    IonRow,
+    IonSegment,
+    IonSegmentButton,
+    IonTitle,
+    IonToolbar
 } from '@ionic/vue';
-  import { analytics, bookmarkOutline, pencilOutline } from 'ionicons/icons';
-  import { defineComponent } from 'vue';
-  import {getUserStore} from '@/modules/user/userStore';
-  import {getNotificationStore} from '@/modules/notify/notificationStore';
-import { NotificationType } from '@/modules/notify/notification';
-  import { createAxios } from '@/modules/axios/setup';
+import {analytics, bookmarkOutline, pencilOutline} from 'ionicons/icons';
+import {defineComponent} from 'vue';
+import {getUserStore} from '@/modules/auth/userStore';
+import {getNotificationStore} from '@/modules/app/notificationStore';
+import {NotificationType} from '@/modules/app/notification';
+import {createAxios} from '@/modules/auth/setup';
 
-  export default defineComponent({
+export default defineComponent({
     components: {
       IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonRow, IonCol, IonAvatar, IonButton, IonGrid,
     },

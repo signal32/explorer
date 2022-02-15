@@ -27,14 +27,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef } from 'vue';
-import { IonAvatar, IonCol, IonRow, IonButton, IonPopover, IonContent, IonList, IonListHeader, IonItem } from '@ionic/vue';
-import { getUserStore } from '@/modules/user/userStore';
-import AuthService from '@/modules/auth/auth.service';
-import { useRouter } from 'vue-router';
+import {defineComponent} from 'vue';
+import {IonAvatar, IonButton, IonCol, IonItem, IonList, IonListHeader, IonPopover, IonRow} from '@ionic/vue';
+import {getUserStore} from '@/modules/auth/userStore';
+import AuthService from '@/modules/auth/authService';
+import {useRouter} from 'vue-router';
 import router from '@/router';
-import {getNotificationStore} from '@/modules/notify/notificationStore'
-import {Notification, NotificationType} from '@/modules/notify/notification'
+import {getNotificationStore} from '@/modules/app/notificationStore'
+import {NotificationType} from '@/modules/app/notification'
 
 export default defineComponent({
     components: {IonAvatar, IonCol, IonRow, IonButton, IonPopover, IonList, IonListHeader, IonItem},

@@ -1,5 +1,5 @@
-import axios, { AxiosRequestConfig } from "axios";
-import { onRequest, onRequestError, onResponse, onResponseError } from "./interceptors";
+import axios, {AxiosRequestConfig} from "axios";
+import {onRequest, onRequestError, onResponse, onResponseError} from "./interceptors";
 
 export function createAxios(config:AxiosRequestConfig) {
     const instance = axios.create(config);

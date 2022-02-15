@@ -1,6 +1,6 @@
-import { defineStore } from "pinia";
-import { Notification, NotificationType } from "./notification";
-import { toastController } from '@ionic/vue';
+import {defineStore} from "pinia";
+import {Notification, NotificationType} from "./notification";
+import {toastController} from '@ionic/vue';
 
 interface NotificationStoreState {
     notifications: Map<NotificationType, Notification[]>

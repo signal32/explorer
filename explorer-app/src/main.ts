@@ -1,9 +1,9 @@
-import { createPinia } from 'pinia';
-import { createApp } from 'vue';
+import {createPinia} from 'pinia';
+import {createApp} from 'vue';
 import App from './App.vue';
 import router from './router';
 
-import {IonButton, IonicVue, IonInput} from '@ionic/vue';
+import {IonButton, IonicVue} from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -43,7 +43,7 @@ export const pinia = createPinia();
 
 const app = createApp(App)
     .use(IonicVue, {
-      //mode: 'ios'
+      mode: 'ios'
     })
     .use(router)
     .use(pinia)

@@ -17,7 +17,7 @@
         <MapView v-model:position="position" @update:position="position = $event" @update:selected="setModalOpen(true, $event)">
         </MapView>
 
-        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,1]" :initialBreakpoint="0.1" :backdropBreakpoint="0.5" @didDismiss="setModalOpen(false)">
+        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,1]" :initialBreakpoint="0.5" :backdropBreakpoint="0.1" @didDismiss="setModalOpen(false)">
             <ion-content>
                 <ion-header translucent>
                     <ion-toolbar>

@@ -24,8 +24,8 @@ import {computed, defineComponent, onMounted, PropType, ref, shallowRef, watch} 
 import {debounce} from 'lodash';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import {hammerSharp, navigateSharp, searchSharp} from 'ionicons/icons';
-import {defineQueryPluginManager} from '@/modules/app/pluginManager';
-import {defineWikiDataPlugin} from '@/modules/app/WikidataPlugin';
+import {defineQueryPluginManager} from '@/modules/query/pluginManager';
+import {defineWikiDataPlugin} from '@/modules/query/WikidataPlugin';
 import {LatLngBounds} from '@/modules/geo/types';
 import {Feature, Geometry} from 'geojson';
 import {IEntityAbstract} from '@/modules/geo/entity';

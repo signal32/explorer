@@ -1,0 +1,22 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+SELECT ?place ?placeLabel ?location ?instanceOf ?instanceOfLabel WHERE {
+    # Select the two corners for the box, San Jose & Sacramento
+    #values ?pointSW {?pointSw}.
+    #values ?pointNE {?pointNe} .
+    # Use the box service
+    SERVICE wikibase:box {
+        # Looking for items with coordinate locations(P625)
+        ?place wdt:P625 ?location .
+        # Set the south west and north east corners of the box
+        bd:serviceParam wikibase:cornerSouthWest ?pointSW .
+        bd:serviceParam wikibase:cornerNorthEast ?pointNE .
+    }
+    ?place wdt:P31 ?instanceOf .
+    ?instanceOf rdfs:label ?instanceOfLabel FILTER (LANG(?instanceOfLabel) = "en") .
+    SERVICE wikibase:label {
+        bd:serviceParam wikibase:language "en" .
+    }
+} LIMIT 100

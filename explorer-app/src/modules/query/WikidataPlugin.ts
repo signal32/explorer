@@ -5,30 +5,7 @@ import {newEngine} from '@comunica/actor-init-sparql';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {IEntityAbstract, IEntityDetails} from '@/modules/geo/entity';
-
-const QUERY_TEMPLATE = `
-PREFIX wd: <http://www.wikidata.org/entity/>
-PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-PREFIX wikibase: <http://wikiba.se/ontology#>
-PREFIX bd: <http://www.bigdata.com/rdf#>
-SELECT ?place ?placeLabel ?location ?instanceOf ?instanceOfLabel WHERE {
-  # Select the two corners for the box, San Jose & Sacramento
-  #values ?pointSW {?pointSw}.
-  #values ?pointNE {?pointNe} .
-  # Use the box service
-  SERVICE wikibase:box {
-      # Looking for items with coordinate locations(P625)
-      ?place wdt:P625 ?location .
-      # Set the south west and north east corners of the box
-      bd:serviceParam wikibase:cornerSouthWest ?pointSW .
-      bd:serviceParam wikibase:cornerNorthEast ?pointNE .
-    }
- ?place wdt:P31 ?instanceOf .
- ?instanceOf rdfs:label ?instanceOfLabel FILTER (LANG(?instanceOfLabel) = "en") .
-     SERVICE wikibase:label {
- bd:serviceParam wikibase:language "en" . 
- }
-}LIMIT 100`
+import testQuery from './sparql/testQuery.sparql';
 
 const engine = newEngine();
 const factory = new DataFactory();
@@ -73,12 +50,16 @@ export function defineWikiDataPlugin(config: Config): WikiDataPlugin {
     return {
         config,
         async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>> {
-
-            const result = await engine.query(QUERY_TEMPLATE, {
+            const newQ = testQuery.replace('?@replaceme', 'wd:Q12280 wd:Q811979 wd:Q3947' )
+            const result = await engine.query(newQ, {
                 sources: [{type: 'sparql', value: config.sparqlEndpoints[0]}], //todo unbodge
                 initialBindings: new (Bindings as any)({
                     '?pointNE': factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
-                    '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral'))
+                    '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
+/*                    '?included': '{wd:Q12280 wd:Q811979 wd:Q3947}',
+                    'excluded': '',
+                    'limit': 100,
+                    'language' : 'en'*/
                 })
             })
 
@@ -89,11 +70,11 @@ export function defineWikiDataPlugin(config: Config): WikiDataPlugin {
 
             if (result.type == 'bindings') {
                 result.bindingsStream.on('data', b => {
-                    console.log(b.get('?instanceOfLabel').value)
+                    console.log(b.get('?subjectTypeLabel').value)
                     collection.features.push(asFeature({
-                        position: wktLiteralToLatLng(b.get('?location').value),
-                        category: {name: b.get('?instanceOfLabel').value},
-                        name: b.get('?placeLabel').value,
+                        position: wktLiteralToLatLng(b.get('?subjectLocation').value),
+                        category: {name: b.get('?subjectTypeLabel').value},
+                        name: b.get('?subjectLabel').value,
                     }))
                 });
 

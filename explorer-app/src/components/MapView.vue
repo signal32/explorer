@@ -37,7 +37,7 @@ const DEFAULT_LNG = -2.2568;
 const DEFAULT_LAT = 57.0348535;
 const DEFAULT_ZOOM = 12;
 
-const wikidataPlugin = defineWikiDataPlugin({sparqlEndpoints: ['https://query.wikidata.org/sparql'], });
+const wikidataPlugin = defineWikiDataPlugin('https://query.wikidata.org/sparql');
 const geoQueryService = defineQueryPluginManager([wikidataPlugin]);
 
 export default defineComponent({

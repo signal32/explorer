@@ -10,8 +10,3 @@ export interface IQueryPlugin {
     getDetails(... items: [string]): Promise<IEntityDetails>,
 }
 
-interface IPluginConfig {
-    friendlyName: string,
-    isEnabled: boolean,
-    serviceURL: boolean,
-}

@@ -6,21 +6,16 @@ import {LatLng, LatLngBounds} from '@/modules/geo/types';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {IEntityAbstract, IEntityDetails} from '@/modules/geo/entity';
 import testQuery from './sparql/testQuery.sparql';
+import {AppPlugin, PluginConfig, PluginParameter} from '@/modules/plugin/interfaces/pluginConfiguration';
 
 const engine = newEngine();
 const factory = new DataFactory();
 
-enum Filter {
-    EXCLUDE,INCLUDE
-}
 
-interface Config {
-    classFiltering?: Map<Filter, string[]>,
-    sparqlEndpoints: string[],
-}
-
-interface WikiDataPlugin extends IQueryPlugin {
-    config: Config
+interface WikiDataPlugin extends IQueryPlugin, AppPlugin {
+    includeCategories: PluginParameter<string[]>,
+    excludeCategories: PluginParameter<string[]>,
+    endpoint: PluginParameter<string>,
 }
 
 function wktLiteralToLatLng(literal: string): LatLng {
@@ -46,13 +41,41 @@ function asFeature(feature: IEntityAbstract): Feature<Geometry, IEntityAbstract>
 }
 
 
-export function defineWikiDataPlugin(config: Config): WikiDataPlugin {
+export function defineWikiDataPlugin(sparqlEnpoint: string): WikiDataPlugin {
     return {
-        config,
+        endpoint: {
+            name: 'Sparql endpoint',
+            scope: 'settings',
+            value: sparqlEnpoint,
+        },
+
+        excludeCategories: {
+            name: 'Exclude categories',
+            scope: 'map_options',
+            value: [''],
+        },
+
+        includeCategories: {
+            name: 'Include categories',
+            scope: 'map_options',
+            value: [''],
+        },
+
+        definePlugin(): PluginConfig {
+            return {
+                friendlyName: 'WikiData Plugin',
+                params: [
+                    this.endpoint,
+                    this.excludeCategories,
+                    this.includeCategories,
+                ]
+            }
+        },
+
         async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>> {
             const newQ = testQuery.replace('?@replaceme', 'wd:Q12280 wd:Q811979 wd:Q3947' )
             const result = await engine.query(newQ, {
-                sources: [{type: 'sparql', value: config.sparqlEndpoints[0]}], //todo unbodge
+                sources: [{type: 'sparql', value: this.endpoint.value}], //todo unbodge
                 initialBindings: new (Bindings as any)({
                     '?pointNE': factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
                     '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),

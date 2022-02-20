@@ -66,12 +66,9 @@ import {storeToRefs} from 'pinia';
 export default defineComponent({
     components: {
         IonContent,
-        IonHeader,
         IonPage,
-        IonTitle,
-        IonToolbar,
-        LoginStatus,
-        IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton, IonButtons
+        IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton,
+        LoginStatus, IonToolbar, IonHeader, IonButtons, IonTitle
     },
 
     setup() {

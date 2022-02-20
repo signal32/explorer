@@ -1,16 +1,17 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Map</ion-title>
-      </ion-toolbar>
-    </ion-header>
     <ion-content :fullscreen="true">
 
+        <ion-fab vertical="top" horizontal="start">
+            <ion-searchbar></ion-searchbar>
+        </ion-fab>
 
 
         <ion-fab vertical="top" horizontal="end" slot="fixed">
             <ion-fab-button color="light" @click="move()">
+                <ion-icon :icon="locateOutline"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button color="light" @click="optionsModalOpen = true">
                 <ion-icon :icon="locateOutline"></ion-icon>
             </ion-fab-button>
         </ion-fab>
@@ -33,6 +34,12 @@
             </ion-content>
         </ion-modal>
 
+        <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.5,0.8]" :initialBreakpoint="0.5" @didDismiss="optionsModalOpen = false" >
+            <ion-content>
+                <map-options></map-options>
+            </ion-content>
+        </ion-modal>
+
     </ion-content>
   </ion-page>
 </template>
@@ -48,6 +55,7 @@ import {
     IonIcon,
     IonModal,
     IonPage,
+    IonSearchbar,
     IonTitle,
     IonToolbar
 } from '@ionic/vue';
@@ -56,6 +64,7 @@ import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {IEntityAbstract} from '@/modules/geo/entity';
+import MapOptions from '@/components/MapOptions.vue';
 
 const defaultAbstract: IEntityAbstract = {
     position: {lat: 0, lng: 0},
@@ -64,18 +73,8 @@ const defaultAbstract: IEntityAbstract = {
 }
 
 export default defineComponent({
-    components: {
-        IonContent,
-        IonHeader,
-        IonPage,
-        IonTitle,
-        IonToolbar,
-        MapView,
-        IonFab,
-        IonFabButton,
-        IonIcon,
-        IonModal,
-        IonButtons,
+    components: { MapOptions, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
+        IonFabButton, IonIcon, IonModal, IonButtons, MapView, IonSearchbar
     },
 
     setup() {
@@ -105,7 +104,9 @@ export default defineComponent({
                 selectedEntityAbstractRef.value = item;
         }
 
-        return { position, move, locateOutline, isModalOpenRef, setModalOpen, selectedEntityAbstractRef };
+        const optionsModalOpen = ref(true);
+
+        return { position, move, locateOutline, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef };
     },
 
 });

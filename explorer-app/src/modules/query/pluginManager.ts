@@ -3,11 +3,14 @@ import {Quad} from '@/modules/geo/quadtree';
 import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
 import {GeoEntity, DetailsEntity} from '@/modules/geo/entity';
+import {AppServices} from '@/modules/app/services';
+import {NotificationType} from '@/modules/app/notification';
 
 
 interface QuadInfo {
     name?: string
     queryCache: Map<IQueryPlugin, FeatureCollection<Geometry, GeoEntity>>,
+    categoriesHash?: string,
 }
 
 interface QueryPluginManager extends IQueryPlugin{
@@ -50,9 +53,17 @@ export function defineQueryPluginManager(plugins: IQueryPlugin[]): QueryPluginMa
             };
 
             for (const quad of this._tree.findOrCreate(area, 12)) {
+                console.log(JSON.stringify(AppServices.userPreferencesStore.liked))
                 // Plugins are called to update quads which have been newly created and are still empty.
-                if (!quad.value) {
+                if (!quad.value || quad.value?.categoriesHash != JSON.stringify(AppServices.userPreferencesStore.liked)) {
+                    AppServices.notificationStore.pushNotification({
+                       title: 'Updating map information from WikiData',
+                        description: 'This may take some time ☕',
+                        type: NotificationType.TOAST
+                    }, )
+                    console.log(`Updating outdated tile ${quad.asArea()}`)
                     await updateQuad(quad, this.plugins, area); //todo Parcelize quad updates
+                    quad.value!.categoriesHash = JSON.stringify(AppServices.userPreferencesStore.liked);
                     //localStorage.setItem('geoQueryCache', );
                 }
 

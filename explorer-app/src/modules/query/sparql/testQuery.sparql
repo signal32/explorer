@@ -18,8 +18,8 @@ SELECT ?subject ?subjectLabel ?subjectLocation ?subjectTypeLabel WHERE {
 
     {
         #VALUES ?included { wd:Q12280 wd:Q811979 wd:Q3947 } #todo get the array from value
-        VALUES ?included { ?@replaceme }
-        VALUES ?excluded { wd:Q3947 } #todo get the array from value
+        VALUES ?included { ?@include }
+        VALUES ?excluded { ?@exclude } #todo get the array from value wd:Q3947
         ?subject p:P31/ps:P31/wdt:P279* ?included .
         FILTER NOT EXISTS { ?subject p:P31/ps:P31/wdt:P279* ?excluded. }
     }

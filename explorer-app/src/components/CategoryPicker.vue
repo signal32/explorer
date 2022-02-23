@@ -29,8 +29,8 @@
 
     <div v-if="suggestedCategories.length > 1">
         <h3>Suggested:</h3>
-        <ion-chip outline color="dark" v-for="s in suggestedCategories" :key="s" @click="addCategory(s.name)" >
-            <ion-label>{{ startCase(s.name) }}</ion-label>
+        <ion-chip outline color="dark" v-for="s in suggestedCategories" :key="s" @click="addCategory(s)" >
+            <ion-label>{{ startCase(s.name) }} - {{s.id}}</ion-label>
         </ion-chip>
     </div>
 
@@ -71,10 +71,10 @@ export default {
             preferencesStore.forget(value.entity);
         }
 
-        function addCategory(category = newCategory.value) {
+        function addCategory(category: CategoryEntity = { name: newCategory.value, id: 'unknown' + newCategory.value}) {
             if (category) {
                 // todo: use the queryplugin or new category plugin to check categories are correct and instantiate valid 'Entity'
-                preferencesStore.like({name: category, id: category})
+                preferencesStore.like({...category}); //creating a copy here
                 newCategory.value = '';
             }
         }

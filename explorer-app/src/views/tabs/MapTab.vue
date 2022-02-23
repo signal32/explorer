@@ -63,13 +63,13 @@ import {locateOutline} from 'ionicons/icons';
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
-import {IEntityAbstract} from '@/modules/geo/entity';
+import {GeoEntity} from '@/modules/geo/entity';
 import MapOptions from '@/components/MapOptions.vue';
 
-const defaultAbstract: IEntityAbstract = {
+const defaultAbstract: GeoEntity = {
+    id: 'unidentified',
     position: {lat: 0, lng: 0},
     name: 'No selection',
-    category: {name: ''}
 }
 
 export default defineComponent({
@@ -97,8 +97,8 @@ export default defineComponent({
         }
 
         const isModalOpenRef = ref(false);
-        const selectedEntityAbstractRef = ref<IEntityAbstract>();
-        function setModalOpen(state: boolean, item?: IEntityAbstract) {
+        const selectedEntityAbstractRef = ref<GeoEntity>();
+        function setModalOpen(state: boolean, item?: GeoEntity) {
             isModalOpenRef.value = state;
             if (item)
                 selectedEntityAbstractRef.value = item;

@@ -2,12 +2,12 @@ import {IQueryPlugin} from '@/modules/plugin/interfaces/queryPlugin';
 import {Quad} from '@/modules/geo/quadtree';
 import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
-import {IEntityAbstract, IEntityDetails} from '@/modules/geo/entity';
+import {GeoEntity, DetailsEntity} from '@/modules/geo/entity';
 
 
 interface QuadInfo {
     name?: string
-    queryCache: Map<IQueryPlugin, FeatureCollection<Geometry, IEntityAbstract>>,
+    queryCache: Map<IQueryPlugin, FeatureCollection<Geometry, GeoEntity>>,
 }
 
 interface QueryPluginManager extends IQueryPlugin{
@@ -18,7 +18,7 @@ interface QueryPluginManager extends IQueryPlugin{
 
 async function updateQuad(quad: Quad<QuadInfo>, plugins: IQueryPlugin[], area: LatLngBounds) {
 
-    if (!quad.value) quad.value = {queryCache: new Map<IQueryPlugin, FeatureCollection<Geometry, IEntityAbstract>>()};
+    if (!quad.value) quad.value = {queryCache: new Map<IQueryPlugin, FeatureCollection<Geometry, GeoEntity>>()};
 
     for (const plugin of plugins) {
         quad.value?.queryCache.set(plugin, await plugin.getAbstractArea(area));
@@ -36,15 +36,15 @@ export function defineQueryPluginManager(plugins: IQueryPlugin[]): QueryPluginMa
 
     return {
         //_tree: tree,
-        _tree: new Quad<QuadInfo>({name: 'root', queryCache: new Map<IQueryPlugin, FeatureCollection<Geometry, IEntityAbstract>>()}),
+        _tree: new Quad<QuadInfo>({name: 'root', queryCache: new Map<IQueryPlugin, FeatureCollection<Geometry, GeoEntity>>()}),
         plugins,
 
-        getAbstract(...items: [string]): Promise<IEntityAbstract[]> {
+        getAbstract(...items: [string]): Promise<GeoEntity[]> {
             return Promise.reject(undefined);
         },
 
-        async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, IEntityAbstract>> {
-            const collection: FeatureCollection<Geometry, IEntityAbstract> = {
+        async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
+            const collection: FeatureCollection<Geometry, GeoEntity> = {
                 type: 'FeatureCollection',
                 features: [],
             };
@@ -65,7 +65,7 @@ export function defineQueryPluginManager(plugins: IQueryPlugin[]): QueryPluginMa
             return Promise.resolve(collection);
         },
 
-        getDetails(...items: [string]): Promise<IEntityDetails> {
+        getDetails(...items: [string]): Promise<DetailsEntity> {
             return Promise.reject(undefined);
         },
 

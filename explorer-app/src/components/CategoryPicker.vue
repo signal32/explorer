@@ -14,32 +14,38 @@
             </ion-button>
         </ion-col>
     </ion-row>
-    <ion-chip outline color="primary" v-for="category in categories" :key="category">
-        <ion-icon v-if="category.include" color="success" :icon="includeIcon" @click="category.include = ! category.include"/>
-        <ion-icon v-if="!category.include" color="danger" :icon="excludeIcon" @click="category.include = ! category.include"/>
-        <ion-label>{{ category.name }}</ion-label>
+    <ion-chip outline color="primary" v-for="category in categories" :key="category.entity.id">
+        <ion-icon v-if="category.value >= preferencesStore.likedThreshold" color="success" :icon="includeIcon" @click="preferencesStore.nudge(category.entity, -0.1)"/>
+        <ion-icon v-if="category.value < preferencesStore.likedThreshold" color="danger" :icon="excludeIcon" @click="preferencesStore.nudge(category.entity, -0.1)"/>
+        <ion-label>{{ startCase(category.entity.name) }}: {{category.value}}</ion-label>
         <ion-icon :icon="closeIcon" @click="removeCategory(category)"/>
     </ion-chip>
 
     <ion-chip outline color="dark">
         <ion-icon :icon="addIcon" @click="addCategory()"/>
         <ion-label ></ion-label>
-        <ion-input placeholder="Add new" v-model="newCategory" @keyup.enter="addCategory()"></ion-input>
+        <ion-input placeholder="Add new" v-model="newCategory" @keyup.enter="addCategory()" @keyup="searchCommons"></ion-input>
     </ion-chip>
 
-    <h3 v-if="newCategory.length > Math.random() * 5">Suggested:</h3>
+    <div v-if="suggestedCategories.length > 1">
+        <h3>Suggested:</h3>
+        <ion-chip outline color="dark" v-for="s in suggestedCategories" :key="s" @click="addCategory(s.name)" >
+            <ion-label>{{ startCase(s.name) }}</ion-label>
+        </ion-chip>
+    </div>
+
 
 </template>
 
 <script lang="ts">
 import {IonChip, IonCol, IonIcon, IonInput, IonLabel, IonRow} from '@ionic/vue';
 import {add, checkmarkOutline, closeCircleOutline, closeOutline, funnel, refresh} from 'ionicons/icons';
-import {ref} from 'vue';
-
-interface Category {
-    name: string,
-    include: boolean,
-}
+import {computed, ref} from 'vue';
+import {AppServices} from '@/modules/app/services';
+import {EntityRating} from '@/modules/auth/entityPreferencesStore';
+import {defineWikiDataPlugin} from '@/modules/query/WikidataPlugin';
+import {startCase} from 'lodash';
+import {CategoryEntity} from '@/modules/geo/entity';
 
 export default {
     name: "MapOptions",
@@ -54,38 +60,53 @@ export default {
 
     setup() {
 
-        const categories = ref<Category[]>([{ name: 'All', include: true}]);
-        const newCategory = ref('');
+        const preferencesStore = AppServices.userPreferencesStore;
+        const categories = computed( () => preferencesStore.liked);
 
-        function removeCategory(value: Category) {
-            const i = categories.value.indexOf(value);
-            categories.value.splice(i, 1);
+        const newCategory = ref('');
+        const suggestedCategories = ref<CategoryEntity[]>([]);
+
+
+        function removeCategory(value: EntityRating) {
+            preferencesStore.forget(value.entity);
         }
 
-        function addCategory() {
-            if (newCategory.value) {
-                console.log(newCategory.value);
-                categories.value.push({name: newCategory.value, include: true});
+        function addCategory(category = newCategory.value) {
+            if (category) {
+                // todo: use the queryplugin or new category plugin to check categories are correct and instantiate valid 'Entity'
+                preferencesStore.like({name: category, id: category})
                 newCategory.value = '';
             }
         }
 
         function sortCategories() {
-            categories.value.sort((a) =>  (a.include)? 0 : 1);
+            categories.value.sort((a, b) =>  a.value - b.value);
+        }
+
+        const wdp = defineWikiDataPlugin('https://query.wikidata.org/sparql');
+        function searchCommons() {
+            wdp.searchCategoryLabels(newCategory.value)
+            .then((res) => {
+                suggestedCategories.value = res;
+            })
         }
 
         return {
             removeCategory,
             addCategory,
             sortCategories,
+            searchCommons,
             categories,
             newCategory,
+            suggestedCategories,
             resetIcon: refresh,
             sortIcon: funnel,
             includeIcon: checkmarkOutline,
             excludeIcon: closeOutline,
             addIcon: add,
             closeIcon: closeCircleOutline,
+            preferencesStore,
+            startCase,
         }
     }
 }

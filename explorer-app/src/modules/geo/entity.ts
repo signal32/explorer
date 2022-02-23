@@ -1,16 +1,33 @@
 import {LatLngLike} from '@/modules/geo/types';
 
-export interface IEntityAbstract {
-    position: LatLngLike,
-    category: ICategory,
+export interface Entity {
+    id: string,
     name: string,
+    category?: Entity,
 }
 
-export interface IEntityDetails {
-    abstract: IEntityAbstract,
+export interface EntityPosition {
+    position: LatLngLike,
+}
+
+export interface EntityName {
+
+}
+
+export interface GeoEntity extends Entity {
+    position: LatLngLike
+}
+
+export interface DetailsEntity extends Entity{
     values: Map<string, any>,
 }
 
-export interface ICategory {
+/*export interface Category {
     name: string,
+}*/
+
+export interface CategoryEntity extends Entity {
+    iconUrl?: string,
 }
+
+export type EntityId = string;

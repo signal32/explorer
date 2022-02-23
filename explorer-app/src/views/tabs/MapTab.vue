@@ -1,23 +1,24 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Map</ion-title>
-      </ion-toolbar>
-    </ion-header>
     <ion-content :fullscreen="true">
 
+        <ion-fab vertical="top" horizontal="start">
+            <ion-searchbar></ion-searchbar>
+        </ion-fab>
 
 
         <ion-fab vertical="top" horizontal="end" slot="fixed">
             <ion-fab-button color="light" @click="move()">
                 <ion-icon :icon="locateOutline"></ion-icon>
             </ion-fab-button>
+            <ion-fab-button color="light" @click="optionsModalOpen = true">
+                <ion-icon :icon="locateOutline"></ion-icon>
+            </ion-fab-button>
         </ion-fab>
         <MapView v-model:position="position" @update:position="position = $event" @update:selected="setModalOpen(true, $event)">
         </MapView>
 
-        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,1]" :initialBreakpoint="0.1" :backdropBreakpoint="0.5" @didDismiss="setModalOpen(false)">
+        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,1]" :initialBreakpoint="0.5" :backdropBreakpoint="0.1" @didDismiss="setModalOpen(false)">
             <ion-content>
                 <ion-header translucent>
                     <ion-toolbar>
@@ -30,6 +31,12 @@
 
                 <h3>Hello</h3>
                 <h3>{{selectedEntityAbstractRef.category}}</h3>
+            </ion-content>
+        </ion-modal>
+
+        <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.5,0.8]" :initialBreakpoint="0.5" @didDismiss="optionsModalOpen = false" >
+            <ion-content>
+                <map-options></map-options>
             </ion-content>
         </ion-modal>
 
@@ -48,6 +55,7 @@ import {
     IonIcon,
     IonModal,
     IonPage,
+    IonSearchbar,
     IonTitle,
     IonToolbar
 } from '@ionic/vue';
@@ -55,27 +63,18 @@ import {locateOutline} from 'ionicons/icons';
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
-import {IEntityAbstract} from '@/modules/geo/entity';
+import {GeoEntity} from '@/modules/geo/entity';
+import MapOptions from '@/components/MapOptions.vue';
 
-const defaultAbstract: IEntityAbstract = {
+const defaultAbstract: GeoEntity = {
+    id: 'unidentified',
     position: {lat: 0, lng: 0},
     name: 'No selection',
-    category: {name: ''}
 }
 
 export default defineComponent({
-    components: {
-        IonContent,
-        IonHeader,
-        IonPage,
-        IonTitle,
-        IonToolbar,
-        MapView,
-        IonFab,
-        IonFabButton,
-        IonIcon,
-        IonModal,
-        IonButtons,
+    components: { MapOptions, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
+        IonFabButton, IonIcon, IonModal, IonButtons, MapView, IonSearchbar
     },
 
     setup() {
@@ -98,14 +97,16 @@ export default defineComponent({
         }
 
         const isModalOpenRef = ref(false);
-        const selectedEntityAbstractRef = ref<IEntityAbstract>();
-        function setModalOpen(state: boolean, item?: IEntityAbstract) {
+        const selectedEntityAbstractRef = ref<GeoEntity>();
+        function setModalOpen(state: boolean, item?: GeoEntity) {
             isModalOpenRef.value = state;
             if (item)
                 selectedEntityAbstractRef.value = item;
         }
 
-        return { position, move, locateOutline, isModalOpenRef, setModalOpen, selectedEntityAbstractRef };
+        const optionsModalOpen = ref(true);
+
+        return { position, move, locateOutline, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef };
     },
 
 });

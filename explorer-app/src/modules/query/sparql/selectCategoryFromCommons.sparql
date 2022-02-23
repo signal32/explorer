@@ -1,0 +1,25 @@
+# Get the WikiData item(s) that corespond to one or more Wikimedia Commons categories.
+
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?item ?itemLabel ?icon
+WHERE
+{
+	VALUES ?commonsCategories {?@commonsCategories}. #{"Category:Parks"@en "Category:Railway stations"@en}.
+	?commonsItem wdt:P31 wd:Q4167836;
+	wdt:P373 | rdfs:label | skos:altLabel ?commonsCategories;
+	wdt:P301 ?item.
+	#rdfs:label ?ci.
+
+	#?item wdt:P279* wd:Q27096213. # Assert that item is a subclasss of geographical location. Very slow and expensive!
+	?item rdfs:label ?itemLabel FILTER (LANG(?itemLabel) = "en") .
+	?item wdt:P2910 ?icon
+
+} LIMIT 100

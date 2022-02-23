@@ -1,6 +1,9 @@
 import {defineStore} from 'pinia';
 import User from '@/modules/auth/user';
 
+/**
+ * Structure of a store which contains core {@link User} and authentication information.
+ */
 interface UserStoreState {
     loggedIn: boolean
     user?: User,
@@ -15,6 +18,9 @@ const defaultState:UserStoreState = {
     refreshToken: undefined
 }
 
+/**
+ * Singleton instance of {@link UserStoreState}.
+ */
 export const getUserStore = defineStore('userStore', {
     state: () => (defaultState),
 

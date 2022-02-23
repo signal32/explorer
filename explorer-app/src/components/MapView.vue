@@ -24,11 +24,11 @@ import {computed, defineComponent, onMounted, PropType, ref, shallowRef, watch} 
 import {debounce} from 'lodash';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import {hammerSharp, navigateSharp, searchSharp} from 'ionicons/icons';
-import {defineQueryPluginManager} from '@/modules/app/pluginManager';
-import {defineWikiDataPlugin} from '@/modules/app/WikidataPlugin';
+import {defineQueryPluginManager} from '@/modules/query/pluginManager';
+import {defineWikiDataPlugin} from '@/modules/query/WikidataPlugin';
 import {LatLngBounds} from '@/modules/geo/types';
 import {Feature, Geometry} from 'geojson';
-import {IEntityAbstract} from '@/modules/geo/entity';
+import {GeoEntity} from '@/modules/geo/entity';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -37,7 +37,7 @@ const DEFAULT_LNG = -2.2568;
 const DEFAULT_LAT = 57.0348535;
 const DEFAULT_ZOOM = 12;
 
-const wikidataPlugin = defineWikiDataPlugin({sparqlEndpoints: ['https://query.wikidata.org/sparql'], });
+const wikidataPlugin = defineWikiDataPlugin('https://query.wikidata.org/sparql');
 const geoQueryService = defineQueryPluginManager([wikidataPlugin]);
 
 export default defineComponent({
@@ -50,7 +50,7 @@ export default defineComponent({
     props: {
         position: Object as PropType<MapPosition>,
         style: Object as PropType<MapStyle>,
-        selected: Object as PropType<IEntityAbstract>,
+        selected: Object as PropType<GeoEntity>,
     },
 
     emits: ['update:position', 'update:selected'],
@@ -150,7 +150,7 @@ export default defineComponent({
                         });
                         map1.on('click', 'wikidata', (clicked) => {
                             if (clicked.features)
-                                _selected.value = (clicked.features[0] as unknown as Feature<Geometry, IEntityAbstract>).properties; //todo Use stronger typing within MapView
+                                _selected.value = (clicked.features[0] as unknown as Feature<Geometry, GeoEntity>).properties; //todo Use stronger typing within MapView
                         })
                     })
 /*                map1.addSource('wikidata', {

@@ -1,6 +1,6 @@
 package com.curioustrout.explorer.gis.util;
 
-import com.curioustrout.explorer.gis.service.query.SparqlQuery;
+import com.curioustrout.explorer.core.query.SparqlQuery;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

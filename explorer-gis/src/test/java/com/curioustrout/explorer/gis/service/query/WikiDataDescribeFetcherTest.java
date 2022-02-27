@@ -1,7 +1,7 @@
 package com.curioustrout.explorer.gis.service.query;
 
-import com.curioustrout.explorer.gis.geo.Area;
-import com.curioustrout.explorer.gis.geo.GeoPosition;
+import com.curioustrout.explorer.core.geo.Area;
+import com.curioustrout.explorer.core.geo.GeoPosition;
 import com.curioustrout.explorer.gis.service.QueryProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

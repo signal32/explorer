@@ -1,6 +1,6 @@
 package com.curioustrout.explorer.gis.service.query;
 
-import com.curioustrout.explorer.gis.geo.Point;
+import com.curioustrout.explorer.core.query.types.Point;
 import com.curioustrout.explorer.gis.service.ModelProvider;
 import com.curioustrout.explorer.gis.service.QueryProvider;
 import com.curioustrout.explorer.gis.util.Fetcher;

@@ -1,4 +1,4 @@
-package com.curioustrout.explorer.gis.geo;
+package com.curioustrout.explorer.core.geo;
 
 import java.util.*;
 

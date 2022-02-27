@@ -16,6 +16,7 @@
         <module>explorer-gis</module>
         <module>explorer-common</module>
         <module>explorer-services</module>
+        <module>explorer-recommend</module>
     </modules>
 
 </project>

@@ -1,7 +1,7 @@
 package com.curioustrout.explorer.gis.service;
 
-import com.curioustrout.explorer.gis.geo.Area;
-import com.curioustrout.explorer.gis.geo.Quad;
+import com.curioustrout.explorer.core.geo.Area;
+import com.curioustrout.explorer.core.geo.Quad;
 import com.curioustrout.explorer.gis.service.query.GeoQueryConfig;
 import com.curioustrout.explorer.gis.util.Fetcher;
 import org.apache.jena.rdf.model.Model;

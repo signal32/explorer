@@ -39,13 +39,18 @@
                     <ion-toolbar>
                         <ion-title>{{selectedEntityAbstractRef.name}}</ion-title>
                         <ion-buttons slot="end">
-                            <ion-button @click="setModalOpen(false)">Close</ion-button>
+                            <ion-button @click="setModalOpen(false)">
+                                <ion-icon :icon="thumbsUpSharp"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                        <ion-buttons slot="end">
+                            <ion-button @click="setModalOpen(false)"><ion-icon :icon="thumbsDownSharp"></ion-icon></ion-button>
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>
 
-                <h3>Hello</h3>
-                <h3>{{selectedEntityAbstractRef.category}}</h3>
+                <h6>Category:</h6>
+                <p>{{selectedEntityAbstractRef.category}}</p>
             </ion-content>
         </ion-modal>
 
@@ -74,7 +79,7 @@ import {
     IonTitle,
     IonToolbar
 } from '@ionic/vue';
-import {locateOutline, planet, settingsOutline, layersOutline} from 'ionicons/icons';
+import {locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp} from 'ionicons/icons';
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
@@ -122,7 +127,7 @@ export default defineComponent({
 
         const optionsModalOpen = ref(true);
 
-        return { position, move, locateOutline, planet, settingsOutline, layersOutline, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef, router };
+        return { position, move, locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef, router };
     },
 
 });

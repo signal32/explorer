@@ -1,6 +1,7 @@
 package com.curioustrout.explorer.gis.service.query;
 
-import com.curioustrout.explorer.gis.geo.GeoPosition;
+import com.curioustrout.explorer.core.query.SparqlQuery;
+import com.curioustrout.explorer.core.geo.GeoPosition;
 import com.curioustrout.explorer.gis.service.ModelProvider;
 import com.curioustrout.explorer.gis.service.QueryProvider;
 import com.curioustrout.explorer.gis.util.Fetcher;

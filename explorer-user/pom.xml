@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>common</artifactId>
+        <artifactId>parent</artifactId>
         <groupId>com.curioustrout.explorer</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../explorer-common</relativePath>
+        <relativePath>../explorer-parent</relativePath>
     </parent>
 
     <groupId>com.curioustrout.explorer</groupId>

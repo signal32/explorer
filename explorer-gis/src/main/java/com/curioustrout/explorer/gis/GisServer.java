@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootApplication()
+@SpringBootApplication(scanBasePackages = "com.curioustrout.explorer.core.query.service")
 @EnableConfigurationProperties(Properties.class)
 public class GisServer {
     public static void main(String[] args) {

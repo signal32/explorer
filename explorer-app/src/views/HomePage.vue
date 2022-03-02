@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+<!--    <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>Explorer</ion-title>
 
@@ -11,7 +11,7 @@
 
         
       </ion-toolbar>
-    </ion-header>
+    </ion-header>-->
     
     <ion-content :fullscreen="true ">
 
@@ -68,7 +68,7 @@ export default defineComponent({
         IonContent,
         IonPage,
         IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton,
-        LoginStatus, IonToolbar, IonHeader, IonButtons, IonTitle
+        //LoginStatus, IonToolbar, IonHeader, IonButtons, IonTitle
     },
 
     setup() {

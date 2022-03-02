@@ -1,5 +1,7 @@
 package com.curioustrout.explorer.gis.geo;
 
+import com.curioustrout.explorer.core.geo.Area;
+import com.curioustrout.explorer.core.geo.GeoPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

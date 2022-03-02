@@ -11,9 +11,13 @@ import {AppServices} from '@/modules/app/services';
 import {CategoryPlugin} from '@/modules/plugin/interfaces/categoryPlugin';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
+import {NotificationType} from '@/modules/app/notification';
 
 const engine = newEngine();
 const factory = new DataFactory();
+
+const DEFAULT_LIKED = 'wd:Q12280 wd:Q811979 wd:Q3947';
+const DEFAULT_DISLIKED = 'wd:Q13276'
 
 /**
  * A plugin for integration with the WikiData knowledge base.
@@ -53,6 +57,14 @@ function asFeature(feature: GeoEntity): Feature<Geometry, GeoEntity> {
         },
         properties: feature,
     }
+}
+
+function wikidataIdFromUrl(url: string): string {
+    const matches = url.match(/Q\d*/gm);
+    if (matches) {
+        return matches[0]
+    }
+    else return '';
 }
 
 /**
@@ -119,7 +131,7 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
                         // Collect data from categories
                         result.bindingsStream.on('data', listener => {
                             const category = {
-                                id: listener.get('?target').value,
+                                id: wikidataIdFromUrl(listener.get('?target').value),
                                 name: listener.get('?label').value,
                                 //iconUrl: listener.get('?icon').value,
                             }
@@ -163,7 +175,26 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
         },
 
         async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
-            const newQ = testQuery.replace('?@replaceme', 'wd:Q12280 wd:Q811979 wd:Q3947' ) //TODO remove replacement/injection bodges and rename testQuery to something proper
+
+            let included = '';
+            if (AppServices.userPreferencesStore.liked.length > 0) {
+                AppServices.userPreferencesStore.liked.forEach( liked => {
+                    included += (`wd:${liked.entity.id} `);
+                })
+            }
+            else included = DEFAULT_LIKED;
+
+            let excluded = '';
+            if (AppServices.userPreferencesStore.disliked.length > 0) {
+                AppServices.userPreferencesStore.disliked.forEach( disliked => {
+                    included += (`wd:${disliked.entity.id} `);
+                })
+            }
+            else excluded = DEFAULT_DISLIKED;
+
+            console.log('excluded: ', excluded);
+            //const newQ = testQuery.replace('?@include', 'wd:Q12280 wd:Q811979 wd:Q3947' ).replace('?@exclude', 'wd:Q3947')
+            const newQ = testQuery.replace('?@include', included ).replace('?@exclude', excluded) //TODO remove replacement/injection bodges and rename testQuery to something proper
             const result = await engine.query(newQ, {
                 sources: [{type: 'sparql', value: this.endpoint.value}], //TODO unbodge
                 initialBindings: new (Bindings as any)({
@@ -200,6 +231,11 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
 
                     // We can resolve once all results have been read.
                     result.bindingsStream.on('end', () => {
+                        AppServices.notificationStore.pushNotification({
+                            title: 'Map updated!',
+                            description: `Fetched ${collection.features.length} items from WikiData`,
+                            type: NotificationType.TOAST
+                        })
                         resolve(collection);
                     });
 

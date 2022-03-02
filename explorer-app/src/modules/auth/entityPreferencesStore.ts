@@ -56,6 +56,10 @@ export const getUserPreferencesStore = defineStore('userPreferencesStore', {
                 if (rating.value <= state.likedThreshold) entities.push(rating);
             })
             return entities;
+        },
+
+        hash: state => {
+            return JSON.stringify(state.ratingMap);
         }
     },
 

@@ -1,5 +1,6 @@
-package com.curioustrout.explorer.gis.geo;
+package com.curioustrout.explorer.core.query.types;
 
+import com.curioustrout.explorer.core.geo.GeoPosition;
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;

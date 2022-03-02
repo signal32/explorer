@@ -1,7 +1,7 @@
 package com.curioustrout.explorer.gis.service;
 
-import com.curioustrout.explorer.gis.geo.Area;
-import com.curioustrout.explorer.gis.geo.GeoPosition;
+import com.curioustrout.explorer.core.geo.Area;
+import com.curioustrout.explorer.core.geo.GeoPosition;
 import com.curioustrout.explorer.gis.model.LocationInfo;
 import com.curioustrout.explorer.gis.model.SimpleLocationInfo;
 import com.curioustrout.explorer.gis.service.query.LocationInformationFetcher;

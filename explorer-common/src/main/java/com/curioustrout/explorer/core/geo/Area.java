@@ -1,4 +1,4 @@
-package com.curioustrout.explorer.gis.geo;
+package com.curioustrout.explorer.core.geo;
 
 public class Area implements Comparable<Area>{
 
@@ -30,6 +30,22 @@ public class Area implements Comparable<Area>{
 
     public void setSw(GeoPosition sw) {
         this.sw = sw;
+    }
+
+    public GeoPosition se() {
+        return new GeoPosition(sw.lat, ne.lng);
+    }
+
+    public GeoPosition nw() {
+        return new GeoPosition(ne.lat, sw.lng);
+    }
+
+    public double breadth() {
+        return getSw().distance(se());
+    }
+
+    public double height() {
+        return getSw().distance(nw());
     }
 
     // TODO: 12/02/2022 Fix midpoint calculation for large areas 

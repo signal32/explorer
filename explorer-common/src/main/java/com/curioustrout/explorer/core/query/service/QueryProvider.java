@@ -9,6 +9,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
@@ -28,20 +29,27 @@ public class QueryProvider {
 
     private final ResourceLoader resourceLoader;
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryProvider.class);
-    //todo fix value injection
-    //@Value("${explorer.gis.query-dir}")
-    private String queryLocationPattern = "classpath:sparql/**/*.sparql";
-    //todo fix value injection
-    //@Value("${explorer.gis.prefix-uri-file}")
-    private String prefixDefinitionPath = "classpath:sparql.properties";
+    private final String queryLocationPattern;
+    private final String prefixDefinitionPath;
 
     private final Map<String, ParameterizedSparqlString> queryStrings;
     private final Model model = ModelFactory.createDefaultModel();
 
+    @Value("${explorer.core.query.sparql-endpoint}")
+    private String test;
 
-    public QueryProvider(ResourceLoader resourceLoader) throws IOException {
+    public QueryProvider(
+            ResourceLoader resourceLoader,
+            @Value("${explorer.core.query.query-dir}") String queryLocationPattern,
+            @Value("${explorer.core.query.prefix-uri-file}") String prefixDefinitionPath)
+            throws IOException {
+
+        this.queryLocationPattern = queryLocationPattern;
+        this.prefixDefinitionPath = prefixDefinitionPath;
         this.resourceLoader = resourceLoader;
         this.queryStrings = new HashMap<>();
+
+        LOGGER.info("Loading queries from {} with prefixes from {}", queryLocationPattern, prefixDefinitionPath);
 
         var properties = new Properties();
         properties.load(resourceLoader.getResource(prefixDefinitionPath).getInputStream());

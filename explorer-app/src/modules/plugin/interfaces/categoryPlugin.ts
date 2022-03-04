@@ -1,7 +1,7 @@
 import {CategoryEntity} from '@/modules/geo/entity';
 
 /**
- * A Category Plugin provides a set of categories which can be
+ * A Category BasePlugin provides a set of categories which can be
  * applied to a {@link CategoryEntity}.
  */
 export interface CategoryPlugin {

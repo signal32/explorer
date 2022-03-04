@@ -1,7 +1,24 @@
-import {getUserStore} from '@/modules/auth/userStore';
+import {getUserStore, userService, UserService} from '@/modules/auth/userStore';
 import {getUserPreferencesStore} from '@/modules/auth/entityPreferencesStore';
 import {useStore} from '@/modules/app/storage';
-import {getNotificationStore} from '@/modules/app/notificationStore';
+import {getNotificationStore, notificationService, NotificationService} from '@/modules/app/notificationStore';
+import {recommendationService, RecommendService} from '@/modules/app/recommendationService';
+import {PluginService} from '@/modules/plugin/pluginManager';
+import {Storage} from '@ionic/storage';
+
+export interface Services {
+    userService: UserService,
+    recommendationService: PluginService<RecommendService>,
+    notificationService: NotificationService,
+    store: Storage,
+}
+
+export const services: Services = {
+    store: useStore,
+    notificationService: notificationService,
+    recommendationService: recommendationService,
+    userService: userService
+}
 
 /**
  * Singleton provider of central application services.

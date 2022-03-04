@@ -47,3 +47,11 @@ export const getNotificationStore = defineStore('notificationStore', {
         }
     }
 })
+
+export interface NotificationService {
+    pushNotification(notification: Notification): any,
+}
+
+export const notificationService: NotificationService = {
+    pushNotification: getNotificationStore().pushNotification
+}

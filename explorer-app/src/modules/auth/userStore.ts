@@ -4,14 +4,14 @@ import User from '@/modules/auth/user';
 /**
  * Structure of a store which contains core {@link User} and authentication information.
  */
-interface UserStoreState {
+/*interface UserStoreState {
     loggedIn: boolean
     user?: User,
     token?: string,
     refreshToken?: string,
-}
+}*/
 
-const defaultState:UserStoreState = {
+const defaultState:UserState = {
     loggedIn: false,
     user: undefined,
     token: undefined,
@@ -28,7 +28,7 @@ export const getUserStore = defineStore('userStore', {
     },
 
     actions: {
-        setUser(user: UserStoreState) {
+        setUser(user: UserState) {
             this.loggedIn = user.loggedIn
             this.user = user.user;
             this.token = user.token;
@@ -42,3 +42,22 @@ export const getUserStore = defineStore('userStore', {
         }
     }
 })
+
+interface UserState {
+    loggedIn: boolean
+    user?: User,
+    token?: string,
+    refreshToken?: string,
+}
+
+export interface UserService {
+    userState: UserState,
+    setUser(user: UserState): any,
+    clearUser(): any
+}
+
+export const userService: UserService = {
+    userState: getUserStore().$state,
+    clearUser: getUserStore().clearUser,
+    setUser: getUserStore().setUser
+}

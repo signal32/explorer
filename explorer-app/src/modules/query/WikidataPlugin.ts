@@ -81,7 +81,7 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
 
         definePlugin(): PluginConfig {
             return {
-                friendlyName: 'WikiData Plugin',
+                friendlyName: 'WikiData BasePlugin',
                 params: [
                     this.endpoint,
                 ]

@@ -56,8 +56,10 @@ export interface UserService {
     clearUser(): any
 }
 
-export const userService: UserService = {
-    userState: getUserStore().$state,
-    clearUser: getUserStore().clearUser,
-    setUser: getUserStore().setUser
+export function getUserService(): UserService {
+    return {
+        userState: getUserStore().$state,
+        clearUser: getUserStore().clearUser,
+        setUser: getUserStore().setUser
+    }
 }

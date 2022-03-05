@@ -52,6 +52,9 @@ export interface NotificationService {
     pushNotification(notification: Notification): any,
 }
 
-export const notificationService: NotificationService = {
-    pushNotification: getNotificationStore().pushNotification
+export function getNotificationService(): NotificationService {
+    return {
+        pushNotification: getNotificationStore().pushNotification
+    }
+
 }

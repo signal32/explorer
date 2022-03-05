@@ -1,7 +1,7 @@
-import {getUserStore, userService, UserService} from '@/modules/auth/userStore';
+import {getUserService, getUserStore, UserService} from '@/modules/auth/userStore';
 import {getUserPreferencesStore} from '@/modules/auth/entityPreferencesStore';
 import {useStore} from '@/modules/app/storage';
-import {getNotificationStore, notificationService, NotificationService} from '@/modules/app/notificationStore';
+import {getNotificationService, getNotificationStore, NotificationService} from '@/modules/app/notificationStore';
 import {recommendationService, RecommendService} from '@/modules/app/recommendationService';
 import {PluginService} from '@/modules/plugin/pluginManager';
 import {Storage} from '@ionic/storage';
@@ -15,9 +15,9 @@ export interface Services {
 
 export const services: Services = {
     store: useStore,
-    notificationService: notificationService,
+    notificationService: getNotificationService(),
     recommendationService: recommendationService,
-    userService: userService
+    userService: getUserService(),
 }
 
 /**

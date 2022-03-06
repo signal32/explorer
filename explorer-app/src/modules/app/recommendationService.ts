@@ -12,7 +12,7 @@ export const recommendationService = new PluginService<RecommendService>((plugin
         async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
             const entities: Entity[] = []
             for (const plugin of plugins) {
-                const res = await plugin.recommendForEntity(entity, limit);
+                const res = await plugin.methods.recommendForEntity(entity, limit);
                 entities.push(...res);
             }
             return entities;
@@ -21,7 +21,7 @@ export const recommendationService = new PluginService<RecommendService>((plugin
         async similarity(first: Entity, second: Entity): Promise<number> {
             const similarity: number[] = []
             for (const plugin of plugins) {
-                const res = await plugin.similarity(first, second);
+                const res = await plugin.methods.similarity(first, second);
                 similarity.push(res);
             }
             return mean(similarity);

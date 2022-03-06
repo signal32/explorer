@@ -1,20 +1,31 @@
 import {RecommendService} from '@/modules/app/recommendationService';
 import {Entity} from '@/modules/geo/entity';
-import {Plugin, PluginRunner} from '@/modules/plugin/pluginManager';
+import {Plugin} from '@/modules/plugin/pluginManager';
 
-export const wikidataReccomendPlugin = new PluginRunner<RecommendService>({
-    init(services, instance) {
-        services.recommendationService.register(instance);
-    },
-    defineMethods(config) {
-        return {
-            recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-                return Promise.resolve([]);
-            },
 
-            similarity(first: Entity, second: Entity): Promise<number> {
-                return Promise.resolve(0);
+
+interface WikidataRecommendPlugin extends RecommendService, Plugin {
+    endpoint?: string,
+}
+
+export function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
+    return {
+
+        initialise(services) {
+            services.recommendationService.register(this);
+
+            return {
+                metadata: {name: 'WikiData Recommendation Plugin'},
+                configVariables: () => [{name: 'endpoint', value: this.endpoint, default: "yeet"}]
             }
+        },
+
+        recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+            return Promise.resolve([]);
+        },
+
+        similarity(first: Entity, second: Entity): Promise<number> {
+            return Promise.resolve(0);
         }
     }
-})
+}

@@ -1,92 +1,99 @@
 import {Services, services} from '@/modules/app/services';
-import {Entity} from '@/modules/geo/entity';
+
+export interface PluginManager {
+    loadPlugin: (plugin: Plugin) => void,
+    unloadPlugin: (name: string) => boolean,
+    getPluginParams: () => Map<string, PluginParam[]>,
+    setPluginParam: (scope: string, param: PluginParam) => void,
+    setPluginRemoveCallback: (name: string, cb: (name: string) => void) => void,
+}
 
 export interface Plugin {
-    initialise(services: Services): PluginConfig | void,
+    initialise(services: Services): PluginConfig,
 }
 
-export interface PluginConfig {
-    options: Map<string, string>,
+interface PluginConfig {
+    metadata: PluginMeta,
+    configVariables?: () => PluginParam[];
 }
 
-const defaultPluginConfig: PluginConfig = {
-    options: new Map<string, string>()
+interface PluginParam {
+    name: string,
+    value: string | number | undefined,
+    default?: string | number
 }
 
-
-export function loadPlugins<C>(plugins: PluginConstructor<C>[]) {
-/*    for (const plugin of plugins) {
-
-    }*/
+interface PluginMeta {
+    name: string,
+    description?: string,
+    version?: string
 }
 
-interface Test<C> {
-    defineMethods: (plugins: PluginRunner<C>[]) => C
+const store = services.store;
+const storePluginPrefix = 'explorer-plugin-';
+
+
+export class AppPluginManager implements PluginManager {
+
+    private loadedPlugins = new Map<string, {instance: Plugin, config: PluginConfig, destroyCb: ((name: string) => void)[]}>();
+
+    constructor(private services: Services) { }
+
+    async loadPlugin(plugin: Plugin) {
+        const config = plugin.initialise(this.services);
+        await this.bindVariables(config);
+        this.loadedPlugins.set(config.metadata.name, {instance: plugin, config, destroyCb: []});
+    }
+
+    unloadPlugin(name: string): boolean {
+        return false;
+    }
+
+    getPluginParams(): Map<string, PluginParam[]> {
+        const configMap = new Map<string, PluginParam[]>();
+        this.loadedPlugins.forEach(p => {
+            if (p.config.configVariables) {
+                configMap.set(p.config.metadata.name, p.config.configVariables())
+            }
+        });
+        return configMap;
+    }
+
+    async setPluginParam(scope: string, param: PluginParam) {
+        await this.services.store.set(storePluginPrefix + scope, param);
+
+        // If the plugin is active then re-bind it's parameters so it 'sees' the new value
+        const pluginConfig = this.loadedPlugins.get(scope)?.config;
+        if (pluginConfig) {
+            await this.bindVariables(pluginConfig);
+        }
+    }
+
+    public setPluginRemoveCallback(name: string, cb: (name: string) => void) {
+        this.loadedPlugins.get(name)?.destroyCb.push(cb);
+    }
+
+    private async bindVariables(config: PluginConfig) {
+        const params = (config.configVariables) ? config.configVariables() : [];
+
+        for (const param of params) {
+            const value = await this.services.store.get(storePluginPrefix + param.name);
+            param.value = (value) ? value : param.default;
+        }
+    }
 }
 
 export class PluginService<Contract> {
-    private plugins: PluginRunner<Contract>[] = [];
+    private plugins: (Contract & Plugin)[] = [];
     public readonly methods: Contract;
 
-    constructor(defineMethods: (plugins: PluginRunner<Contract>[]) => Contract) {
+    constructor(defineMethods: (plugins: Contract[]) => Contract) {
         this.methods = defineMethods(this.plugins);
     }
 
-    public register(plugin: PluginRunner<Contract>) {
+    public register(plugin: Contract & Plugin) {
+        //manager.setPluginRemoveCallback(plugin, (name) => this.plugins.findIndex())
         this.plugins.push(plugin);
     }
 
 }
-
-export class PluginRunner<Contract> {
-    private config: PluginConfig;
-    public methods: Contract;
-
-    constructor(constructor: PluginConstructor<Contract>) {
-        this.config = constructor.init(services, this) || defaultPluginConfig;
-        this.methods = constructor.defineMethods(this.config);
-    }
-}
-
-interface PluginConstructor<C> {
-    init(services: Services, instance: PluginRunner<C>): PluginConfig | void,
-    defineMethods(config: PluginConfig): C,
-}
-
-
-//demo
-
-interface Interface {
-    recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]>,
-    similarity(first: Entity, second: Entity): Promise<number>,
-}
-
-const service = new PluginService((plugins) => {
-    return {
-        recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-            return Promise.resolve([]);
-        },
-
-        similarity(first: Entity, second: Entity): Promise<number> {
-            return Promise.resolve(0);
-        }
-    }
-})
-
-const runner = new PluginRunner({
-    init(services, instance) {
-         service.register(instance);
-    },
-    defineMethods(config) {
-        return {
-            recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-                return Promise.resolve([]);
-            },
-
-            similarity(first: Entity, second: Entity): Promise<number> {
-                return Promise.resolve(0);
-            }
-        }
-    }
-});
-

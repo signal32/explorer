@@ -38,12 +38,12 @@
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
-import {getUserStore} from '@/modules/auth/userStore';
+import {userService} from '@/modules/auth/userService';
 
 export default defineComponent({
     setup() {
-        const userStore = getUserStore();
-        const user = ref(userStore?.user || {});
+        const userStore = userService;
+        const user = ref(userStore.userState?.user || {});
 
         return { user }
         

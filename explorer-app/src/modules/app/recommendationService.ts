@@ -7,24 +7,28 @@ export interface RecommendService {
     similarity(first: Entity, second: Entity): Promise<number>,
 }
 
-export const recommendationService = new PluginService<RecommendService>((plugins) => {
-    return {
-        async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-            const entities: Entity[] = []
-            for (const plugin of plugins) {
-                const res = await plugin.methods.recommendForEntity(entity, limit);
-                entities.push(...res);
-            }
-            return entities;
-        },
+function defineRecommendationService() {
+    return new PluginService<RecommendService>((plugins) => {
+        return {
+            async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+                const entities: Entity[] = []
+                for (const plugin of plugins) {
+                    const res = await plugin.recommendForEntity(entity, limit);
+                    entities.push(...res);
+                }
+                return entities;
+            },
 
-        async similarity(first: Entity, second: Entity): Promise<number> {
-            const similarity: number[] = []
-            for (const plugin of plugins) {
-                const res = await plugin.methods.similarity(first, second);
-                similarity.push(res);
+            async similarity(first: Entity, second: Entity): Promise<number> {
+                const similarity: number[] = []
+                for (const plugin of plugins) {
+                    const res = await plugin.similarity(first, second);
+                    similarity.push(res);
+                }
+                return mean(similarity);
             }
-            return mean(similarity);
         }
-    }
-})
+    })
+}
+
+export const recommendationService = defineRecommendationService();

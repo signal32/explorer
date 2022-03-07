@@ -1,7 +1,7 @@
 import {pinia} from '@/main';
 import User from '@/modules/auth/user';
-import {getUserStore} from '@/modules/auth/userStore';
-import {getNotificationStore} from '../app/notificationStore';
+import {userService} from '@/modules/auth/userService';
+import {notificationService} from '../app/notificationService';
 import {createAxios} from './setup';
 import {NotificationType} from '../app/notification';
 
@@ -45,8 +45,7 @@ class AuthService {
                 if (token) {
                     console.log(`Authentication success: Token = ${token}\nRefresh Token = ${refreshToken}`);
                     user = await this.userInfo(token)
-                    const store = getUserStore(pinia);
-                    store.setUser({ user, token, refreshToken, loggedIn: true});
+                    userService.setUser({ user, token, refreshToken, loggedIn: true});
                 }
                 return user;
             })
@@ -60,12 +59,12 @@ class AuthService {
      * Ends the current session
      */
     public logout() {
-        const token = getUserStore().refreshToken;
+        const token = userService.userState.refreshToken;
         return instance
             .post(LOGOUT_PATH, `client_id=${CLIENT_ID}&refresh_token=${token}`)
             .then( res => {
                 console.log("logged out");
-                getUserStore().clearUser();
+                userService.clearUser();
             })
             .catch( err => {
                 console.log(`Logout failed: ${err}`)
@@ -105,12 +104,11 @@ class AuthService {
     }
 
     public refreshLogin(){
-        const store = getUserStore();
         console.log("refreshing token");
         const params = new URLSearchParams();
         params.append('client_id', CLIENT_ID);
         //params.append('username', store.user?.username || '');
-        params.append('refresh_token', store.refreshToken || '');
+        params.append('refresh_token', userService.userState.refreshToken || '');
         params.append('grant_type', 'refresh_token');
 
         return instance
@@ -121,16 +119,14 @@ class AuthService {
                 if (token) {
                     console.log(`Re-authentication success: Token = ${token}\nRefresh Token = ${refreshToken}`);
                     const user = await this.userInfo(token)
-                    const store = getUserStore(pinia);
-                    store.refreshToken = refreshToken
-                    store.setUser({ user: user, token, refreshToken, loggedIn: true});
+                    userService.setUser({ user: user, token, refreshToken, loggedIn: true});
                     return user;
                 }
                 else return {};
             })
             .catch( err => {
                 console.log(`Re-authentication failed: ${err}`);
-                getNotificationStore().pushNotification({title: "Authentication failed", type: NotificationType.TOAST});
+                notificationService.pushNotification({title: "Authentication failed", type: NotificationType.TOAST});
                 throw err;
             })
 

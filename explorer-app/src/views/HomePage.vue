@@ -59,7 +59,7 @@ import LoginStatus from '@/components/LoginStatus.vue'
 import {defineComponent} from 'vue';
 import {useRouter} from 'vue-router';
 import router from '@/router';
-import {getUserStore} from '@/modules/auth/userStore';
+import {userService} from '@/modules/auth/userService';
 import AuthService from '@/modules/auth/authService';
 import {storeToRefs} from 'pinia';
 
@@ -73,10 +73,9 @@ export default defineComponent({
 
     setup() {
         const router = useRouter();
-        const store = getUserStore();
-        const {loggedIn, user, token } = storeToRefs(store);
+        const store = userService;
 
-        return {router, store, loggedIn, user, token, map, person, compass};
+        return {router, store, map, person, compass};
     },
 
     methods: {

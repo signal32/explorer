@@ -7,7 +7,7 @@ import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {GeoEntity, DetailsEntity, Entity, CategoryEntity} from '@/modules/geo/entity';
 import testQuery from './sparql/testQuery.sparql';
 import {AppPlugin, PluginConfig, PluginParameter} from '@/modules/plugin/interfaces/pluginConfiguration';
-import {AppServices} from '@/modules/app/services';
+import {AppServices, services} from '@/modules/app/services';
 import {CategoryPlugin} from '@/modules/plugin/interfaces/categoryPlugin';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
@@ -113,7 +113,7 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
             }
 
             const storageKey = 'categories_cache';
-            this.categories = await AppServices.commonStore.get(storageKey) as CategoryEntity[];
+            this.categories = await services.store.get(storageKey) as CategoryEntity[];
 
             if (this.categories) {
                 return Promise.resolve(this.categories);
@@ -141,7 +141,7 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
 
                         // Should wait and be resolved only when all bindings have been processed
                         result.bindingsStream.on('end', () => {
-                            AppServices.commonStore.set(storageKey, this.categories)
+                            services.store.set(storageKey, this.categories)
                             resolve(this.categories || []);
                         });
 
@@ -231,7 +231,7 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
 
                     // We can resolve once all results have been read.
                     result.bindingsStream.on('end', () => {
-                        AppServices.notificationStore.pushNotification({
+                        services.notificationService.pushNotification({
                             title: 'Map updated!',
                             description: `Fetched ${collection.features.length} items from WikiData`,
                             type: NotificationType.TOAST

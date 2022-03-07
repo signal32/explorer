@@ -20,21 +20,21 @@
                     <ion-item>
                         <ion-label>
                             User Details
-                            <p>{{store.user}}</p>
-                            <p>loggedIn: {{store.loggedIn}}</p>
+                            <p>{{store.userState.user}}</p>
+                            <p>loggedIn: {{store.userState.loggedIn}}</p>
                             <button @click="reAuthUser">Re-Authenticate</button>
                         </ion-label>
                     </ion-item>
                     <ion-item>
                         <ion-label class="ion-text-wrap">
                             Access Token
-                            <p>{{store.token}}</p>
+                            <p>{{store.userState.token}}</p>
                         </ion-label>
                     </ion-item>
                     <ion-item>
                         <ion-label class="ion-text-wrap">
                             Refresh Token
-                            <p>{{store.refreshToken}}</p>
+                            <p>{{store.userState.refreshToken}}</p>
                         </ion-label>
                     </ion-item>
                 </ion-list>
@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, ref} from 'vue';
 import {
     IonAccordion,
     IonAccordionGroup,
@@ -81,23 +81,24 @@ import {
     IonTitle,
     IonToolbar
 } from '@ionic/vue';
-import {getUserStore} from '@/modules/auth/userStore';
+import {userService} from '@/modules/auth/userService';
 import AuthService from '@/modules/auth/authService';
-import {getNotificationStore} from '@/modules/app/notificationStore';
+import {notificationService} from '@/modules/app/notificationService';
 import {NotificationType} from '@/modules/app/notification';
 
 export default defineComponent({
     components: {IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonLabel, IonList, IonItem, IonBackButton, IonAccordion, IonAccordionGroup },
     setup() {
-        const store = getUserStore();
         const env = process.env;
         console.log(env)
+        const store = userService;
 
         async function reAuthUser() {
             AuthService.refreshLogin()
             .then(() => {
-                getNotificationStore().pushNotification({title: "Re-Authentication Success!", type: NotificationType.TOAST});
-            })            
+                notificationService.pushNotification({title: "Re-Authentication Success!", type: NotificationType.TOAST});
+                console.log(userService.userState.user)
+            })
         }
 
         return {store, env, reAuthUser};

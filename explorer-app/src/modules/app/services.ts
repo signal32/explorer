@@ -1,8 +1,8 @@
-import {getUserService, getUserStore, UserService} from '@/modules/auth/userStore';
+import {UserService, userService } from '@/modules/auth/userService';
 import {getUserPreferencesStore} from '@/modules/auth/entityPreferencesStore';
-import {useStore} from '@/modules/app/storage';
-import {getNotificationService, getNotificationStore, NotificationService} from '@/modules/app/notificationStore';
-import {recommendationService, RecommendService} from '@/modules/app/recommendationService';
+import { useStore } from '@/modules/app/storage';
+import { notificationService, NotificationService } from '@/modules/app/notificationService';
+import { RecommendService, recommendationService } from '@/modules/app/recommendationService';
 import {PluginService} from '@/modules/plugin/pluginManager';
 import {Storage} from '@ionic/storage';
 
@@ -15,10 +15,11 @@ export interface Services {
 
 export const services: Services = {
     store: useStore,
-    notificationService: getNotificationService(),
+    notificationService: notificationService,
     recommendationService: recommendationService,
-    userService: getUserService(),
-}
+    userService: userService,
+};
+
 
 /**
  * Singleton provider of central application services.
@@ -27,22 +28,8 @@ export const services: Services = {
 export const AppServices = {
 
     /**
-     * User details storage and operations.
-     */
-    userStore: getUserStore(),
-
-    /**
      * Global user preferences and operations.
      */
     userPreferencesStore: getUserPreferencesStore(),
 
-    /**
-     * Storage and service for sending and reading notifications.
-     */
-    notificationStore: getNotificationStore(),
-
-    /**
-     * Key-Value store for use by any service.
-     */
-    commonStore: useStore,
 }

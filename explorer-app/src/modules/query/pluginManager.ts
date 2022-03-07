@@ -5,6 +5,7 @@ import {FeatureCollection, Geometry} from 'geojson';
 import {GeoEntity, DetailsEntity} from '@/modules/geo/entity';
 import {AppServices} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';
+import {notificationService} from '@/modules/app/notificationService';
 
 
 interface QuadInfo {
@@ -56,7 +57,7 @@ export function defineQueryPluginManager(plugins: IQueryPlugin[]): QueryPluginMa
                 console.log(JSON.stringify(AppServices.userPreferencesStore.liked))
                 // Plugins are called to update quads which have been newly created and are still empty.
                 if (!quad.value || quad.value?.categoriesHash != JSON.stringify(AppServices.userPreferencesStore.liked)) {
-                    AppServices.notificationStore.pushNotification({
+                    notificationService.pushNotification({
                        title: 'Updating map information from WikiData',
                         description: 'This may take some time ☕',
                         type: NotificationType.TOAST

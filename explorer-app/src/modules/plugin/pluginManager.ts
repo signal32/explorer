@@ -29,7 +29,6 @@ interface PluginMeta {
     version?: string
 }
 
-const store = services.store;
 const storePluginPrefix = 'explorer-plugin-';
 
 

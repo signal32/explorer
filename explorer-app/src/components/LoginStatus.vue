@@ -29,19 +29,19 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import {IonAvatar, IonButton, IonCol, IonItem, IonList, IonListHeader, IonPopover, IonRow} from '@ionic/vue';
-import {getUserStore} from '@/modules/auth/userStore';
+import {userService} from '@/modules/auth/userService';
 import AuthService from '@/modules/auth/authService';
 import {useRouter} from 'vue-router';
 import router from '@/router';
-import {getNotificationStore} from '@/modules/app/notificationStore'
+import {notificationService} from '@/modules/app/notificationService'
 import {NotificationType} from '@/modules/app/notification'
 
 export default defineComponent({
     components: {IonAvatar, IonCol, IonRow, IonButton, IonPopover, IonList, IonListHeader, IonItem},
     setup() {
-        const store = getUserStore();
+        const store = userService;
         const router = useRouter();
-        const notificationStore = getNotificationStore();
+        const notificationStore = notificationService;
 
         function logout() {
             AuthService.logout()

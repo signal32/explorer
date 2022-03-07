@@ -56,8 +56,8 @@ import {
 } from '@ionic/vue';
 import {analytics, bookmarkOutline, pencilOutline} from 'ionicons/icons';
 import {defineComponent} from 'vue';
-import {getUserStore} from '@/modules/auth/userStore';
-import {getNotificationStore} from '@/modules/app/notificationStore';
+import {userService} from '@/modules/auth/userService';
+import {notificationService} from '@/modules/app/notificationService';
 import {NotificationType} from '@/modules/app/notification';
 import {createAxios} from '@/modules/auth/setup';
 
@@ -68,8 +68,8 @@ export default defineComponent({
 
     setup() {
 
-        const userStore = getUserStore();
-        const notificationStore = getNotificationStore();
+        const userStore = userService;
+        const notificationStore = notificationService;
         async function notImplementedAlert() {
           const axios = createAxios({
               baseURL: "http://10.1.0.20:8081/",
@@ -77,7 +77,7 @@ export default defineComponent({
             });
 
           const config = {
-              headers: { Authorization: `Bearer ${userStore.token}` }
+              headers: { Authorization: `Bearer ${userStore.userState?.token}` }
           };
           axios.post("public/user/bio/", prompt('Type here'), config)
           .then(() => {

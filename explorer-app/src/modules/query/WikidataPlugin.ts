@@ -218,7 +218,7 @@ export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
                     // This is faster than awaiting the entire result set.
                     result.bindingsStream.on('data', b => {
                         collection.features.push(asFeature({
-                            id: 'not implemented (from WikiDataPlugin.ts',
+                            id: wikidataIdFromUrl(b.get('?subject').value),
                             position: wktLiteralToLatLng(b.get('?subjectLocation').value),
                             category: {
                                 name: b.get('?subjectTypeLabel').value,

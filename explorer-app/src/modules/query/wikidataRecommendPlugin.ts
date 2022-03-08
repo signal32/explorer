@@ -1,8 +1,7 @@
 import {RecommendService} from '@/modules/app/recommendationService';
 import {Entity} from '@/modules/geo/entity';
 import {Plugin} from '@/modules/plugin/pluginManager';
-import {ref} from 'vue';
-
+import {createAxios} from '@/modules/auth/setup';
 
 
 interface WikidataRecommendPlugin extends RecommendService, Plugin {
@@ -11,9 +10,13 @@ interface WikidataRecommendPlugin extends RecommendService, Plugin {
 
 const endpoint = {
     name: 'endpoint',
-    value: undefined,
-    default: 'http://yeet.com'
+    value: '',
+    default: 'http://10.1.0.20:8087/'
 }
+
+const axios = createAxios({
+    timeout: 1500,
+})
 
 function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
     return {
@@ -33,7 +36,19 @@ function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
         },
 
         recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-            return Promise.resolve([]);
+            console.log('hello from wikidatarecommendplugin!');
+
+            return axios.get(endpoint.value + `public/recommend?entity=${entity.id}&limit=50` )
+                .then(res => {
+                    console.log(res.data);
+                    const entities: Entity[] = [];
+                    res.data.forEach((i: any) => entities.push({
+                        id: i, name: 'unnamed ' + i
+                    }))
+                    return entities;
+                })
+
+            //return Promise.resolve([entity]);
         },
 
         similarity(first: Entity, second: Entity): Promise<number> {

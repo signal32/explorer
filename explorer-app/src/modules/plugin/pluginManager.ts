@@ -17,6 +17,7 @@ export interface Plugin {
 interface PluginConfig {
     metadata: PluginMeta,
     configVariables?: () => PluginParam[];
+    setConfigVariable?: (param: PluginParam) => void,
 }
 
 interface PluginParam {

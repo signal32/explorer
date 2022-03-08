@@ -48,9 +48,10 @@
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>
-
+                <p>id = {{selectedEntityAbstractRef.id}}</p>
                 <h6>Category:</h6>
                 <p>{{selectedEntityAbstractRef.category}}</p>
+                <recommend-block :entity="selectedEntityAbstractRef"></recommend-block>
             </ion-content>
         </ion-modal>
 
@@ -85,6 +86,7 @@ import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {GeoEntity} from '@/modules/geo/entity';
 import MapOptions from '@/components/MapOptions.vue';
+import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
 
 const defaultAbstract: GeoEntity = {
     id: 'unidentified',
@@ -93,7 +95,8 @@ const defaultAbstract: GeoEntity = {
 }
 
 export default defineComponent({
-    components: { MapOptions, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
+    components: {
+        RecommendBlock, MapOptions, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
         IonFabButton, IonIcon, IonModal, IonButtons, MapView, IonSearchbar, IonCol, IonRow,
     },
 
@@ -125,7 +128,7 @@ export default defineComponent({
                 selectedEntityAbstractRef.value = item;
         }
 
-        const optionsModalOpen = ref(true);
+        const optionsModalOpen = ref(false);
 
         const isMenuOpen = ref('closed');
 

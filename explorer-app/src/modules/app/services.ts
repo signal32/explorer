@@ -6,6 +6,7 @@ import { RecommendService, recommendationService } from '@/modules/app/recommend
 import {AppPluginManager, PluginManager, PluginService} from '@/modules/plugin/pluginManager';
 import {Storage} from '@ionic/storage';
 import {wikidataRecommendPlugin} from '@/modules/query/wikidataRecommendPlugin';
+import {wembedderPlugin} from '@/modules/plugin/wembedderPlugin';
 
 export interface Services {
     userService: UserService,
@@ -16,7 +17,8 @@ export interface Services {
 }
 
 const defaultPlugins = [
-    wikidataRecommendPlugin
+    wikidataRecommendPlugin,
+    wembedderPlugin,
 ]
 
 function defineServices(): Services {

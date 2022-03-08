@@ -3,9 +3,10 @@ import {Services, services} from '@/modules/app/services';
 export interface PluginManager {
     loadPlugin: (plugin: Plugin) => void,
     unloadPlugin: (name: string) => boolean,
-    getPluginParams: () => Map<string, PluginParam[]>,
+    getPluginParams: (name: string) => PluginParam[],
     setPluginParam: (scope: string, param: PluginParam) => void,
     setPluginRemoveCallback: (name: string, cb: (name: string) => void) => void,
+    getPluginConfigs: () => PluginConfig[],
 }
 
 export interface Plugin {
@@ -36,26 +37,34 @@ export class AppPluginManager implements PluginManager {
 
     private loadedPlugins = new Map<string, {instance: Plugin, config: PluginConfig, destroyCb: ((name: string) => void)[]}>();
 
-    constructor(private services: Services) { }
+    constructor(private services: Services) {
+        console.log('Plugin Manager loaded with services:', services);
+    }
 
     async loadPlugin(plugin: Plugin) {
-        const config = plugin.initialise(this.services);
-        await this.bindVariables(config);
-        this.loadedPlugins.set(config.metadata.name, {instance: plugin, config, destroyCb: []});
+        try{
+            const config = plugin.initialise(this.services);
+            await this.bindVariables(config);
+            this.loadedPlugins.set(config.metadata.name, {instance: plugin, config, destroyCb: []});
+            console.log(`Loaded plugin: name: ${config.metadata.name}, version: ${config.metadata.version || 'undefined'}`)
+        }
+        catch (e) {
+            console.error('Plugin load failed for plugin: ', plugin);
+        }
     }
 
     unloadPlugin(name: string): boolean {
         return false;
     }
 
-    getPluginParams(): Map<string, PluginParam[]> {
-        const configMap = new Map<string, PluginParam[]>();
-        this.loadedPlugins.forEach(p => {
-            if (p.config.configVariables) {
-                configMap.set(p.config.metadata.name, p.config.configVariables())
+    getPluginParams(name: string): PluginParam[] {
+        if (name) {
+            const config = this.loadedPlugins.get(name)?.config;
+            if (config && config.configVariables) {
+               return config.configVariables();
             }
-        });
-        return configMap;
+        }
+        return [];
     }
 
     async setPluginParam(scope: string, param: PluginParam) {
@@ -70,6 +79,12 @@ export class AppPluginManager implements PluginManager {
 
     public setPluginRemoveCallback(name: string, cb: (name: string) => void) {
         this.loadedPlugins.get(name)?.destroyCb.push(cb);
+    }
+
+    public getPluginConfigs() {
+        const configs: PluginConfig[] = []
+        this.loadedPlugins.forEach(c => configs.push(c.config));
+        return configs;
     }
 
     private async bindVariables(config: PluginConfig) {

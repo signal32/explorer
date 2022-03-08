@@ -13,7 +13,7 @@
       </ion-toolbar>
     </ion-header>-->
     
-    <ion-content :fullscreen="true ">
+    <ion-content :fullscreen="true " id="main">
 
       <ion-tabs>
         <ion-router-outlet></ion-router-outlet>

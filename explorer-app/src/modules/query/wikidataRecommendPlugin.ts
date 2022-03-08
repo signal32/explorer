@@ -8,15 +8,19 @@ interface WikidataRecommendPlugin extends RecommendService, Plugin {
     endpoint?: string,
 }
 
-export function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
+function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
     return {
 
         initialise(services) {
             services.recommendationService.register(this);
 
             return {
-                metadata: {name: 'WikiData Recommendation Plugin'},
-                configVariables: () => [{name: 'endpoint', value: this.endpoint, default: "yeet"}]
+                metadata: {
+                    name: 'WikiData Recommendation Plugin',
+                    version: '0.0.1',
+                    description: 'Analyses embeddings within the WikiData knowledge graph to provide recommendations for items that are similar to each other.'
+                },
+                configVariables: () => [{name: 'endpoint', value: this.endpoint, default: "https://query.wikidata.org/sparql"}]
             }
         },
 
@@ -29,3 +33,5 @@ export function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
         }
     }
 }
+
+export const wikidataRecommendPlugin = defineWikidataRecommendPlugin();

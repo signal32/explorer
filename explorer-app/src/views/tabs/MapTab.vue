@@ -14,7 +14,7 @@
                   </div>
               </ion-col>
               <ion-col size="2">
-                  <ion-button shape="round" color="light" @click="router.push('/debug')">
+                  <ion-button shape="round" color="light" @click="router.push('/settings')">
                       <ion-icon slot="icon-only" :icon="settingsOutline"></ion-icon>
                   </ion-button>
               </ion-col>
@@ -85,7 +85,6 @@ import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {GeoEntity} from '@/modules/geo/entity';
 import MapOptions from '@/components/MapOptions.vue';
-import {useRouter} from 'vue-router';
 
 const defaultAbstract: GeoEntity = {
     id: 'unidentified',
@@ -120,6 +119,7 @@ export default defineComponent({
         const isModalOpenRef = ref(false);
         const selectedEntityAbstractRef = ref<GeoEntity>();
         function setModalOpen(state: boolean, item?: GeoEntity) {
+            isMenuOpen.value = 'open';
             isModalOpenRef.value = state;
             if (item)
                 selectedEntityAbstractRef.value = item;
@@ -127,7 +127,9 @@ export default defineComponent({
 
         const optionsModalOpen = ref(true);
 
-        return { position, move, locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef, router };
+        const isMenuOpen = ref('closed');
+
+        return { isMenuOpen, position, move, locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef, router };
     },
 
 });

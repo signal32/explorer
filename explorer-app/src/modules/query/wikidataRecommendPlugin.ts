@@ -1,11 +1,18 @@
 import {RecommendService} from '@/modules/app/recommendationService';
 import {Entity} from '@/modules/geo/entity';
 import {Plugin} from '@/modules/plugin/pluginManager';
+import {ref} from 'vue';
 
 
 
 interface WikidataRecommendPlugin extends RecommendService, Plugin {
-    endpoint?: string,
+    endpoint?: { value: string },
+}
+
+const endpoint = {
+    name: 'endpoint',
+    value: undefined,
+    default: 'http://yeet.com'
 }
 
 function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
@@ -13,6 +20,7 @@ function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
 
         initialise(services) {
             services.recommendationService.register(this);
+            this.endpoint = {value: 'undefined'};
 
             return {
                 metadata: {
@@ -20,7 +28,7 @@ function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
                     version: '0.0.1',
                     description: 'Analyses embeddings within the WikiData knowledge graph to provide recommendations for items that are similar to each other.'
                 },
-                configVariables: () => [{name: 'endpoint', value: this.endpoint, default: "https://query.wikidata.org/sparql"}]
+                configVariables: () => [endpoint]
             }
         },
 

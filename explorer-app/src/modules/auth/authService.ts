@@ -1,4 +1,3 @@
-import {pinia} from '@/main';
 import User from '@/modules/auth/user';
 import {userService} from '@/modules/auth/userService';
 import {notificationService} from '../app/notificationService';

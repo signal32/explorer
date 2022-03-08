@@ -27,51 +27,56 @@
                         </ion-label>
                     </ion-item>
                     <ion-item v-for="param in getPluginParams(plugin.metadata.name)" :key="param.name">
-                        <ion-label class="ion-text-wrap">
-                            <h3>{{startCase(param.name)}}:</h3>
-                        </ion-label>
-                        <ion-input :placeholder="param.default" v-model="param.value"></ion-input>
-                        <ion-button color="light">Reset</ion-button>
+                        <ion-label position="floating">{{param.name}}</ion-label>
+                        <ion-input :placeholder="param.default" v-model="param.value" @keyup="modified=true"></ion-input>
+                        <ion-button slot="end" color="light" shape="round" @click="param.value = param.default">
+                            <ion-icon :icon="refresh"/>
+                        </ion-button>
                     </ion-item>
                 </ion-list>
             </ion-accordion>
             </ion-accordion-group>
+
+            <ion-fab v-if="modified" vertical="bottom" horizontal="end" slot="fixed">
+                <ion-fab-button>
+                    <ion-icon :icon="save"></ion-icon>
+                </ion-fab-button>
+            </ion-fab>
+
         </ion-content>
     </ion-page>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, reactive, ref} from 'vue';
 import {
     IonAccordion,
     IonAccordionGroup,
     IonButton,
-    IonContent,
+    IonContent, IonFab, IonFabButton, IonIcon,
     IonInput,
     IonItem,
     IonLabel,
     IonList,
     IonPage
 } from '@ionic/vue';
+import {refresh, save} from 'ionicons/icons'
 import StandardHeader from "@/components/headers/StandardHeader.vue";
 import {services} from '@/modules/app/services';
 import {startCase} from 'lodash';
 export default defineComponent({
     name: "PluginMenu",
-    components: {StandardHeader, IonContent, IonPage, IonAccordion, IonItem, IonList, IonLabel, IonAccordionGroup, IonInput, IonButton},
+    components: {StandardHeader, IonContent, IonPage, IonAccordion, IonItem, IonList, IonLabel, IonAccordionGroup, IonInput, IonButton, IonIcon, IonFab, IonFabButton},
     setup() {
-        const plugins = (services?.pluginManager?.getPluginConfigs() || []);
 
+        const plugins = (services?.pluginManager?.getPluginConfigs() || []);
+        const modified = ref(false);
 
         function getPluginParams(name: string) {
-            return services?.pluginManager?.getPluginParams(name) || [];
+            return reactive(services?.pluginManager?.getPluginParams(name) || []);
         }
 
-        function setPluginParam(pluginName: string, paramName: string, value: string) {
-            services?.pluginManager?.setPluginParam(pluginName, {name: paramName, value: value})
-        }
-
-        return {plugins, getPluginParams, startCase}
+        return {plugins, modified, getPluginParams, startCase, refresh, save}
     }
 })
 </script>

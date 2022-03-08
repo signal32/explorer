@@ -1,4 +1,5 @@
 import {Services, services} from '@/modules/app/services';
+import {Ref} from 'vue';
 
 export interface PluginManager {
     loadPlugin: (plugin: Plugin) => void,
@@ -20,8 +21,10 @@ interface PluginConfig {
 
 interface PluginParam {
     name: string,
-    value: string | number | undefined,
-    default?: string | number
+    description?: string,
+    value: number | string | undefined,
+    default?: number | string,
+    options?: number[] | string[],
 }
 
 interface PluginMeta {
@@ -92,7 +95,7 @@ export class AppPluginManager implements PluginManager {
 
         for (const param of params) {
             const value = await this.services.store.get(storePluginPrefix + param.name);
-            param.value = (value) ? value : param.default;
+            param.value = (value != null && true) ? value : param.default;
         }
     }
 }

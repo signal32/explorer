@@ -56,6 +56,22 @@
                 </ion-list>
             </ion-accordion>
 
+            <ion-accordion value="Preferences">
+                <ion-item slot="header">
+                    <ion-label>Preferences</ion-label>
+                </ion-item>
+
+                <ion-list slot="content">
+                    <ion-item>
+                        <ion-label class="ion-text-wrap">
+                            Ratings
+                            <p>{{services.preferenceService.ratingMap}}</p>
+                            <p>{{services.preferenceService.liked}}</p>
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            </ion-accordion>
+
         </ion-accordion-group>
 
 
@@ -85,6 +101,7 @@ import {userService} from '@/modules/auth/userService';
 import AuthService from '@/modules/auth/authService';
 import {notificationService} from '@/modules/app/notificationService';
 import {NotificationType} from '@/modules/app/notification';
+import {services} from '@/modules/app/services';
 
 export default defineComponent({
     components: {IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonLabel, IonList, IonItem, IonBackButton, IonAccordion, IonAccordionGroup },
@@ -101,7 +118,7 @@ export default defineComponent({
             })
         }
 
-        return {store, env, reAuthUser};
+        return {store, env, reAuthUser, services};
     },
 })
 </script>

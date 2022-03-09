@@ -10,7 +10,7 @@ import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
 import {NotificationType} from '@/modules/app/notification';
 import {Plugin, PluginParam} from '@/modules/plugin/pluginManager';
-import {Services, AppServices} from '@/modules/app/services';
+import {Services} from '@/modules/app/services';
 import {CategoryService} from '@/modules/app/categoryService';
 
 const engine = newEngine();
@@ -147,8 +147,8 @@ class WikiDataPlugin implements QueryService, CategoryService, Plugin {
      */
     private computeIncluded(): string {
         let included = '';
-        if (AppServices.userPreferencesStore.liked.length > 0) {
-            AppServices.userPreferencesStore.liked.forEach( liked => {
+        if (this.services && this.services.preferenceService.liked.length > 0) {
+            this.services.preferenceService.liked.forEach( liked => {
                 included += (`wd:${liked.entity.id} `);
             })
         }
@@ -162,8 +162,8 @@ class WikiDataPlugin implements QueryService, CategoryService, Plugin {
      */
     private computeExcluded(): string {
         let excluded = '';
-        if (AppServices.userPreferencesStore.disliked.length > 0) {
-            AppServices.userPreferencesStore.disliked.forEach( disliked => {
+        if (this.services && this.services.preferenceService.disliked.length > 0) {
+            this.services.preferenceService.disliked.forEach( disliked => {
                 excluded += (`wd:${disliked.entity.id} `);
             })
         }

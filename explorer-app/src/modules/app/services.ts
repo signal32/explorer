@@ -1,5 +1,5 @@
 import {UserService, userService } from '@/modules/auth/userService';
-import {getUserPreferencesStore} from '@/modules/auth/entityPreferencesStore';
+import { entityPreferenceService, EntityPreferencesService } from '@/modules/auth/entityPreferencesStore';
 import { useStore } from '@/modules/app/storage';
 import { notificationService, NotificationService } from '@/modules/app/notificationService';
 import { RecommendService, recommendationService } from '@/modules/app/recommendationService';
@@ -14,6 +14,7 @@ import {categoryService, CategoryService} from '@/modules/app/categoryService';
 export interface Services {
     userService:            UserService,
     notificationService:    NotificationService,
+    preferenceService:      EntityPreferencesService,
     store:                  Storage,
     recommendationService:  PluginService<RecommendService>,
     queryService:           PluginService<QueryService>,
@@ -31,6 +32,7 @@ function defineServices(): Services {
     const partialServices: Services = {
         userService:            userService,
         notificationService:    notificationService,
+        preferenceService:      entityPreferenceService,
         store:                  useStore,
         queryService:           queryService,
         recommendationService:  recommendationService,
@@ -47,16 +49,3 @@ function defineServices(): Services {
 }
 
 export const services = defineServices();
-
-/**
- * Singleton provider of central application services.
- * Defines the concrete API available to plugins.
- */
-export const AppServices = {
-
-    /**
-     * Global user preferences and operations.
-     */
-    userPreferencesStore: getUserPreferencesStore(),
-
-}

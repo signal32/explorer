@@ -14,7 +14,7 @@
             </ion-button>
         </ion-col>
     </ion-row>
-    <ion-chip outline color="primary" v-for="category in categories" :key="category.entity.id">
+    <ion-chip outline color="primary" v-for="category in preferencesStore.liked" :key="category.entity.id">
         <ion-icon v-if="category.value >= preferencesStore.likedThreshold" color="success" :icon="includeIcon" @click="preferencesStore.nudge(category.entity, -0.1)"/>
         <ion-icon v-if="category.value < preferencesStore.likedThreshold" color="danger" :icon="excludeIcon" @click="preferencesStore.nudge(category.entity, -0.1)"/>
         <ion-label>{{ startCase(category.entity.name) }}: {{category.value}}</ion-label>
@@ -41,7 +41,7 @@
 import {IonChip, IonCol, IonIcon, IonInput, IonLabel, IonRow} from '@ionic/vue';
 import {add, checkmarkOutline, closeCircleOutline, closeOutline, funnel, refresh} from 'ionicons/icons';
 import {computed, ref} from 'vue';
-import {AppServices, services} from '@/modules/app/services';
+import {services} from '@/modules/app/services';
 import {EntityRating} from '@/modules/auth/entityPreferencesStore';
 import {startCase} from 'lodash';
 import {CategoryEntity} from '@/modules/geo/entity';
@@ -59,7 +59,7 @@ export default {
 
     setup() {
 
-        const preferencesStore = AppServices.userPreferencesStore;
+        const preferencesStore = services.preferenceService
         const categories = computed( () => preferencesStore.liked);
 
         const newCategory = ref('');

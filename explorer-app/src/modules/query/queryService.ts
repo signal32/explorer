@@ -2,7 +2,7 @@ import {Quad} from '@/modules/geo/quadtree';
 import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
 import {GeoEntity, DetailsEntity} from '@/modules/geo/entity';
-import {AppServices} from '@/modules/app/services';
+import {services} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';
 import {notificationService} from '@/modules/app/notificationService';
 import {PluginService} from '@/modules/plugin/pluginManager';
@@ -38,14 +38,14 @@ function defineQueryService() {
 
                 for (const quad of tree.findOrCreate(area, 12)) {
                     // Plugins are called to update quads which have been newly created and are still empty.
-                    if (!quad.value || quad.value?.categoriesHash != JSON.stringify(AppServices.userPreferencesStore.liked)) {
+                    if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked)) {
                         notificationService.pushNotification({
                             title: 'Updating map information from WikiData',
                             description: 'This may take some time ☕',
                             type: NotificationType.TOAST
                         }, )
                         await updateQuad(quad, plugins, area); //todo Parcelize quad updates
-                        quad.value!.categoriesHash = JSON.stringify(AppServices.userPreferencesStore.liked);
+                        quad.value!.categoriesHash = JSON.stringify(services.preferenceService.liked);
                         //localStorage.setItem('geoQueryCache', );
                     }
 

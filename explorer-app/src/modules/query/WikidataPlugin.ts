@@ -6,12 +6,12 @@ import {LatLng, LatLngBounds} from '@/modules/geo/types';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {GeoEntity, DetailsEntity, CategoryEntity} from '@/modules/geo/entity';
 import testQuery from './sparql/testQuery.sparql';
-import {CategoryPlugin} from '@/modules/plugin/interfaces/categoryPlugin';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
 import {NotificationType} from '@/modules/app/notification';
 import {Plugin, PluginParam} from '@/modules/plugin/pluginManager';
 import {Services, AppServices} from '@/modules/app/services';
+import {CategoryService} from '@/modules/app/categoryService';
 
 const engine = newEngine();
 const factory = new DataFactory();
@@ -25,7 +25,7 @@ const defaultEndpoint = {
     default: 'https://query.wikidata.org/sparql',
 }
 
-class WikiDataPlugin implements QueryService, CategoryPlugin, Plugin {
+class WikiDataPlugin implements QueryService, CategoryService, Plugin {
 
     private readonly categoryStorageKey = 'categories_cache';
     private categories: CategoryEntity[] = [];
@@ -38,6 +38,9 @@ class WikiDataPlugin implements QueryService, CategoryPlugin, Plugin {
         this.endpoint = defaultEndpoint;
 
         services.queryService.register(this);
+        services.categoryService.register(this);
+
+        this.getCategoryList().then(result => this.categories = result);
 
         return {
             metadata: {

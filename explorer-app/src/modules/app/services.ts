@@ -9,14 +9,16 @@ import {wikidataRecommendPlugin} from '@/modules/query/wikidataRecommendPlugin';
 import {wembedderPlugin} from '@/modules/plugin/wembedderPlugin';
 import {queryService, QueryService} from '@/modules/query/queryService';
 import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
+import {categoryService, CategoryService} from '@/modules/app/categoryService';
 
 export interface Services {
-    userService: UserService,
-    recommendationService: PluginService<RecommendService>,
-    queryService: PluginService<QueryService>,
-    notificationService: NotificationService,
-    store: Storage,
-    pluginManager?: PluginManager,
+    userService:            UserService,
+    notificationService:    NotificationService,
+    store:                  Storage,
+    recommendationService:  PluginService<RecommendService>,
+    queryService:           PluginService<QueryService>,
+    categoryService:        PluginService<CategoryService>
+    pluginManager?:         PluginManager,
 }
 
 const defaultPlugins = [
@@ -27,11 +29,12 @@ const defaultPlugins = [
 
 function defineServices(): Services {
     const partialServices: Services = {
-        store: useStore,
-        notificationService: notificationService,
-        queryService: queryService,
-        recommendationService: recommendationService,
-        userService: userService,
+        userService:            userService,
+        notificationService:    notificationService,
+        store:                  useStore,
+        queryService:           queryService,
+        recommendationService:  recommendationService,
+        categoryService:        categoryService,
     }
     const manager = new AppPluginManager(partialServices);
 

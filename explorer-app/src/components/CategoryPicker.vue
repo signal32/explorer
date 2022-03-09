@@ -41,9 +41,8 @@
 import {IonChip, IonCol, IonIcon, IonInput, IonLabel, IonRow} from '@ionic/vue';
 import {add, checkmarkOutline, closeCircleOutline, closeOutline, funnel, refresh} from 'ionicons/icons';
 import {computed, ref} from 'vue';
-import {AppServices} from '@/modules/app/services';
+import {AppServices, services} from '@/modules/app/services';
 import {EntityRating} from '@/modules/auth/entityPreferencesStore';
-import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
 import {startCase} from 'lodash';
 import {CategoryEntity} from '@/modules/geo/entity';
 
@@ -84,7 +83,7 @@ export default {
         }
 
         function searchCommons() {
-            wikidataPlugin.searchCategoryLabels(newCategory.value)
+            services.categoryService.methods.searchCategoryLabels(newCategory.value)
             .then((res) => {
                 suggestedCategories.value = res;
             })

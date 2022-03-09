@@ -14,7 +14,7 @@
             </ion-item>
 
             <ion-accordion-group>
-            <ion-accordion v-for="plugin in plugins" :key="plugin.metadata.name" value="user">
+            <ion-accordion v-for="plugin in plugins" :key="plugin.metadata.name" :value="plugin.metadata.name">
                 <ion-item slot="header">
                     <ion-label>{{plugin.metadata.name}}</ion-label>
                 </ion-item>

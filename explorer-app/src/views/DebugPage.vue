@@ -56,20 +56,25 @@
                 </ion-list>
             </ion-accordion>
 
-            <ion-accordion value="Preferences">
+            <!-- Additional parameters shown programmatically via the debug service -->
+            <ion-accordion v-for="[scope, items] in services.debug.diagnostics" :key="scope" :value="scope">
                 <ion-item slot="header">
-                    <ion-label>Preferences</ion-label>
+                    <ion-label>{{ startCase(scope) }}</ion-label>
                 </ion-item>
-
-                <ion-list slot="content">
+                <ion-list v-for="item in items" :key="item.name" slot="content">
                     <ion-item>
                         <ion-label class="ion-text-wrap">
-                            Ratings
-                            <p>{{services.preferenceService.ratingMap}}</p>
-                            <p>{{services.preferenceService.liked}}</p>
+                            {{ startCase(item.name) }}
+                            <div v-if="item.type=='map'">
+                                <div v-for="[key, value] in item.values" :key="key">
+                                    <p>{{key}}: {{value}}</p>
+                                </div>
+                            </div>
+                            <p v-else v-for="value in item.values" :key="value">{{value}}</p>
                         </ion-label>
                     </ion-item>
                 </ion-list>
+
             </ion-accordion>
 
         </ion-accordion-group>
@@ -102,6 +107,7 @@ import AuthService from '@/modules/auth/authService';
 import {notificationService} from '@/modules/app/notificationService';
 import {NotificationType} from '@/modules/app/notification';
 import {services} from '@/modules/app/services';
+import {startCase} from 'lodash';
 
 export default defineComponent({
     components: {IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonLabel, IonList, IonItem, IonBackButton, IonAccordion, IonAccordionGroup },
@@ -118,7 +124,7 @@ export default defineComponent({
             })
         }
 
-        return {store, env, reAuthUser, services};
+        return {store, env, reAuthUser, services, startCase};
     },
 })
 </script>

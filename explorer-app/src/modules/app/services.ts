@@ -10,11 +10,13 @@ import {wembedderPlugin} from '@/modules/plugin/wembedderPlugin';
 import {queryService, QueryService} from '@/modules/query/queryService';
 import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
 import {categoryService, CategoryService} from '@/modules/app/categoryService';
+import {debugService, DebugService} from '@/modules/app/debugService';
 
 export interface Services {
     userService:            UserService,
     notificationService:    NotificationService,
     preferenceService:      EntityPreferencesService,
+    debug:                  DebugService,
     store:                  Storage,
     recommendationService:  PluginService<RecommendService>,
     queryService:           PluginService<QueryService>,
@@ -33,6 +35,7 @@ function defineServices(): Services {
         userService:            userService,
         notificationService:    notificationService,
         preferenceService:      entityPreferenceService,
+        debug:                  debugService,
         store:                  useStore,
         queryService:           queryService,
         recommendationService:  recommendationService,

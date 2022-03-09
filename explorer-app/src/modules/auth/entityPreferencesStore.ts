@@ -1,6 +1,7 @@
 import {Entity, EntityId} from '@/modules/geo/entity';
 import {clamp} from 'lodash';
 import {reactive} from 'vue';
+import {services} from '@/modules/app/services';
 
 /**
  * Defines structure of a store containing preferences for an {@link Entity}.
@@ -69,6 +70,12 @@ function defineEntityPreferencesService(): EntityPreferencesService {
 function update(state: EntityPreferencesService) {
     disliked(state);
     liked(state);
+    services.debug.setDiagnosticData({
+        scope: 'Preferences',
+        name: 'Preference map',
+        type: 'map',
+        values: state.ratingMap,
+    })
 }
 
 function disliked(state: EntityPreferencesService) {

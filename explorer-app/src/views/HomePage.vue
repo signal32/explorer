@@ -61,7 +61,6 @@ import {useRouter} from 'vue-router';
 import router from '@/router';
 import {userService} from '@/modules/auth/userService';
 import AuthService from '@/modules/auth/authService';
-import {storeToRefs} from 'pinia';
 
 export default defineComponent({
     components: {

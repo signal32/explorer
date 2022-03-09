@@ -43,7 +43,7 @@ import {add, checkmarkOutline, closeCircleOutline, closeOutline, funnel, refresh
 import {computed, ref} from 'vue';
 import {AppServices} from '@/modules/app/services';
 import {EntityRating} from '@/modules/auth/entityPreferencesStore';
-import {defineWikiDataPlugin} from '@/modules/query/WikidataPlugin';
+import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
 import {startCase} from 'lodash';
 import {CategoryEntity} from '@/modules/geo/entity';
 
@@ -83,9 +83,8 @@ export default {
             categories.value.sort((a, b) =>  a.value - b.value);
         }
 
-        const wdp = defineWikiDataPlugin('https://query.wikidata.org/sparql');
         function searchCommons() {
-            wdp.searchCategoryLabels(newCategory.value)
+            wikidataPlugin.searchCategoryLabels(newCategory.value)
             .then((res) => {
                 suggestedCategories.value = res;
             })

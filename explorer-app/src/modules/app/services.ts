@@ -7,10 +7,13 @@ import {AppPluginManager, PluginManager, PluginService} from '@/modules/plugin/p
 import {Storage} from '@ionic/storage';
 import {wikidataRecommendPlugin} from '@/modules/query/wikidataRecommendPlugin';
 import {wembedderPlugin} from '@/modules/plugin/wembedderPlugin';
+import {queryService, QueryService} from '@/modules/query/queryService';
+import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
 
 export interface Services {
     userService: UserService,
     recommendationService: PluginService<RecommendService>,
+    queryService: PluginService<QueryService>,
     notificationService: NotificationService,
     store: Storage,
     pluginManager?: PluginManager,
@@ -19,12 +22,14 @@ export interface Services {
 const defaultPlugins = [
     wikidataRecommendPlugin,
     wembedderPlugin,
+    wikidataPlugin,
 ]
 
 function defineServices(): Services {
     const partialServices: Services = {
         store: useStore,
         notificationService: notificationService,
+        queryService: queryService,
         recommendationService: recommendationService,
         userService: userService,
     }

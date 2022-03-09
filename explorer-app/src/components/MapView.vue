@@ -24,11 +24,10 @@ import {computed, defineComponent, onMounted, PropType, ref, shallowRef, watch} 
 import {debounce} from 'lodash';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import {hammerSharp, navigateSharp, searchSharp} from 'ionicons/icons';
-import {defineQueryPluginManager} from '@/modules/query/pluginManager';
-import {defineWikiDataPlugin} from '@/modules/query/WikidataPlugin';
 import {LatLngBounds} from '@/modules/geo/types';
 import {Feature, Geometry} from 'geojson';
 import {GeoEntity} from '@/modules/geo/entity';
+import {services} from '@/modules/app/services';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -36,9 +35,6 @@ const TILE_API = process.env.VUE_APP_EXPLORER_TILE_API;
 const DEFAULT_LNG = -2.2568;
 const DEFAULT_LAT = 57.0348535;
 const DEFAULT_ZOOM = 12;
-
-const wikidataPlugin = defineWikiDataPlugin('https://query.wikidata.org/sparql');
-const geoQueryService = defineQueryPluginManager([wikidataPlugin]);
 
 export default defineComponent({
     components: {
@@ -82,7 +78,6 @@ export default defineComponent({
         const _selected = computed({
             get: () => props.selected,
             set: value => {
-                console.log(value)
                 emit('update:selected', value)
             }
         });
@@ -129,10 +124,9 @@ export default defineComponent({
             });
 
             map1.on('load', () => {
-                geoQueryService.getAbstractArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
+                services.queryService.methods.getAbstractArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
                     .then( data => {
                         data.features = [...new Set(data.features)] //todo fix data duplicates
-                        console.log('data', data);
                         map1.addSource('wikidata', {
                             type: 'geojson',
                             data:  data});
@@ -186,7 +180,7 @@ export default defineComponent({
 
         async function updateMap() {
             if ((map.value?.getSource('wikidata'))) {
-                geoQueryService.getAbstractArea(LatLngBounds.fromMapBox(map.value?.getCenter().toBounds(500)))
+                services.queryService.methods.getAbstractArea(LatLngBounds.fromMapBox(map.value?.getCenter().toBounds(500)))
                     .then( data => {
                         (map.value?.getSource('wikidata') as any).setData(data, map.value?.getZoom());
                     });

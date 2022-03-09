@@ -20,7 +20,7 @@ interface PluginConfig {
     setConfigVariable?: (param: PluginParam) => void,
 }
 
-interface PluginParam {
+export interface PluginParam {
     name: string,
     description?: string,
     value: number | string | undefined,

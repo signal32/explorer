@@ -1,17 +1,17 @@
-import {IQueryPlugin} from '@/modules/plugin/interfaces/queryPlugin';
+import {QueryService} from '@/modules/query/queryService';
 import {Bindings} from '@comunica/bus-query-operation';
 import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {newEngine} from '@comunica/actor-init-sparql';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
-import {GeoEntity, DetailsEntity, Entity, CategoryEntity} from '@/modules/geo/entity';
+import {GeoEntity, DetailsEntity, CategoryEntity} from '@/modules/geo/entity';
 import testQuery from './sparql/testQuery.sparql';
-import {AppPlugin, PluginConfig, PluginParameter} from '@/modules/plugin/interfaces/pluginConfiguration';
-import {AppServices, services} from '@/modules/app/services';
 import {CategoryPlugin} from '@/modules/plugin/interfaces/categoryPlugin';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
 import {NotificationType} from '@/modules/app/notification';
+import {Plugin, PluginParam} from '@/modules/plugin/pluginManager';
+import {Services, AppServices} from '@/modules/app/services';
 
 const engine = newEngine();
 const factory = new DataFactory();
@@ -19,15 +19,220 @@ const factory = new DataFactory();
 const DEFAULT_LIKED = 'wd:Q12280 wd:Q811979 wd:Q3947';
 const DEFAULT_DISLIKED = 'wd:Q13276'
 
-/**
- * A plugin for integration with the WikiData knowledge base.
- */
-interface WikiDataPlugin extends IQueryPlugin, AppPlugin, CategoryPlugin {
-    endpoint: PluginParameter<string>,
-    categories?: CategoryEntity[],
-    categoryIndex?: Index,
-    setupIndex(): any,
+const defaultEndpoint = {
+    name: 'SPARQL Endpoint',
+    value: 'https://query.wikidata.org/sparql',
+    default: 'https://query.wikidata.org/sparql',
 }
+
+class WikiDataPlugin implements QueryService, CategoryPlugin, Plugin {
+
+    private readonly categoryStorageKey = 'categories_cache';
+    private categories: CategoryEntity[] = [];
+    private index?: Index;
+
+    constructor(private services?: Services, private endpoint: PluginParam = defaultEndpoint) {}
+
+    initialise(services: Services) {
+        this.services = services;
+        this.endpoint = defaultEndpoint;
+
+        services.queryService.register(this);
+
+        return {
+            metadata: {
+                name: 'WikiData'
+            },
+            configVariables: () => [this.endpoint]
+        };
+    }
+
+    getAbstract(...items: [string]): Promise<GeoEntity[]> {
+        console.warn('getAbstract() not implemented for WikiDataPlugin');
+        return Promise.resolve([]);
+    }
+
+    /**
+     * Searches WikiData for items within an area and returns them as {@link GeoEntity}.
+     * @param area The area to search
+     */
+    async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
+
+        const query = testQuery
+            .replace('?@include', this.computeIncluded())
+            .replace('?@exclude', this.computeExcluded())
+
+        const result = await engine.query(query, {
+            sources: [{type: 'sparql', value: this.endpoint.value}],
+            initialBindings: new (Bindings as any)({
+                '?pointNE': factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
+                '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
+            })
+        });
+
+        const features: FeatureCollection<Geometry, GeoEntity> = {
+            type: 'FeatureCollection',
+            features: []
+        }
+
+        if (result.type == 'bindings') {
+            return new Promise((resolve, reject) => {
+                // When each item is complete process it and add to collection
+                // This is faster than awaiting the entire result set.
+                result.bindingsStream.on('data', b => {
+                    features.features.push(asFeature({
+                        id: wikidataIdFromUrl(b.get('?subject').value),
+                        position: wktLiteralToLatLng(b.get('?subjectLocation').value),
+                        category: {
+                            name: b.get('?subjectTypeLabel').value,
+                            id: 'not implemented (from WikiDataPlugin.ts',
+                        },
+                        //category: {name: b.get('?subjectTypeLabel').value},
+                        name: b.get('?subjectLabel').value
+                    }))
+                });
+
+                // Resolve once all results have been read.
+                result.bindingsStream.on('end', () => {
+                    this.services?.notificationService.pushNotification({
+                        title: 'Map updated!',
+                        description: `Fetched ${features.features.length} items from WikiData`,
+                        type: NotificationType.TOAST
+                    })
+                    resolve(features);
+                });
+
+                // And reject if something went wrong.
+                result.bindingsStream.on('error', (error) => {
+                    console.error('WikiData retrieval failed: ' + error)
+                    reject(error);
+                })
+
+            })
+        }
+
+        else return Promise.reject('Result type is not bindings');
+    }
+
+    getCategoryFromLabel(labels: string[]): Promise<CategoryEntity[]> {
+        console.warn('getCategoryFromLabel() not implemented for WikiDataPlugin');
+        return Promise.resolve([]);
+    }
+
+    async getCategoryList(): Promise<CategoryEntity[]> {
+        if (this.categories.length == 0) {
+            this.categories = await this.loadCategories();
+        }
+        return this.categories;
+    }
+
+    async getDetails(...items: [string]): Promise<DetailsEntity> {
+        return Promise.reject('Not implemented');
+    }
+
+    async searchCategoryLabels(term: string): Promise<CategoryEntity[]> {
+        if (!this.index) await this.setupCategoryIndex();
+
+        const ids = this.index?.search(term, 10) || [];
+        const names = this.categories.filter(c => ids.includes(c.id)); // HACK This will be slow!
+        return Promise.resolve(names);
+    }
+
+    /**
+     * Hack method to get list of IDs suitable for injecting into SPARQL
+     * @private
+     */
+    private computeIncluded(): string {
+        let included = '';
+        if (AppServices.userPreferencesStore.liked.length > 0) {
+            AppServices.userPreferencesStore.liked.forEach( liked => {
+                included += (`wd:${liked.entity.id} `);
+            })
+        }
+        else included = DEFAULT_LIKED;
+        return included;
+    }
+
+    /**
+     * Hack method to get list of IDs suitable for injecting into SPARQL
+     * @private
+     */
+    private computeExcluded(): string {
+        let excluded = '';
+        if (AppServices.userPreferencesStore.disliked.length > 0) {
+            AppServices.userPreferencesStore.disliked.forEach( disliked => {
+                excluded += (`wd:${disliked.entity.id} `);
+            })
+        }
+        else excluded = DEFAULT_DISLIKED;
+        return excluded;
+    }
+
+    /**
+     * Loads categories. No side effects, you must assign returned categories yourself.
+     * @private
+     */
+    private async loadCategories(): Promise<CategoryEntity[]> {
+        let newCategories = await this.services?.store.get(this.categoryStorageKey) as CategoryEntity[];
+
+        if (newCategories) {
+            return Promise.resolve(newCategories);
+        }
+        else {
+            console.log('Loading categories from WikiData');
+            newCategories = [];
+
+            const result = await engine.query(selectCategories, {
+                sources: [{type: 'sparql', value: this.endpoint.value}]
+            });
+
+            if (result.type == 'bindings') {
+                return new Promise(((resolve, reject) => {
+                    // Collect data from categories
+                    result.bindingsStream.on('data', listener => {
+                        const category = {
+                            id: wikidataIdFromUrl(listener.get('?target').value),
+                            name: listener.get('?label').value,
+                            //iconUrl: listener.get('?icon').value,
+                        }
+                       newCategories.push(category);
+                    });
+
+                    // Should wait and be resolved only when all bindings have been processed
+                    result.bindingsStream.on('end', () => {
+                        this.services?.store.set(this.categoryStorageKey, newCategories)
+                        resolve(newCategories);
+                    });
+
+                    // Catch any errors while reading for rejection
+                    result.bindingsStream.on('error', (error) => {
+                        console.error('WikiData retrieval failed: ' + error)
+                        reject(error);
+                    })
+                }));
+            }
+            else {
+                return Promise.reject('Unable to get categories from WikiData: Not bindings type')
+            }
+        }
+    }
+
+    private async setupCategoryIndex() {
+        this.index = new Index({
+            charset: 'latin:extra',
+            preset: 'match',
+            tokenize: 'strict',
+            cache: false,
+        });
+
+        this.categories.forEach(c => {
+            this.index?.add(c.id, c.name);
+        })
+    }
+
+}
+
+export const wikidataPlugin  = new WikiDataPlugin();
 
 /**
  * Convert RDF type wktLiteral to a {@link LatLng} for use internally.
@@ -65,199 +270,4 @@ function wikidataIdFromUrl(url: string): string {
         return matches[0]
     }
     else return '';
-}
-
-/**
- * Create a new instance of {@link WikiDataPlugin}.
- * @param sparqlEndPoint WikiData SPARQL endpoint URL to connect to.
- */
-export function defineWikiDataPlugin(sparqlEndPoint: string): WikiDataPlugin {
-    return {
-        endpoint: {
-            name: 'Sparql endpoint',
-            scope: 'settings',
-            value: sparqlEndPoint,
-        },
-
-        definePlugin(): PluginConfig {
-            return {
-                friendlyName: 'WikiData BasePlugin',
-                params: [
-                    this.endpoint,
-                ]
-            }
-        },
-
-        async setupIndex() {
-            this.categoryIndex = new Index({
-                charset: 'latin:extra',
-                preset: 'match',
-                tokenize: 'strict',
-                cache: false,
-            });
-
-            const categories = await this.getCategoryList();
-            categories.forEach(c => {
-                this.categoryIndex?.add(c.id, c.name)
-            });
-        },
-
-        /**
-         * Get categories that have been cached in local storage and fetch them from WikiData if not.
-         */
-        async getCategoryList(): Promise<CategoryEntity[]> {
-
-            if (this.categories && this.categories.length > 1) {
-                console.log(this.categories[1])
-                return Promise.resolve(this.categories);
-            }
-
-            const storageKey = 'categories_cache';
-            this.categories = await services.store.get(storageKey) as CategoryEntity[];
-
-            if (this.categories) {
-                return Promise.resolve(this.categories);
-            }
-
-            else {
-                console.log('WikiData plugin did not find cached categories. Retrieving now...');
-                this.categories = [];
-                const result = await engine.query(selectCategories, {
-                    sources: [{type: 'sparql', value: this.endpoint.value}]
-                });
-
-                if (result.type == 'bindings') {
-                    return new Promise(((resolve, reject) => {
-                        // Collect data from categories
-                        result.bindingsStream.on('data', listener => {
-                            const category = {
-                                id: wikidataIdFromUrl(listener.get('?target').value),
-                                name: listener.get('?label').value,
-                                //iconUrl: listener.get('?icon').value,
-                            }
-                            console.log(category);
-                            this.categories?.push(category);
-                        });
-
-                        // Should wait and be resolved only when all bindings have been processed
-                        result.bindingsStream.on('end', () => {
-                            services.store.set(storageKey, this.categories)
-                            resolve(this.categories || []);
-                        });
-
-                        // Catch any errors while reading for rejection
-                        result.bindingsStream.on('error', (error) => {
-                            console.error('WikiData retrieval failed: ' + error)
-                            reject(error);
-                        })
-                    }));
-                }
-
-                else {
-                    return Promise.reject('Unable to get categories from WikiData: Not bindings type')
-                }
-            }
-        },
-
-        async searchCategoryLabels(term: string): Promise<CategoryEntity[]> {
-            if (!this.categoryIndex) this.setupIndex();
-
-            const ids = this.categoryIndex?.search(term, 10) || [];
-            const names = this.categories
-                ?.filter(c => ids.includes(c.id)); // HACK This will be slow!
-
-            return Promise.resolve(names || []);
-        },
-
-
-        async getCategoryFromLabel(): Promise<CategoryEntity[]> {
-            return Promise.reject('Not implemented');
-        },
-
-        async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
-
-            let included = '';
-            if (AppServices.userPreferencesStore.liked.length > 0) {
-                AppServices.userPreferencesStore.liked.forEach( liked => {
-                    included += (`wd:${liked.entity.id} `);
-                })
-            }
-            else included = DEFAULT_LIKED;
-
-            let excluded = '';
-            if (AppServices.userPreferencesStore.disliked.length > 0) {
-                AppServices.userPreferencesStore.disliked.forEach( disliked => {
-                    included += (`wd:${disliked.entity.id} `);
-                })
-            }
-            else excluded = DEFAULT_DISLIKED;
-
-            console.log('excluded: ', excluded);
-            //const newQ = testQuery.replace('?@include', 'wd:Q12280 wd:Q811979 wd:Q3947' ).replace('?@exclude', 'wd:Q3947')
-            const newQ = testQuery.replace('?@include', included ).replace('?@exclude', excluded) //TODO remove replacement/injection bodges and rename testQuery to something proper
-            const result = await engine.query(newQ, {
-                sources: [{type: 'sparql', value: this.endpoint.value}], //TODO unbodge
-                initialBindings: new (Bindings as any)({
-                    '?pointNE': factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
-                    '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
-/*                    '?included': '{wd:Q12280 wd:Q811979 wd:Q3947}',
-                    'excluded': '',
-                    'limit': 100,
-                    'language' : 'en'*/
-                })
-            })
-
-            const collection: FeatureCollection<Geometry, GeoEntity> = {
-                type: 'FeatureCollection',
-                features: []
-            }
-
-            if (result.type == 'bindings') {
-                return new Promise(( (resolve, reject) => {
-                    // When each item is complete process it and add to collection
-                    // This is faster than awaiting the entire result set.
-                    result.bindingsStream.on('data', b => {
-                        collection.features.push(asFeature({
-                            id: wikidataIdFromUrl(b.get('?subject').value),
-                            position: wktLiteralToLatLng(b.get('?subjectLocation').value),
-                            category: {
-                                name: b.get('?subjectTypeLabel').value,
-                                id: 'not implemented (from WikiDataPlugin.ts',
-                            },
-                            //category: {name: b.get('?subjectTypeLabel').value},
-                            name: b.get('?subjectLabel').value
-                        }))
-                    });
-
-                    // We can resolve once all results have been read.
-                    result.bindingsStream.on('end', () => {
-                        services.notificationService.pushNotification({
-                            title: 'Map updated!',
-                            description: `Fetched ${collection.features.length} items from WikiData`,
-                            type: NotificationType.TOAST
-                        })
-                        resolve(collection);
-                    });
-
-                    // And reject if something went wrong.
-                    result.bindingsStream.on('error', (error) => {
-                        console.error('WikiData retrieval failed: ' + error)
-                        reject(error);
-                    })
-                }))
-            }
-
-            else return Promise.reject('Result type is not == bindings');
-
-        },
-
-        getAbstract(...items): Promise<GeoEntity[]> {
-            return Promise.reject('not implemented');
-        },
-
-
-        getDetails(...items): Promise<DetailsEntity> {
-            return Promise.reject('not implemented')
-        }
-    };
 }

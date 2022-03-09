@@ -42,15 +42,12 @@ const i18n = createI18n<[MessageSchema], 'en-US'>(
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import VueVirtualScroller from 'vue-virtual-scroller';
 
-/* Init global data store */
-export const pinia = createPinia();
 
 const app = createApp(App)
     .use(IonicVue, {
       //mode: 'ios'
     })
     .use(router)
-    .use(pinia)
     .use(VueVirtualScroller)
     .use(i18n)
     .component("IonButton", IonButton); //todo move global registration to separate file and add more

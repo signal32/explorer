@@ -32,7 +32,6 @@
     "maplibre-gl": "^2.0.4",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "npm": "^8.5.0",
-    "pinia": "^2.0.9",
     "quadstore": "^9.1.0",
     "raw-loader": "^4.0.2",
     "rdf-data-factory": "^1.1.0",

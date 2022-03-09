@@ -87,7 +87,7 @@ public class Word2VecRecommender implements IRecomender {
         tokenizer.setTokenPreProcessor(new CommonPreprocessor());
 
         word2VecModel = new Builder()
-                .minWordFrequency(20)
+                .minWordFrequency(4)
                 .layerSize(100)
                 .seed(42)
                 .windowSize(1)

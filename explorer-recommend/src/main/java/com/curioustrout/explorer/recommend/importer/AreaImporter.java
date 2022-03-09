@@ -90,6 +90,7 @@ public class AreaImporter {
         var subAreas = createSubAreas(area, chunkSize);
 
         for (int i = 0; i < subAreas.size(); i++) {
+            if (i > 2) break;
 
             try {
                 LOGGER.info("Retrieving info: {}/{}", i, subAreas.size());
@@ -114,9 +115,6 @@ public class AreaImporter {
             new File(cachePath).mkdirs();
             var areaCache = ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("file:" + cachePath + "/**/*.nt");
             for (int i = 0, areaCacheLength = areaCache.length; i < areaCacheLength; i++) {
-                if (i >50) {
-                    break;
-                }
                 Resource area = areaCache[i];
                 LOGGER.info("Loading cache {}/{}: {}",i, areaCacheLength, area.getFilename());
                 var stream = new FileInputStream(area.getFile());

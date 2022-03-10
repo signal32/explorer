@@ -136,12 +136,12 @@
 
     <build>
         <plugins>
-            <plugin>
+<!--            <plugin>
                 <inherited>true</inherited>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${explorer.springboot.version}</version>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>

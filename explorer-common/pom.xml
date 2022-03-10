@@ -3,16 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>parent</artifactId>
-        <groupId>com.curioustrout.explorer</groupId>
+        <artifactId>explorer</artifactId>
+        <groupId>com.curioustrout</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../explorer-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>common</artifactId>
     <name>common</name>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <properties>
         <explorer.gis.jena.version>4.3.2</explorer.gis.jena.version>
@@ -39,5 +39,17 @@
             <version>${explorer.gis.jena.version}</version>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${explorer.springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

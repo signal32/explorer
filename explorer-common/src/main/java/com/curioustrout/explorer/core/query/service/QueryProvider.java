@@ -1,6 +1,7 @@
 package com.curioustrout.explorer.core.query.service;
 
 import com.curioustrout.explorer.core.query.QueryConfig;
+import org.apache.jena.ext.com.google.common.io.Resources;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryException;
@@ -14,8 +15,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +58,7 @@ public class QueryProvider {
         properties.load(resourceLoader.getResource(prefixDefinitionPath).getInputStream());
 
         for (var queryResource : loadQueries()) {
-            var fileContents = Files.readString(queryResource.getFile().toPath());
+            var fileContents = StreamUtils.copyToString(queryResource.getInputStream(), Charset.defaultCharset());
             var queryString = new ParameterizedSparqlString(fileContents);
 
             for (var prefix : properties.entrySet()){

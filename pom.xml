@@ -9,13 +9,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>explorer-all</name>
 
-<!--    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.7</version>
-        <relativePath/>
-    </parent>-->
-
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -26,12 +19,10 @@
 
     <modules>
         <module>explorer-user</module>
-<!--        <module>explorer-app</module>-->
-<!--        <module>explorer-gis</module>-->
+        <module>explorer-app</module>
         <module>explorer-common</module>
         <module>explorer-services</module>
         <module>explorer-recommend</module>
-<!--        <module>explorer-parent</module>-->
     </modules>
 
     <dependencies>
@@ -103,6 +94,7 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -110,6 +102,10 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -136,12 +132,6 @@
 
     <build>
         <plugins>
-<!--            <plugin>
-                <inherited>true</inherited>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${explorer.springboot.version}</version>
-            </plugin>-->
             <plugin>
                 <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>

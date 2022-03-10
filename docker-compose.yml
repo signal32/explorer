@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  explorer-app:
+    image: "explorer-app"
+    build: explorer-app/
+    ports:
+      - "8080:80"
+  explorer-user:
+    image: "explorer-user"
+    build: explorer-user/
+    ports:
+      - "8081:8090"
+    environment:
+      - SERVER_PORT=8090
+  explorer-recommend:
+    image: "explorer-recommend"
+    build: explorer-recommend/
+    ports:
+      - "8081:8080"

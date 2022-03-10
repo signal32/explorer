@@ -23,7 +23,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -pl explorer-user,explorer-recommend -B package --file pom.xml
       
     - name: Login to DockerHub Registry
       run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
@@ -32,4 +32,4 @@ jobs:
       run: docker build ./explorer-recommend --file explorer-recommend/Dockerfile --tag explorer-recommend:$(date +%s)
     
     - name: explorer-app push docker
-      run: docker push signal32/explorer-recommend:latest
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/explorer-recommend:latest

@@ -4,10 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>parent</artifactId>
-        <groupId>com.curioustrout.explorer</groupId>
+        <artifactId>explorer</artifactId>
+        <groupId>com.curioustrout</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../explorer-parent</relativePath>
     </parent>
 
     <groupId>com.curioustrout.explorer</groupId>
@@ -36,5 +35,37 @@
         </dependency>
 
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${explorer.springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${explorer.springboot.version}</version>
+                <configuration>
+                    <mainClass>com.curioustrout.explorer.server.user.UserApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

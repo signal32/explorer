@@ -1,7 +1,4 @@
 <template>
-    <h1>{{entity.name}}</h1>
-    <h6>{{entity.id}}</h6>
-
     <image-details v-if="headerImages" :element="headerImages"/>
 
     <div v-if="details.length > 0">

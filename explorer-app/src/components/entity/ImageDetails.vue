@@ -1,40 +1,31 @@
 <template>
 
     <!-- Single images do not need a slider -->
-    <div v-if="element.images.length === 1">
+<!--
+    <div v-if="element.images.length === 1" style="height: 300px; display: inline-block">
         <image-card :src="element.images[0].url"/>
     </div>
+-->
 
     <!-- Display multiple images within a slider -->
-    <div class="horizontal-container" v-else-if="element.images.length >= 1">
-        <image-card class="horizontal-item" v-for="item in element.images" :key="item.url" :src="item.url"/>
-    </div>
+    <horizontal-list>
+        <image-card v-for="item in element.images" :key="item.url" :src="item.url"/>
+    </horizontal-list>
 
 </template>
 
 <script lang="ts">
 import 'vue3-carousel/dist/carousel.css';
-import {defineComponent, PropType, ref} from 'vue';
+import {defineComponent, PropType} from 'vue';
 import {ImageDetailElement} from '@/modules/query/detailsService';
 import ImageCard from '@/components/entity/ImageCard.vue';
+import HorizontalList from '@/components/util/HorizontalList.vue';
 
 export default defineComponent({
     name: "ImageDetails",
-    components: {ImageCard},
+    components: {HorizontalList, ImageCard},
     props: {
         element: Object as PropType<ImageDetailElement>
     }
 })
 </script>
-
-<style>
-.horizontal-container {
-    overflow: auto;
-    white-space: nowrap;
-}
-
-.horizontal-item {
-    display: inline-block;
-    height: 300px;
-}
-</style>

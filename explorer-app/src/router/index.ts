@@ -36,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
       component: () => import('@/views/menus/PluginMenu.vue'),
   },
   {
+    path: '/entity',
+    name: 'Entity',
+    component: () => import('@/views/EntityPage.vue')
+  },
+  {
     path: '/view/',
     component: HomePage,
     children: [

@@ -33,7 +33,7 @@
         <MapView v-model:position="position" @update:position="position = $event" @update:selected="setModalOpen(true, $event)">
         </MapView>
 
-        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,1]" :initialBreakpoint="0.5" :backdropBreakpoint="0.1" @didDismiss="setModalOpen(false)">
+        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,0.9]" :initialBreakpoint="0.5" :backdropBreakpoint="0.1" @didDismiss="setModalOpen(false)">
             <ion-content>
                 <ion-header translucent>
                     <ion-toolbar>
@@ -48,10 +48,10 @@
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>
-                <p>id = {{selectedEntityAbstractRef.id}}</p>
-                <h6>Category:</h6>
-                <p>{{selectedEntityAbstractRef.category}}</p>
+                <entity-details :entity="selectedEntityAbstractRef"/>
                 <recommend-block :entity="selectedEntityAbstractRef"></recommend-block>
+                <p>id: {{selectedEntityAbstractRef.id}}</p>
+                <p>Category: {{selectedEntityAbstractRef.category}}</p>
             </ion-content>
         </ion-modal>
 
@@ -87,6 +87,8 @@ import MapView, {MapPosition} from '@/components/MapView.vue';
 import {GeoEntity} from '@/modules/geo/entity';
 import MapOptions from '@/components/MapOptions.vue';
 import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
+import {services} from '@/modules/app/services';
+import EntityDetails from '@/components/entity/EntityDetails.vue';
 
 const defaultAbstract: GeoEntity = {
     id: 'unidentified',
@@ -96,6 +98,7 @@ const defaultAbstract: GeoEntity = {
 
 export default defineComponent({
     components: {
+        EntityDetails,
         RecommendBlock, MapOptions, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
         IonFabButton, IonIcon, IonModal, IonButtons, MapView, IonSearchbar, IonCol, IonRow,
     },
@@ -132,7 +135,7 @@ export default defineComponent({
 
         const isMenuOpen = ref('closed');
 
-        return { isMenuOpen, position, move, locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef, router };
+        return { isMenuOpen, position, move, locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef, router, services };
     },
 
 });

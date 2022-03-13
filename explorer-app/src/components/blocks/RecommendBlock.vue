@@ -28,10 +28,7 @@ export default defineComponent({
 
         if (props.entity) {
             services.recommendationService.methods.recommendForEntity(props.entity)
-                .then(res => {
-                    console.log('we got', res);
-                    entities.value.push(...res);
-                })
+                .then(res => entities.value.push(...res))
         }
 
         return {entities}
@@ -43,6 +40,6 @@ export default defineComponent({
 
 <style scoped>
     .scroller {
-        height: 100%;
+        height: 150px;
     }
 </style>

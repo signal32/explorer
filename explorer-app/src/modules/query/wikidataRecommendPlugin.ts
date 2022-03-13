@@ -36,19 +36,15 @@ function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
         },
 
         recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-            console.log('hello from wikidatarecommendplugin!');
-
             return axios.get(endpoint.value + `public/recommend?entity=${entity.id}&limit=50` )
                 .then(res => {
-                    console.log(res.data);
+                    console.debug('Recommendations received:', res.data);
                     const entities: Entity[] = [];
                     res.data.forEach((i: any) => entities.push({
                         id: i, name: 'unnamed ' + i
                     }))
                     return entities;
                 })
-
-            //return Promise.resolve([entity]);
         },
 
         similarity(first: Entity, second: Entity): Promise<number> {

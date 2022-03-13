@@ -4,14 +4,22 @@ import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {newEngine} from '@comunica/actor-init-sparql';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
-import {GeoEntity, DetailsEntity, CategoryEntity} from '@/modules/geo/entity';
+import {GeoEntity, DetailsEntity, CategoryEntity, Entity} from '@/modules/geo/entity';
 import testQuery from './sparql/testQuery.sparql';
+import describeItems from './sparql/describeItems.sparql';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
 import {NotificationType} from '@/modules/app/notification';
 import {Plugin, PluginParam} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
 import {CategoryService} from '@/modules/app/categoryService';
+import {
+    ActionDetailElement,
+    DetailElement,
+    DetailServiceFormatPlugin,
+    DetailServiceKnowledgePlugin, ImageDetailElement
+} from '@/modules/query/detailsService';
+import {Quad} from '@rdfjs/types';
 
 const engine = newEngine();
 const factory = new DataFactory();
@@ -25,7 +33,7 @@ const defaultEndpoint = {
     default: 'https://query.wikidata.org/sparql',
 }
 
-class WikiDataPlugin implements QueryService, CategoryService, Plugin {
+class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnowledgePlugin, DetailServiceFormatPlugin, Plugin {
 
     private readonly categoryStorageKey = 'categories_cache';
     private categories: CategoryEntity[] = [];
@@ -39,6 +47,8 @@ class WikiDataPlugin implements QueryService, CategoryService, Plugin {
 
         services.queryService.register(this);
         services.categoryService.register(this);
+        services.detailService.knowledge.register(this);
+        services.detailService.format.register(this);
 
         this.getCategoryList().then(result => this.categories = result);
 
@@ -129,8 +139,45 @@ class WikiDataPlugin implements QueryService, CategoryService, Plugin {
         return this.categories;
     }
 
-    async getDetails(...items: [string]): Promise<DetailsEntity> {
-        return Promise.reject('Not implemented');
+    async describe(entity: Entity): Promise<Quad[]> {
+        const query = describeItems.replace('?items', `wd:${entity.id}`);
+        const result = await engine.query(query, { sources: [{type: 'sparql', value: this.endpoint.value}]})
+        if (result.type == 'quads') {
+            return result.quads();
+        }
+        else return Promise.reject('Result type is not quad');
+    }
+
+    async format(entity: Entity, facts: Quad[]): Promise<DetailElement[]> {
+        const details: DetailElement[] = [];
+
+        const image: ImageDetailElement = {
+            id: `${entity.id}_image`,
+            type: 'images',
+            images: [],
+        };
+
+        facts.forEach(fact => {
+
+            // Images should have P18 property and a valid URL (a regex check would be better)
+            if (wikidataIdFromUrl(fact.predicate.value, true) == 'P18' && fact.predicate.value.includes('http')) {
+                image.images.push({
+                    url: fact.object.value,
+                    caption: fact.predicate.value
+                })
+            }
+
+            if (wikidataIdFromUrl(fact.predicate.value, true) == 'P718') {
+                details.push({
+                    id: `${entity.id}_canmoreLink`,
+                    type: 'actions',
+                    actions: [{title: 'View on Canmore', url: `https://canmore.org.uk/site/${fact.object.value}/`}]
+                })
+            }
+        })
+
+        details.push(image);
+        return details;
     }
 
     async searchCategoryLabels(term: string): Promise<CategoryEntity[]> {
@@ -267,8 +314,14 @@ function asFeature(feature: GeoEntity): Feature<Geometry, GeoEntity> {
     }
 }
 
-function wikidataIdFromUrl(url: string): string {
-    const matches = url.match(/Q\d*/gm);
+/**
+ * Extract WikiData ID, e.g. P317, from a URL.
+ * @param url Url of WikiData item. e.g. http://www.wikidata.org/prop/direct/P18
+ * @param directOnly Only resolve IDs for URLs which point to linked data directly.
+ */
+function wikidataIdFromUrl(url: string, directOnly = false): string {
+    if (directOnly && !url.includes('direct')) return '';
+    const matches = url.match(/[Q|P]\d*/gm);
     if (matches) {
         return matches[0]
     }

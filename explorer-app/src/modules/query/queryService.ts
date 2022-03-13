@@ -11,7 +11,6 @@ import {PluginService} from '@/modules/plugin/pluginManager';
 export interface QueryService {
     getAbstract(... items: [string]): Promise<GeoEntity[]>,
     getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>>,
-    getDetails(... items: [string]): Promise<DetailsEntity>,
 }
 
 interface QuadInfo {
@@ -58,9 +57,6 @@ function defineQueryService() {
                 return Promise.resolve(collection);
             },
 
-            getDetails(...items): Promise<DetailsEntity> {
-                return Promise.reject('not implemented');
-            },
         }
     });
 }

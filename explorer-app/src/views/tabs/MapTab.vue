@@ -37,7 +37,7 @@
             <ion-content>
                 <ion-header translucent>
                     <ion-toolbar>
-                        <ion-title>{{selectedEntityAbstractRef.name}}</ion-title>
+                        <ion-title>{{selectedEntityAbstractRef?.name}}</ion-title>
                         <ion-buttons slot="end">
                             <ion-button @click="setModalOpen(false)">
                                 <ion-icon :icon="thumbsUpSharp"></ion-icon>
@@ -50,8 +50,8 @@
                 </ion-header>
                 <entity-details :entity="selectedEntityAbstractRef"/>
                 <recommend-block :entity="selectedEntityAbstractRef"></recommend-block>
-                <p>id: {{selectedEntityAbstractRef.id}}</p>
-                <p>Category: {{selectedEntityAbstractRef.category}}</p>
+                <p>id: {{selectedEntityAbstractRef?.id}}</p>
+                <p>Category: {{selectedEntityAbstractRef?.category}}</p>
             </ion-content>
         </ion-modal>
 

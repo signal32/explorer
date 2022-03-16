@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts">
-import 'vue3-carousel/dist/carousel.css';
 import {defineComponent, PropType} from 'vue';
 import {ImageDetailElement} from '@/modules/query/detailsService';
 import ImageCard from '@/components/entity/ImageCard.vue';

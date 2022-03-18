@@ -19,12 +19,15 @@
 <script lang="ts">
 // Inspired by https://documentation.maptiler.com/hc/en-us/articles/4413873409809-Display-a-map-in-Vue-js-using-MapLibre-GL-JS
 import 'maplibre-gl/dist/maplibre-gl.css'
-import {Map} from 'maplibre-gl';
+import {LngLat, Map} from 'maplibre-gl';
 import {computed, defineComponent, onMounted, PropType, ref, shallowRef, watch} from 'vue';
 import {debounce} from 'lodash';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import {hammerSharp, navigateSharp, searchSharp} from 'ionicons/icons';
-import GisService from '@/modules/gis/gisService';
+import {LatLngBounds} from '@/modules/geo/types';
+import {Feature, Geometry} from 'geojson';
+import {GeoEntity} from '@/modules/geo/entity';
+import {services} from '@/modules/app/services';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -42,10 +45,11 @@ export default defineComponent({
 
     props: {
         position: Object as PropType<MapPosition>,
-        style: Object as PropType<MapStyle>
+        style: Object as PropType<MapStyle>,
+        selected: Object as PropType<GeoEntity>,
     },
 
-    emits: ['update:position'],
+    emits: ['update:position', 'update:selected'],
 
     setup(props, {emit}) {
         const mapContainer = shallowRef("");
@@ -54,6 +58,7 @@ export default defineComponent({
         const position = ref<MapPosition>({
             lng: DEFAULT_LNG, lat: DEFAULT_LAT, zoom: DEFAULT_ZOOM
         });
+        let lastUpdateCenter = new LngLat(0.0, 0.0);
 
         const details = ref({
             bearing: 0
@@ -67,6 +72,13 @@ export default defineComponent({
             get: () => props.position,
             set: (value) => {
                 emit(`update:position`, value);
+            }
+        });
+
+        const _selected = computed({
+            get: () => props.selected,
+            set: value => {
+                emit('update:selected', value)
             }
         });
 
@@ -102,11 +114,19 @@ export default defineComponent({
                     updateExternalPosition();
                 }
                 details.value.bearing = map1.getBearing() || 0
+
+                if (!map1.getBounds().contains(lastUpdateCenter)) {
+                    //console.log('Radius of viewport: ' + map1.getCenter().distanceTo(map1.getBounds().getNorthEast()));
+                    //updateMap();
+                    lastUpdateCenter = map1.getCenter();
+                }
+
             });
 
             map1.on('load', () => {
-                GisService.getGeoJson(map1.getCenter(), map1.getZoom())
+                services.queryService.methods.getAbstractArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
                     .then( data => {
+                        data.features = [...new Set(data.features)] //todo fix data duplicates
                         map1.addSource('wikidata', {
                             type: 'geojson',
                             data:  data});
@@ -121,6 +141,10 @@ export default defineComponent({
                             paint: {
                                 "text-color": "#ffffff"
                             }
+                        });
+                        map1.on('click', 'wikidata', (clicked) => {
+                            if (clicked.features)
+                                _selected.value = (clicked.features[0] as unknown as Feature<Geometry, GeoEntity>).properties; //todo Use stronger typing within MapView
                         })
                     })
 /*                map1.addSource('wikidata', {
@@ -156,7 +180,7 @@ export default defineComponent({
 
         async function updateMap() {
             if ((map.value?.getSource('wikidata'))) {
-                GisService.getGeoJson(map.value?.getCenter(), map.value?.getZoom())
+                services.queryService.methods.getAbstractArea(LatLngBounds.fromMapBox(map.value?.getCenter().toBounds(500)))
                     .then( data => {
                         (map.value?.getSource('wikidata') as any).setData(data, map.value?.getZoom());
                     });

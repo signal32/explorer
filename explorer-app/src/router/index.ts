@@ -3,6 +3,8 @@ import { RouteRecordRaw } from 'vue-router';
 import HomePage from '../views/HomePage.vue'
 import AuthPage from '@/views/AuthPage.vue';
 import DebugPage from '@/views/DebugPage.vue';
+import SettingsMenuList from '@/views/menus/SettingsMenuList.vue';
+import PluginMenu from '@/views/menus/PluginMenu.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,6 +25,20 @@ const routes: Array<RouteRecordRaw> = [
     path: '/debug',
     name: 'DebugPage',
     component: DebugPage
+  },
+  {
+    path: '/settings',
+    name: 'SettingsPage',
+    component: SettingsMenuList
+  },
+  {
+      path: '/settings/plugins',
+      component: () => import('@/views/menus/PluginMenu.vue'),
+  },
+  {
+    path: '/entity',
+    name: 'Entity',
+    component: () => import('@/views/EntityPage.vue')
   },
   {
     path: '/view/',

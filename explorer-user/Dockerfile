@@ -1,4 +1,7 @@
-FROM openjdk:8-jdk-alpine
-MAINTAINER curioustrout.com
-#COPY target/docker-message-server-1.0.0.jar message-server-1.0.0.jar
-#ENTRYPOINT ["java","-jar","/message-server-1.0.0.jar"]
+#FROM openjdk:8-jdk-alpine as production-stage
+FROM openjdk:17-jdk-slim-buster as production-stage
+#RUN addgroup -S explorer && adduser -S explorer -G explorer
+#USER explorer:explorer
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]

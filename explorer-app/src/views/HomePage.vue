@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+<!--    <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>Explorer</ion-title>
 
@@ -11,9 +11,9 @@
 
         
       </ion-toolbar>
-    </ion-header>
+    </ion-header>-->
     
-    <ion-content :fullscreen="true ">
+    <ion-content :fullscreen="true " id="main">
 
       <ion-tabs>
         <ion-router-outlet></ion-router-outlet>
@@ -40,33 +40,41 @@
 </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton, toastController, IonButtons } from '@ionic/vue';
-import { map, person, compass } from 'ionicons/icons';
+import {
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonLabel,
+    IonPage,
+    IonRouterOutlet,
+    IonTabBar,
+    IonTabButton,
+    IonTabs,
+    IonTitle,
+    IonToolbar
+} from '@ionic/vue';
+import {compass, map, person} from 'ionicons/icons';
 import LoginStatus from '@/components/LoginStatus.vue'
-import { computed, defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 import {useRouter} from 'vue-router';
 import router from '@/router';
-import {getUserStore} from '@/modules/user/userStore';
-import AuthService from '@/modules/auth/auth.service';
-import { storeToRefs } from 'pinia';
+import {userService} from '@/modules/auth/userService';
+import AuthService from '@/modules/auth/authService';
 
 export default defineComponent({
     components: {
         IonContent,
-        IonHeader,
         IonPage,
-        IonTitle,
-        IonToolbar,
-        LoginStatus,
-        IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton, IonButtons
+        IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton,
+        //LoginStatus, IonToolbar, IonHeader, IonButtons, IonTitle
     },
 
     setup() {
         const router = useRouter();
-        const store = getUserStore();
-        const {loggedIn, user, token } = storeToRefs(store);
+        const store = userService;
 
-        return {router, store, loggedIn, user, token, map, person, compass};
+        return {router, store, map, person, compass};
     },
 
     methods: {

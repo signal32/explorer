@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  explorer-app:
+    image: "explorer-app"
+    build: explorer-app/
+    ports:
+      - "8080:80"
+  explorer-user:
+    image: "explorer-user"
+    build: explorer-user/
+    environment:
+      - SERVER_PORT=8080
+    ports:
+      - "8081:8080"
+  explorer-recommend:
+    image: "explorer-recommend"
+    build: explorer-recommend/
+    environment:
+      - SERVER_PORT=8080
+    ports:
+      - "8082:8080"
+
+
+  keycloak:
+    image: jboss/keycloak:${KEYCLOAK_VERSION:-16.1.0}
+    restart: on-failure
+    volumes:
+      - ./config/keycloak/realm.json:/tmp/explorer-realm.json
+    environment:
+      - KEYCLOAK_USER=${KEYCLOAK_USER:-admin}
+      - KEYCLOAK_PASSWORD=${KEYCLOAK_PASSWORD:-password}
+      - KEYCLOAK_IMPORT=/tmp/explorer-realm.json
+      - DB_VENDOR=postgres
+      - DB_USER=${KEYCLOAK_DB_USER:-admin}
+      - DB_PASSWORD=${KEYCLOAK_DB_PASSWORD:-password}
+      - DB_ADDR=keycloak-db
+      - DB_PORT=5432
+      - DB_DATABASE=keycloakdb
+    ports:
+      - "${KEYCLOAK_PORT:-8083}:8080"
+    depends_on:
+      - keycloak-db
+
+  # Main database configuration for user details, used by keycloak to fulfill authentication duties.
+  keycloak-db:
+    image: postgres:10
+    environment:
+      POSTGRES_USER: ${KEYCLOAK_DB_USER:-admin}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-password}
+      POSTGRES_DB: keycloakdb
+    volumes:
+      - ${KEYCLOAK_DB_DIR:-./data/keycloak_db}:/var/lib/postgresql/data
+
+  # Service for providing vector tiles to front-end application
+  tileServer:
+    image: maptiler/tileserver-gl:${TILESERVER_VERSION:-v3.1.1}
+    restart: unless-stopped
+    command: --verbose --config /config/tileserver/tileserver.json --mbtiles /tile_data/tiles/tiles.mbtiles --port 8090
+    volumes:
+      - ./config:/config
+      - ${TILESERVER_TILE_DIR:-./data/tileserver}:/tile_data
+    ports:
+      - "${TILESERVER_PORT:-8090}:8090"

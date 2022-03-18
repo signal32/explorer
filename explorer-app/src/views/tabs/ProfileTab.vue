@@ -39,37 +39,37 @@
 
 <script lang="ts">
 import {
-    IonContent,
-    IonPage,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonSegment,
-    IonSegmentButton,
-    IonLabel,
-    IonIcon,
-    IonCol,
-    IonRow,
     IonAvatar,
     IonButton,
-    IonGrid
+    IonCol,
+    IonContent,
+    IonGrid,
+    IonHeader,
+    IonIcon,
+    IonLabel,
+    IonPage,
+    IonRow,
+    IonSegment,
+    IonSegmentButton,
+    IonTitle,
+    IonToolbar
 } from '@ionic/vue';
-  import { analytics, bookmarkOutline, pencilOutline } from 'ionicons/icons';
-  import { defineComponent } from 'vue';
-  import {getUserStore} from '@/modules/user/userStore';
-  import {getNotificationStore} from '@/modules/notify/notificationStore';
-import { NotificationType } from '@/modules/notify/notification';
-  import { createAxios } from '@/modules/axios/setup';
+import {analytics, bookmarkOutline, pencilOutline} from 'ionicons/icons';
+import {defineComponent} from 'vue';
+import {userService} from '@/modules/auth/userService';
+import {notificationService} from '@/modules/app/notificationService';
+import {NotificationType} from '@/modules/app/notification';
+import {createAxios} from '@/modules/auth/setup';
 
-  export default defineComponent({
+export default defineComponent({
     components: {
       IonContent, IonPage, IonHeader, IonToolbar, IonTitle, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonRow, IonCol, IonAvatar, IonButton, IonGrid,
     },
 
     setup() {
 
-        const userStore = getUserStore();
-        const notificationStore = getNotificationStore();
+        const userStore = userService;
+        const notificationStore = notificationService;
         async function notImplementedAlert() {
           const axios = createAxios({
               baseURL: "http://10.1.0.20:8081/",
@@ -77,7 +77,7 @@ import { NotificationType } from '@/modules/notify/notification';
             });
 
           const config = {
-              headers: { Authorization: `Bearer ${userStore.token}` }
+              headers: { Authorization: `Bearer ${userStore.userState?.token}` }
           };
           axios.post("public/user/bio/", prompt('Type here'), config)
           .then(() => {

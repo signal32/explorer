@@ -54,30 +54,31 @@
 </template>
 
 <script lang="ts">
-import { MessageSchema } from "@/main";
+import {MessageSchema} from "@/main";
 import {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonCard,
-    IonCardContent,
-    IonCardTitle,
-    IonCardHeader,
-    IonItem,
-    IonLabel,
-    IonInput,
+    alertController,
+    IonBackButton,
     IonButton,
     IonButtons,
-    IonBackButton,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonContent,
+    IonGrid,
+    IonHeader,
+    IonInput,
+    IonItem,
+    IonLabel,
     IonLoading,
-    alertController, IonGrid
+    IonPage,
+    IonTitle,
+    IonToolbar
 } from "@ionic/vue";
 import {defineComponent, ref} from "vue";
-import { useI18n } from "vue-i18n";
-import User from '@/modules/user/user';
-import authService from '@/modules/auth/auth.service';
+import {useI18n} from "vue-i18n";
+import User from '@/modules/auth/user';
+import authService from '@/modules/auth/authService';
 import router from '@/router';
 
 export default defineComponent({

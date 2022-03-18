@@ -1,44 +1,106 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Map</ion-title>
-      </ion-toolbar>
-    </ion-header>
+      <div class="explorer-above">
+
+          <ion-row>
+              <ion-col size="2">
+                  <ion-button shape="round" color="light" @click="router.push('/auth')">
+                      <ion-icon slot="icon-only" :icon="planet"></ion-icon>
+                  </ion-button>
+              </ion-col>
+              <ion-col size="8">
+                  <div style="background-color: transparent; border-radius: 15pc; contain: content; box-shadow: 1px 1px 4px 2px rgba(2,2,2,0.45);">
+                      <ion-searchbar style="padding: 0"></ion-searchbar>
+                  </div>
+              </ion-col>
+              <ion-col size="2">
+                  <ion-button shape="round" color="light" @click="router.push('/settings')">
+                      <ion-icon slot="icon-only" :icon="settingsOutline"></ion-icon>
+                  </ion-button>
+              </ion-col>
+          </ion-row>
+      </div>
     <ion-content :fullscreen="true">
 
-        <ion-fab vertical="top" horizontal="end" slot="fixed">
-            <ion-fab-button color="light" @click="move()">
+        <ion-fab vertical="top" horizontal="end" slot="fixed" style="margin-top: 60px">
+            <ion-fab-button color="light" @click="move()" >
                 <ion-icon :icon="locateOutline"></ion-icon>
             </ion-fab-button>
+            <ion-fab-button color="light" @click="optionsModalOpen = true">
+                <ion-icon :icon="layersOutline"></ion-icon>
+            </ion-fab-button>
         </ion-fab>
-        <MapView v-model:position="position" @update:position="position = $event">
+        <MapView v-model:position="position" @update:position="position = $event" @update:selected="setModalOpen(true, $event)">
         </MapView>
+
+        <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,0.9]" :initialBreakpoint="0.5" :backdropBreakpoint="0.1" @didDismiss="setModalOpen(false)">
+            <ion-content>
+                <ion-header translucent>
+                    <ion-toolbar>
+                        <ion-title>{{selectedEntityAbstractRef?.name}}</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button @click="setModalOpen(false)">
+                                <ion-icon :icon="thumbsUpSharp"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                        <ion-buttons slot="end">
+                            <ion-button @click="setModalOpen(false)"><ion-icon :icon="thumbsDownSharp"></ion-icon></ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+                <entity-details :entity="selectedEntityAbstractRef"/>
+                <recommend-block :entity="selectedEntityAbstractRef"></recommend-block>
+                <p>id: {{selectedEntityAbstractRef?.id}}</p>
+                <p>Category: {{selectedEntityAbstractRef?.category}}</p>
+            </ion-content>
+        </ion-modal>
+
+        <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.5,0.8]" :initialBreakpoint="0.5" @didDismiss="optionsModalOpen = false" >
+            <ion-content>
+                <map-options></map-options>
+            </ion-content>
+        </ion-modal>
+
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-// Inspired by https://documentation.maptiler.com/hc/en-us/articles/4413873409809-Display-a-map-in-Vue-js-using-MapLibre-GL-JS
 import 'maplibre-gl/dist/maplibre-gl.css'
-import {IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonPage, IonTitle, IonToolbar} from '@ionic/vue';
-import {locateOutline} from 'ionicons/icons';
+import {
+    IonButtons, IonCol,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonHeader,
+    IonIcon,
+    IonModal,
+    IonPage, IonRow,
+    IonSearchbar,
+    IonTitle,
+    IonToolbar
+} from '@ionic/vue';
+import {locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp} from 'ionicons/icons';
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
-import MapView from '@/components/MapView.vue';
-import {MapPosition} from '@/components/MapView.vue';
+import MapView, {MapPosition} from '@/components/MapView.vue';
+import {GeoEntity} from '@/modules/geo/entity';
+import MapOptions from '@/components/MapOptions.vue';
+import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
+import {services} from '@/modules/app/services';
+import EntityDetails from '@/components/entity/EntityDetails.vue';
+
+const defaultAbstract: GeoEntity = {
+    id: 'unidentified',
+    position: {lat: 0, lng: 0},
+    name: 'No selection',
+}
 
 export default defineComponent({
     components: {
-        IonContent,
-        IonHeader,
-        IonPage,
-        IonTitle,
-        IonToolbar,
-        MapView,
-        IonFab,
-        IonFabButton,
-        IonIcon
+        EntityDetails,
+        RecommendBlock, MapOptions, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
+        IonFabButton, IonIcon, IonModal, IonButtons, MapView, IonSearchbar, IonCol, IonRow,
     },
 
     setup() {
@@ -60,8 +122,32 @@ export default defineComponent({
             }
         }
 
-        return { position, move, locateOutline };
+        const isModalOpenRef = ref(false);
+        const selectedEntityAbstractRef = ref<GeoEntity>();
+        function setModalOpen(state: boolean, item?: GeoEntity) {
+            isMenuOpen.value = 'open';
+            isModalOpenRef.value = state;
+            if (item)
+                selectedEntityAbstractRef.value = item;
+        }
+
+        const optionsModalOpen = ref(false);
+
+        const isMenuOpen = ref('closed');
+
+        return { isMenuOpen, position, move, locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, thumbsUpSharp, isModalOpenRef, optionsModalOpen, setModalOpen, selectedEntityAbstractRef, router, services };
     },
 
 });
 </script>
+
+<style>
+div.explorer-above {
+    position:fixed;
+/*    background:#fff4c8;
+    border:1px solid #ffcc00;*/
+    width:100%;
+    z-index:100;
+    top:5px;
+}
+</style>

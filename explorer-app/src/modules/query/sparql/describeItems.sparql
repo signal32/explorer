@@ -1,0 +1,6 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+DESCRIBE ?item
+WHERE
+{
+    VALUES ?item { ?items }
+}

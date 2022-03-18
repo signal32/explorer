@@ -90,18 +90,20 @@ class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnow
 
         if (result.type == 'bindings') {
             return new Promise((resolve, reject) => {
+
                 // When each item is complete process it and add to collection
                 // This is faster than awaiting the entire result set.
-                result.bindingsStream.on('data', b => {
+                result.bindingsStream.on('data', binding => {
+                    console.log('Icon: ', binding.get('?categoryIcon')?.value);
                     features.features.push(asFeature({
-                        id: wikidataIdFromUrl(b.get('?subject').value),
-                        position: wktLiteralToLatLng(b.get('?subjectLocation').value),
+                        id: wikidataIdFromUrl(binding.get('?subject').value),
+                        position: wktLiteralToLatLng(binding.get('?subjectLocation').value),
                         category: {
-                            name: b.get('?subjectTypeLabel').value,
-                            id: 'not implemented (from WikiDataPlugin.ts',
+                            id: binding.get('?category').value,
+                            name: binding.get('?categoryLabel').value,
+                            iconUrl: binding.get('?categoryIcon')?.value,
                         },
-                        //category: {name: b.get('?subjectTypeLabel').value},
-                        name: b.get('?subjectLabel').value
+                        name: binding.get('?subjectLabel').value
                     }))
                 });
 
@@ -243,8 +245,8 @@ class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnow
                         const category = {
                             id: wikidataIdFromUrl(listener.get('?target').value),
                             name: listener.get('?label').value,
-                            //iconUrl: listener.get('?icon').value,
-                        }
+                            iconUrl: listener.get('?icon')?.value,
+                        };
                        newCategories.push(category);
                     });
 

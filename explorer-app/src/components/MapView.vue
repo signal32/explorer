@@ -124,7 +124,7 @@ export default defineComponent({
             });
 
             map1.on('load', () => {
-                services.queryService.methods.getAbstractArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
+                services.queryService.methods.getByArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
                     .then( data => {
                         data.features = [...new Set(data.features)] //todo fix data duplicates
                         map1.addSource('wikidata', {
@@ -180,7 +180,7 @@ export default defineComponent({
 
         async function updateMap() {
             if ((map.value?.getSource('wikidata'))) {
-                services.queryService.methods.getAbstractArea(LatLngBounds.fromMapBox(map.value?.getCenter().toBounds(500)))
+                services.queryService.methods.getByArea(LatLngBounds.fromMapBox(map.value?.getCenter().toBounds(500)))
                     .then( data => {
                         (map.value?.getSource('wikidata') as any).setData(data, map.value?.getZoom());
                     });

@@ -4,11 +4,13 @@ services:
   explorer-app:
     image: "explorer-app"
     build: explorer-app/
+    restart: unless-stopped
     ports:
       - "8080:80"
   explorer-user:
     image: "explorer-user"
     build: explorer-user/
+    restart: unless-stopped
     environment:
       - SERVER_PORT=8080
     ports:
@@ -16,6 +18,7 @@ services:
   explorer-recommend:
     image: "explorer-recommend"
     build: explorer-recommend/
+    restart: unless-stopped
     environment:
       - SERVER_PORT=8080
     ports:
@@ -24,7 +27,7 @@ services:
 
   keycloak:
     image: jboss/keycloak:${KEYCLOAK_VERSION:-16.1.0}
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - ./config/keycloak/realm.json:/tmp/explorer-realm.json
     environment:

@@ -8,6 +8,9 @@ data/
 # .env files ignored. Use .env.dev to be explicit
 .env
 
+/config
+/data
+
 ### STS ###
 .apt_generated
 .classpath

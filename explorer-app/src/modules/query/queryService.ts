@@ -1,7 +1,7 @@
 import {Quad} from '@/modules/geo/quadtree';
 import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
-import {GeoEntity, DetailsEntity} from '@/modules/geo/entity';
+import {GeoEntity, DetailsEntity, Entity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';
 import {notificationService} from '@/modules/app/notificationService';
@@ -9,8 +9,8 @@ import {PluginService} from '@/modules/plugin/pluginManager';
 
 
 export interface QueryService {
-    getAbstract(... items: [string]): Promise<GeoEntity[]>,
-    getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>>,
+    getById: (id: string) => Promise<Entity | undefined>,
+    getByArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>>,
 }
 
 interface QuadInfo {
@@ -20,16 +20,29 @@ interface QuadInfo {
 }
 
 const tree = new Quad<QuadInfo>({name: 'root', queryCache: new Map<QueryService, FeatureCollection<Geometry, GeoEntity>>()});
+const idMap = new Map<string, Entity>();
 
 function defineQueryService() {
     return new PluginService<QueryService>(plugins => {
         return {
 
-            getAbstract(...items): Promise<GeoEntity[]> {
-                return Promise.reject('not implemented');
+            async getById(id): Promise<Entity | undefined> {
+                let entity = idMap.get(id);
+
+                if (entity != undefined) return entity;
+
+                for (const p of plugins) {
+                    entity = await p.getById(id);
+                    if (entity != undefined) {
+                        idMap.set(entity.id, entity); //cache this
+                        return entity;
+                    }
+                }
+                console.warn(`Entity with id=${id} could not be found`);
+                return undefined;
             },
 
-            async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
+            async getByArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
                 const collection: FeatureCollection<Geometry, GeoEntity> = {
                     type: 'FeatureCollection',
                     features: [],
@@ -69,7 +82,7 @@ async function updateQuad(quad: Quad<QuadInfo>, plugins: QueryService[], area: L
     if (!quad.value) quad.value = {queryCache: new Map<QueryService, FeatureCollection<Geometry, GeoEntity>>()};
 
     for (const plugin of plugins) {
-        quad.value?.queryCache.set(plugin, await plugin.getAbstractArea(area));
+        quad.value?.queryCache.set(plugin, await plugin.getByArea(area));
     }
     const quadArea = quad.asArea();
     console.debug(`Updated quad with name = ${quad.value?.name}, cs = ${quadArea.crossSection().toFixed(3)}m, values = `, quad.value);

@@ -9,6 +9,7 @@ import testQuery from './sparql/testQuery.sparql';
 import describeItems from './sparql/describeItems.sparql';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
+import selectEntityById from './sparql/selectEntityById.sparql';
 import {NotificationType} from '@/modules/app/notification';
 import {Plugin, PluginParam} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
@@ -33,7 +34,7 @@ const defaultEndpoint = {
     default: 'https://query.wikidata.org/sparql',
 }
 
-class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnowledgePlugin, DetailServiceFormatPlugin, Plugin {
+export class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnowledgePlugin, DetailServiceFormatPlugin, Plugin {
 
     private readonly categoryStorageKey = 'categories_cache';
     private categories: CategoryEntity[] = [];
@@ -65,11 +66,34 @@ class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnow
         return Promise.resolve([]);
     }
 
+    async getById(id: string): Promise<Entity | undefined> {
+        const query = selectEntityById.replace('?@ids', `wd:${id}`);
+
+        const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint.value}]});
+
+        if (result.type == 'bindings') {
+            const binding = await result.bindings();
+            if (binding.length > 0) {
+                return {
+                    id: wikidataIdFromUrl(binding[0].get('?subject').value),
+                    name: binding[0].get('?subjectLabel').value,
+                    //position: wktLiteralToLatLng(binding[0].get('?subjectLocation').value),
+                    category: {
+                        id: wikidataIdFromUrl(binding[0].get('?category').value),
+                        name: binding[0].get('?categoryLabel').value,
+                        iconUrl: binding[0].get('?categoryIcon')?.value,
+                    }
+                }
+            }
+        }
+        else return undefined;
+    }
+
     /**
      * Searches WikiData for items within an area and returns them as {@link GeoEntity}.
      * @param area The area to search
      */
-    async getAbstractArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
+    async getByArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
 
         const query = testQuery
             .replace('?@include', this.computeIncluded())

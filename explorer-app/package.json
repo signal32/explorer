@@ -28,6 +28,7 @@
     "core-js": "^3.20.3",
     "flexsearch": "^0.7.21",
     "i": "^0.3.7",
+    "jest-raw-loader": "^1.0.1",
     "lodash": "^4.17.21",
     "maplibre-gl": "^2.0.4",
     "node-polyfill-webpack-plugin": "^1.1.4",

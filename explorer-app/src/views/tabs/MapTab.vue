@@ -37,6 +37,7 @@
             <ion-content>
                 <ion-header translucent>
                     <ion-toolbar>
+                        <img v-if="selectedEntityAbstractRef?.category?.iconUrl" :src="selectedEntityAbstractRef?.category?.iconUrl" height="40">
                         <ion-title>{{selectedEntityAbstractRef?.name}}</ion-title>
                         <ion-buttons slot="end">
                             <ion-button @click="setModalOpen(false)">
@@ -48,8 +49,12 @@
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>
+                <img :src="selectedEntityAbstractRef?.category?.iconUrl" height="40">
+
                 <entity-details :entity="selectedEntityAbstractRef"/>
                 <recommend-block :entity="selectedEntityAbstractRef"></recommend-block>
+                <img :src="selectedEntityAbstractRef?.category?.iconUrl" height="40">
+                {{selectedEntityAbstractRef.category}}
                 <p>id: {{selectedEntityAbstractRef?.id}}</p>
                 <p>Category: {{selectedEntityAbstractRef?.category}}</p>
             </ion-content>
@@ -84,7 +89,7 @@ import {locateOutline, planet, settingsOutline, layersOutline, thumbsDownSharp, 
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import MapView, {MapPosition} from '@/components/MapView.vue';
-import {GeoEntity} from '@/modules/geo/entity';
+import {Entity, GeoEntity} from '@/modules/geo/entity';
 import MapOptions from '@/components/MapOptions.vue';
 import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
 import {services} from '@/modules/app/services';
@@ -123,12 +128,16 @@ export default defineComponent({
         }
 
         const isModalOpenRef = ref(false);
-        const selectedEntityAbstractRef = ref<GeoEntity>();
+        const selectedEntityAbstractRef = ref<Entity>();
         function setModalOpen(state: boolean, item?: GeoEntity) {
             isMenuOpen.value = 'open';
             isModalOpenRef.value = state;
-            if (item)
-                selectedEntityAbstractRef.value = item;
+            services.queryService.methods.getById(item?.id || '')
+            .then(res => {
+                if (res)
+                    selectedEntityAbstractRef.value = res
+                console.log('hiya', res);
+            });
         }
 
         const optionsModalOpen = ref(false);

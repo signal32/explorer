@@ -3,7 +3,7 @@ import {LatLngLike} from '@/modules/geo/types';
 export interface Entity {
     id: string,
     name: string,
-    category?: Entity,
+    category?: CategoryEntity,
 }
 
 export interface EntityPosition {

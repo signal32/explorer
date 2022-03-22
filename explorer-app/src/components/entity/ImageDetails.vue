@@ -8,9 +8,11 @@
 -->
 
     <!-- Display multiple images within a slider -->
-    <horizontal-list>
-        <image-card v-for="item in element.images" :key="item.url" :src="item.url"/>
-    </horizontal-list>
+    <ion-item v-if="element.images.length > 0">
+        <horizontal-list>
+            <image-card v-for="item in element.images" :key="item.url" :src="item.url"/>
+        </horizontal-list>
+    </ion-item>
 
 </template>
 
@@ -19,10 +21,11 @@ import {defineComponent, PropType} from 'vue';
 import {ImageDetailElement} from '@/modules/query/detailsService';
 import ImageCard from '@/components/entity/ImageCard.vue';
 import HorizontalList from '@/components/util/HorizontalList.vue';
+import {IonItem} from '@ionic/vue';
 
 export default defineComponent({
     name: "ImageDetails",
-    components: {HorizontalList, ImageCard},
+    components: {HorizontalList, ImageCard, IonItem},
     props: {
         element: Object as PropType<ImageDetailElement>
     }

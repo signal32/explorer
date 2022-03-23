@@ -27,7 +27,7 @@ export interface Services {
 }
 
 const defaultPlugins = [
-    wikidataRecommendPlugin,
+/*    wikidataRecommendPlugin,*/
     /*wembedderPlugin,*/
     wikidataPlugin,
 ]

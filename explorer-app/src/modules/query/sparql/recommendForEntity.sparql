@@ -1,0 +1,19 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+SELECT ?subject ?subjectLabel ?category ?categoryLabel ?categoryIcon WHERE
+{
+    VALUES ?origin {?@originEntities}
+
+    ?origin wdt:P276 ?location.
+    ?origin wdt:P31 ?category.
+
+    ?subject    wdt:P276 ?location; # With same location
+                wdt:P31 ?category;      # With same type
+                rdfs:label ?subjectLabel FILTER (LANG(?subjectLabel) = "en") .
+
+    ?category rdfs:label ?categoryLabel FILTER (LANG(?categoryLabel) = "en") .
+    OPTIONAL {?category wdt:P2910 ?categoryIcon.}
+
+    #SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } # Helps get the label in your language, if not, then en language
+} LIMIT 10

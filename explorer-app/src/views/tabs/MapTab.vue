@@ -65,9 +65,7 @@
                     </ion-item>
 
                     <entity-details :entity="selected"/>
-                    <ion-item>
-                        <recommend-block :entity="selected"/>
-                    </ion-item>
+                    <recommend-block :entity="selected"/>
                     <ion-accordion-group>
                     <ion-accordion value="colors">
                         <ion-item slot="header">

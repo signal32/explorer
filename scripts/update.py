@@ -10,7 +10,7 @@ subprocess.run(["git", "remote", "update"])
 diff = subprocess.run(["git", "status"], stdout=subprocess.PIPE, text=True)
 diff.stdout.find("yeet")
 
-if FORCE_UPDATE or diff.stdout.find("Your branch is behind"):
+if diff.stdout.find("behind") != -1:
     print("Branch is behind origin: updating deployment...")
     subprocess.run(["git","pull"])
 
@@ -20,5 +20,5 @@ if FORCE_UPDATE or diff.stdout.find("Your branch is behind"):
     subprocess.run(["docker-compose", "up", "--build", "--force-recreate", "-d"])
 
     print("Deployment updated")
-
+else: print('Explorer is up to date: No changes on master')
 print("Update process finished at: ", datetime.datetime.now())

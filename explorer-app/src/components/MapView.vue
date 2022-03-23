@@ -13,6 +13,10 @@
 
     <div class="map-wrap">
         <div class="map" ref="mapContainer"></div>
+        <div v-if="isLoading" style="position: absolute; bottom: 0; height: 4px; width: 100%">
+            <ion-progress-bar type="indeterminate"></ion-progress-bar>
+
+        </div>
     </div>
 </template>
 
@@ -22,12 +26,13 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import {LngLat, Map} from 'maplibre-gl';
 import {computed, defineComponent, onMounted, PropType, ref, shallowRef, watch} from 'vue';
 import {debounce} from 'lodash';
-import {IonFab, IonFabButton, IonIcon} from '@ionic/vue';
+import {IonFab, IonFabButton, IonIcon, IonProgressBar} from '@ionic/vue';
 import {hammerSharp, navigateSharp, searchSharp} from 'ionicons/icons';
 import {LatLngBounds} from '@/modules/geo/types';
 import {Feature, Geometry} from 'geojson';
 import {GeoEntity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
+import {NotificationType} from '@/modules/app/notification';
 
 type MapStyle = 'dark' | 'light' | 'basic-preview';
 
@@ -40,7 +45,8 @@ export default defineComponent({
     components: {
         IonFab,
         IonFabButton,
-        IonIcon
+        IonIcon,
+        IonProgressBar,
     },
 
     props: {
@@ -49,7 +55,7 @@ export default defineComponent({
         selected: Object as PropType<GeoEntity>,
     },
 
-    emits: ['update:position', 'update:selected'],
+    emits: ['update:position', 'update:selected', 'load_start', 'load_finish'],
 
     setup(props, {emit}) {
         const mapContainer = shallowRef("");
@@ -117,15 +123,17 @@ export default defineComponent({
 
                 if (!map1.getBounds().contains(lastUpdateCenter)) {
                     //console.log('Radius of viewport: ' + map1.getCenter().distanceTo(map1.getBounds().getNorthEast()));
-                    //updateMap();
+                    updateMap();
                     lastUpdateCenter = map1.getCenter();
                 }
 
             });
 
             map1.on('load', () => {
+                isLoading.value = true;
                 services.queryService.methods.getByArea(LatLngBounds.fromMapBox(map1.getCenter().toBounds(500)))
                     .then( data => {
+                        isLoading.value = false;
                         data.features = [...new Set(data.features)] //todo fix data duplicates
                         map1.addSource('wikidata', {
                             type: 'geojson',
@@ -147,31 +155,10 @@ export default defineComponent({
                                 _selected.value = (clicked.features[0] as unknown as Feature<Geometry, GeoEntity>).properties; //todo Use stronger typing within MapView
                         })
                     })
-/*                map1.addSource('wikidata', {
-                    type: 'geojson',
-                    data:  GisService.getGeoJson(map1.getCenter(), map1.getZoom())
-                    //data: JSON.parse("{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-2.3713666,57.2827122]},\"properties\":{}}]}")
-                });*/
-                //map1.showTileBoundaries = true;
-
-                //map1.getSource('wikidata')?.tileID
-
             });
 
-
-
-            map1.on('moveend', () => {
-
-                // TODO Improve type safety when https://github.com/maplibre/maplibre-gl-js/issues/785 is resolved
-                if ((map1.getSource('wikidata'))) {
-                    //(map1.getSource('wikidata') as any).setData(GisService.getGeoJson(map1.getCenter(), map1.getZoom()));
-                }
-            })
-
             map1.resize();
-
             map.value = map1;
-
         })
 
         async function resetMap () {
@@ -179,10 +166,24 @@ export default defineComponent({
         }
 
         async function updateMap() {
-            if ((map.value?.getSource('wikidata'))) {
-                services.queryService.methods.getByArea(LatLngBounds.fromMapBox(map.value?.getCenter().toBounds(500)))
+            const zoom = map.value?.getZoom();
+            if (zoom && zoom < 13) {
+                services.notificationService.pushNotification({
+                    title: 'Zoom in to update map',
+                    description: 'Automatic search over large areas is currently disabled.',
+                    type: NotificationType.TOAST
+                })
+                return;
+            }
+
+            if (map.value?.getSource('wikidata')) {
+                emit('load_start');
+                isLoading.value = true;
+                services.queryService.methods.getByArea(LatLngBounds.fromMapBox(map.value?.getBounds()))
                     .then( data => {
                         (map.value?.getSource('wikidata') as any).setData(data, map.value?.getZoom());
+                        emit('load_finish');
+                        isLoading.value = false;
                     });
 
             }
@@ -193,7 +194,8 @@ export default defineComponent({
         }
 
         const x = map.value?.getBearing()
-        return { map, mapContainer, resetMap, orientate, updateMap, navigateSharp, hammerSharp, searchSharp, details}
+        const isLoading = ref(false);
+        return { map, mapContainer, isLoading, resetMap, orientate, updateMap, navigateSharp, hammerSharp, searchSharp, details}
     },
 });
 

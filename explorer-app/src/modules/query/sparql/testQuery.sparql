@@ -33,5 +33,5 @@ SELECT ?subject ?subjectLabel ?subjectLocation ?category ?categoryLabel ?categor
     }
 
 }
-LIMIT 100
+LIMIT 1000
 

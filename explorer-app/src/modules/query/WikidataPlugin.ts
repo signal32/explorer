@@ -118,7 +118,6 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
                 // When each item is complete process it and add to collection
                 // This is faster than awaiting the entire result set.
                 result.bindingsStream.on('data', binding => {
-                    console.log('Icon: ', binding.get('?categoryIcon')?.value);
                     features.features.push(asFeature({
                         id: wikidataIdFromUrl(binding.get('?subject').value),
                         position: wktLiteralToLatLng(binding.get('?subjectLocation').value),
@@ -133,11 +132,6 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
 
                 // Resolve once all results have been read.
                 result.bindingsStream.on('end', () => {
-                    this.services?.notificationService.pushNotification({
-                        title: 'Map updated!',
-                        description: `Fetched ${features.features.length} items from WikiData`,
-                        type: NotificationType.TOAST
-                    })
                     resolve(features);
                 });
 

@@ -51,14 +51,8 @@ function defineQueryService() {
                 for (const quad of tree.findOrCreate(area, 12)) {
                     // Plugins are called to update quads which have been newly created and are still empty.
                     if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked)) {
-                        notificationService.pushNotification({
-                            title: 'Updating map information from WikiData',
-                            description: 'This may take some time ☕',
-                            type: NotificationType.TOAST
-                        }, )
-                        await updateQuad(quad, plugins, area); //todo Parcelize quad updates
+                        await updateQuad(quad, plugins, area); //todo Make quad updates in parallel
                         quad.value!.categoriesHash = JSON.stringify(services.preferenceService.liked);
-                        //localStorage.setItem('geoQueryCache', );
                     }
 
                     // Then geoJson is merged together from each quad
@@ -82,7 +76,7 @@ async function updateQuad(quad: Quad<QuadInfo>, plugins: QueryService[], area: L
     if (!quad.value) quad.value = {queryCache: new Map<QueryService, FeatureCollection<Geometry, GeoEntity>>()};
 
     for (const plugin of plugins) {
-        quad.value?.queryCache.set(plugin, await plugin.getByArea(area));
+        quad.value?.queryCache.set(plugin, await plugin.getByArea(quad.asArea()));
     }
     const quadArea = quad.asArea();
     console.debug(`Updated quad with name = ${quad.value?.name}, cs = ${quadArea.crossSection().toFixed(3)}m, values = `, quad.value);

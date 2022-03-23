@@ -1,19 +1,21 @@
 <template>
-    <ion-title>Related</ion-title>
+    <ion-item>
+<!--    <ion-title>Related</ion-title>-->
 <!--    <RecycleScroller class="scroller" direction="horizontal" :items="entities" :item-size="300">
         <template #default="{ item }">
             <entity-abstract-card :entity="item"></entity-abstract-card>
         </template>
     </RecycleScroller>-->
 
-    <horizontal-list>
-        <entity-abstract-card v-for="entity in entities" :key="entity.id" :entity="entity"></entity-abstract-card>
-    </horizontal-list>
+        <horizontal-list>
+            <entity-abstract-card v-for="entity in entities" :key="entity.id" :entity="entity"></entity-abstract-card>
+        </horizontal-list>
+    </ion-item>
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType, ref} from 'vue';
-import {IonTitle} from '@ionic/vue';
+import {IonTitle, IonItem} from '@ionic/vue';
 import {Entity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
 import EntityAbstractCard from '@/components/entity/EntityAbstractCard.vue';
@@ -21,7 +23,7 @@ import HorizontalList from '@/components/util/HorizontalList.vue';
 
 export default defineComponent({
     name: "RecommendBlock",
-    components: {HorizontalList, EntityAbstractCard, IonTitle },
+    components: {HorizontalList, EntityAbstractCard, IonItem },
 
     props: {
         entity: Object as PropType<Entity>

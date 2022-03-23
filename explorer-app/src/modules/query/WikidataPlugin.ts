@@ -10,6 +10,7 @@ import describeItems from './sparql/describeItems.sparql';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
 import selectEntityById from './sparql/selectEntityById.sparql';
+import recommendForEntity from './sparql/recommendForEntity.sparql';
 import {NotificationType} from '@/modules/app/notification';
 import {Plugin, PluginParam} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
@@ -21,6 +22,7 @@ import {
     DetailServiceKnowledgePlugin, ImageDetailElement
 } from '@/modules/query/detailsService';
 import {Quad} from '@rdfjs/types';
+import {RecommendService} from '@/modules/app/recommendationService';
 
 const engine = newEngine();
 const factory = new DataFactory();
@@ -34,7 +36,7 @@ const defaultEndpoint = {
     default: 'https://query.wikidata.org/sparql',
 }
 
-export class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnowledgePlugin, DetailServiceFormatPlugin, Plugin {
+export class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnowledgePlugin, DetailServiceFormatPlugin, RecommendService, Plugin {
 
     private readonly categoryStorageKey = 'categories_cache';
     private categories: CategoryEntity[] = [];
@@ -50,6 +52,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         services.categoryService.register(this);
         services.detailService.knowledge.register(this);
         services.detailService.format.register(this);
+        services.recommendationService.register(this);
 
         this.getCategoryList().then(result => this.categories = result);
 
@@ -61,9 +64,59 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         };
     }
 
-    getAbstract(...items: [string]): Promise<GeoEntity[]> {
-        console.warn('getAbstract() not implemented for WikiDataPlugin');
-        return Promise.resolve([]);
+    /**
+     * Get a list of similar entities to the supplied {@link Entity}.
+     * Under the hood this method polls the WikiData SPARQL endpoint using {@link recommendForEntity}
+     * to select entities within the same region and of same/adjacent categories.
+     * @param entity Entity to find similar entities for
+     * @param limit Max similar entities to find
+     */
+   async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+       const query = recommendForEntity.replace(`?@originEntities`, `wd:${entity.id}`)
+       const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint.value}]});
+
+       const recommended: Entity[] = [];
+
+       if (result.type == 'bindings') {
+           return new Promise( (resolve, reject) => {
+               // When each item is complete process it and add to collection
+               // This is faster than awaiting the entire result set.
+               result.bindingsStream.on('data', binding => {
+                   if (wikidataIdFromUrl(binding.get('?subject').value) != entity.id){
+                       recommended.push({
+                           id: wikidataIdFromUrl(binding.get('?subject').value),
+                           category: {
+                               id: binding.get('?category').value,
+                               name: binding.get('?categoryLabel').value,
+                               iconUrl: binding.get('?categoryIcon')?.value,
+                           },
+                           name: binding.get('?subjectLabel').value
+                       })
+                   }
+               })
+
+               // Resolve once all results have been read.
+               result.bindingsStream.on('end', () => {
+                   resolve(recommended);
+               });
+
+               // And reject if something went wrong.
+               result.bindingsStream.on('error', (error) => {
+                   console.error('WikiData retrieval failed: ' + error)
+                   reject(error);
+               })
+           })
+       }
+
+       return Promise.reject('Result type is not bindings')
+   }
+
+    /**
+     * Not implemented for WikiData plugin as this is hard to calculate
+     * with using only a WikiData endpoint. See separate WikiData Recommend Plugin.
+     */
+    similarity(first: Entity, second: Entity): Promise<number> {
+        return Promise.reject('not implemented');
     }
 
     async getById(id: string): Promise<Entity | undefined> {

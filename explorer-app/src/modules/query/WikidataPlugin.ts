@@ -41,12 +41,12 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     constructor(private services?: Services, private endpoint: string = DEFAULT_ENDPOINT) {}
 
     initialise(services: Services): PluginConfig {
-        this.services = services;
+/*        this.services = services;
         services.queryService.register(this);
         services.categoryService.register(this);
         services.detailService.knowledge.register(this);
         services.detailService.format.register(this);
-        services.recommendationService.register(this);
+        services.recommendationService.register(this);*/
 
         this.getCategoryList().then(result => this.categories = result);
 
@@ -63,7 +63,22 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
                     get: () => {return this.endpoint},
                     set: value => {this.endpoint = value}
                 }
-            ]
+            ],
+            onEnable: () => {
+                services.queryService.register(this);
+                services.categoryService.register(this);
+                services.detailService.knowledge.register(this);
+                services.detailService.format.register(this);
+                services.recommendationService.register(this);
+
+            },
+            onDisable: () => {
+                services.queryService.remove(this);
+                services.categoryService.remove(this);
+                services.detailService.knowledge.remove(this);
+                services.detailService.format.remove(this);
+                services.recommendationService.remove(this);
+            }
         };
     }
 

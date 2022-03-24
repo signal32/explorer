@@ -7,7 +7,9 @@ export interface PluginManager {
     getPluginParams: (name: string) => PluginParam[],
     setPluginParam: (scope: string, param: PluginParam) => void,
     setPluginRemoveCallback: (name: string, cb: (name: string) => void) => void,
-    getPluginConfigs: () => PluginConfig[],
+    getPluginConfigs: () => {config: PluginConfig, enabled: boolean}[],
+    enablePlugin: (name: string) => void,
+    disablePlugin: (name: string) => void,
 }
 
 export interface Plugin {
@@ -51,7 +53,7 @@ const storePluginPrefix = 'explorer-plugin-';
 
 export class AppPluginManager implements PluginManager {
 
-    private loadedPlugins = new Map<string, {instance: Plugin, config: PluginConfig, destroyCb: ((name: string) => void)[]}>();
+    private loadedPlugins = new Map<string, {instance: Plugin, config: PluginConfig, destroyCb: ((name: string) => void)[], enabled: boolean}>();
 
     constructor(private services: Services) {
         console.log('Plugin Manager loaded with services:', services);
@@ -61,8 +63,9 @@ export class AppPluginManager implements PluginManager {
         try{
             const config = plugin.initialise(this.services);
             await this.bindVariables(config);
-            this.loadedPlugins.set(config.metadata.name, {instance: plugin, config, destroyCb: []});
+            this.loadedPlugins.set(config.metadata.name, {instance: plugin, config, destroyCb: [], enabled: false});
             console.log(`Loaded plugin: name: ${config.metadata.name}, version: ${config.metadata.version || 'undefined'}`)
+            this.enablePlugin(config.metadata.name)
         }
         catch (e) {
             console.error('Plugin load failed for plugin: ', plugin);
@@ -96,9 +99,30 @@ export class AppPluginManager implements PluginManager {
     }
 
     public getPluginConfigs() {
-        const configs: PluginConfig[] = []
-        this.loadedPlugins.forEach(c => configs.push(c.config));
+        const configs: {config: PluginConfig, enabled: boolean}[] = []
+        this.loadedPlugins.forEach(c => configs.push({config: c.config, enabled: c.enabled}));
         return configs;
+    }
+
+    enablePlugin(name: string) {
+        const plugin = this.loadedPlugins.get(name);
+        if (plugin) {
+            plugin.enabled = true;
+            plugin.config.onEnable?.(services)
+            console.log(`Enabled plugin ${plugin.config.metadata.name}`)
+        }
+        else console.warn(`Could not enable plugin ${name}: Not loaded`);
+    }
+
+    disablePlugin(name: string){
+        const plugin = this.loadedPlugins.get(name);
+        if (plugin) {
+            plugin.enabled = false;
+            plugin.config.onDisable?.(services);
+            plugin.destroyCb.forEach(cb => cb(name)) // Invoke registered on destroy callbacks for cleanup.
+            console.log(`Disabled plugin ${plugin.config.metadata.name} after running ${plugin.destroyCb.length} destroy callbacks.`)
+        }
+        else console.warn(`Could not disable plugin ${name}: Not loaded`);
     }
 
     private async bindVariables(config: PluginConfig) {
@@ -123,6 +147,19 @@ export class PluginService<Contract> {
     public register(plugin: Contract & Plugin) {
         //manager.setPluginRemoveCallback(plugin, (name) => this.plugins.findIndex())
         this.plugins.push(plugin);
+    }
+
+    public remove(plugin: Plugin) {
+        let toRemoveIdx;
+        for (let i = 0; i < this.plugins.length; i++) {
+            if (this.plugins[i].initialise == plugin.initialise) {
+                toRemoveIdx = i;
+            }
+        }
+
+        if (toRemoveIdx) {
+            this.plugins.splice(toRemoveIdx, 1);
+        }
     }
 
 }

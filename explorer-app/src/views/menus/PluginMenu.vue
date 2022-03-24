@@ -14,19 +14,23 @@
             </ion-item>
 
             <ion-accordion-group>
-            <ion-accordion v-for="plugin in plugins" :key="plugin.metadata.name" :value="plugin.metadata.name">
+            <ion-accordion v-for="plugin in plugins" :key="plugin.config.metadata.name" :value="plugin.config.metadata.name">
                 <ion-item slot="header">
-                    <ion-label>{{plugin.metadata.name}}</ion-label>
+                    <ion-label>{{plugin.config.metadata.name}}</ion-label>
                 </ion-item>
 
                 <ion-list slot="content">
+                    <ion-item v-on:click="setEnabled(plugin.config.metadata.name, !plugin.enabled)">
+                        <ion-label>Enabled: {{plugin.enabled}}</ion-label>
+                    </ion-item>
                     <ion-item>
                         <ion-label class="ion-text-wrap">
-                            <p>{{plugin.metadata.description}}</p>
-                            <p>Version: {{plugin.metadata.version}}</p>
+                            <p>{{plugin.config.metadata.description}}</p>
+                            <p>Version: {{plugin.config.metadata.version}}</p>
+                            <p v-on:click="setEnabled(plugin.config.metadata.name, !plugin.enabled)">Enabled: {{plugin.enabled}}</p>
                         </ion-label>
                     </ion-item>
-                    <ion-item v-for="param in getPluginParams(plugin.metadata.name)" :key="param.name">
+                    <ion-item v-for="param in getPluginParams(plugin.config.metadata.name)" :key="param.name">
                         <ion-label position="floating">{{param.name}}</ion-label>
                         <ion-input :placeholder="param.default" v-model="param.value.value" @keyup="modified=true"></ion-input>
                         <ion-button slot="end" color="light" shape="round" @click="param.value.value = param.default">
@@ -86,7 +90,12 @@ export default defineComponent({
             else return[];
         }
 
-        return {plugins, modified, getPluginParams, startCase, refresh, save}
+        function setEnabled(name: string, state: boolean) {
+            if (state) services.pluginManager?.enablePlugin(name);
+            else services.pluginManager?.disablePlugin(name);
+        }
+
+        return {plugins, modified, getPluginParams, startCase, setEnabled, refresh, save}
     }
 })
 </script>

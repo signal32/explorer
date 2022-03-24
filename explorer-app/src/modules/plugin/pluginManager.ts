@@ -1,5 +1,5 @@
 import {Services, services} from '@/modules/app/services';
-import {Ref} from 'vue';
+import {Ref, WritableComputedRef} from 'vue';
 
 export interface PluginManager {
     loadPlugin: (plugin: Plugin) => void,
@@ -14,19 +14,31 @@ export interface Plugin {
     initialise(services: Services): PluginConfig,
 }
 
-interface PluginConfig {
+export interface PluginConfig {
     metadata: PluginMeta,
-    configVariables?: () => PluginParam[];
-    setConfigVariable?: (param: PluginParam) => void,
+    params?: PluginParam[];
+    onDisable?: (services: Services) => void,
+    onEnable?: (services: Services) => void,
 }
 
-export interface PluginParam {
+export interface BasePluginParam<T> {
     name: string,
     description?: string,
-    value: number | string | undefined,
-    default?: number | string,
-    options?: number[] | string[],
+    type: 'number' | 'string' | 'boolean',
+    default?: T,
+    options?: T[],
+    get: () => T,
+    set?: (value: T) => void,
 }
+
+export interface NumberPluginParam extends BasePluginParam<number>{ type: 'number' }
+export interface StringPluginParam extends BasePluginParam<string>{ type: 'string'}
+export interface BooleanPluginParam extends BasePluginParam<boolean>{ type: 'boolean'}
+
+
+export declare type PluginParam = NumberPluginParam | StringPluginParam | BooleanPluginParam;
+
+
 
 interface PluginMeta {
     name: string,
@@ -64,9 +76,7 @@ export class AppPluginManager implements PluginManager {
     getPluginParams(name: string): PluginParam[] {
         if (name) {
             const config = this.loadedPlugins.get(name)?.config;
-            if (config && config.configVariables) {
-               return config.configVariables();
-            }
+            return config?.params || [];
         }
         return [];
     }
@@ -92,11 +102,12 @@ export class AppPluginManager implements PluginManager {
     }
 
     private async bindVariables(config: PluginConfig) {
-        const params = (config.configVariables) ? config.configVariables() : [];
-
+        const params = config.params || [];
         for (const param of params) {
-            const value = await this.services.store.get(storePluginPrefix + param.name);
-            param.value = (value != null && true) ? value : param.default;
+            const value = await this.services.store.get(storePluginPrefix + param.name) || param.default;
+            if (value && param.type == 'string') param.set?.(value as string);
+            if (value && param.type == 'number') param.set?.(value as number)
+            if (value && param.type == 'boolean') param.set?.(value as boolean);
         }
     }
 }

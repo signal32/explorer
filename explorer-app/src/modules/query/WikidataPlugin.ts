@@ -12,7 +12,7 @@ import selectCategories from './sparql/selectCategories.sparql';
 import selectEntityById from './sparql/selectEntityById.sparql';
 import recommendForEntity from './sparql/recommendForEntity.sparql';
 import {NotificationType} from '@/modules/app/notification';
-import {Plugin, PluginParam} from '@/modules/plugin/pluginManager';
+import {Plugin, PluginConfig, PluginParam} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
 import {CategoryService} from '@/modules/app/categoryService';
 import {
@@ -29,12 +29,8 @@ const factory = new DataFactory();
 
 const DEFAULT_LIKED = 'wd:Q12280 wd:Q811979 wd:Q3947';
 const DEFAULT_DISLIKED = 'wd:Q13276'
+const DEFAULT_ENDPOINT = 'https://query.wikidata.org/sparql';
 
-const defaultEndpoint = {
-    name: 'SPARQL Endpoint',
-    value: 'https://query.wikidata.org/sparql',
-    default: 'https://query.wikidata.org/sparql',
-}
 
 export class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnowledgePlugin, DetailServiceFormatPlugin, RecommendService, Plugin {
 
@@ -42,12 +38,10 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     private categories: CategoryEntity[] = [];
     private index?: Index;
 
-    constructor(private services?: Services, private endpoint: PluginParam = defaultEndpoint) {}
+    constructor(private services?: Services, private endpoint: string = DEFAULT_ENDPOINT) {}
 
-    initialise(services: Services) {
+    initialise(services: Services): PluginConfig {
         this.services = services;
-        this.endpoint = defaultEndpoint;
-
         services.queryService.register(this);
         services.categoryService.register(this);
         services.detailService.knowledge.register(this);
@@ -60,7 +54,16 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
             metadata: {
                 name: 'WikiData'
             },
-            configVariables: () => [this.endpoint]
+            //configVariables: () => [this.endpoint]
+            params: [
+                {
+                    name: 'SPARQL Endpoint',
+                    type: 'string',
+                    default: 'https://query.wikidata.org/sparql',
+                    get: () => {return this.endpoint},
+                    set: value => {this.endpoint = value}
+                }
+            ]
         };
     }
 
@@ -73,7 +76,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      */
    async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
        const query = recommendForEntity.replace(`?@originEntities`, `wd:${entity.id}`)
-       const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint.value}]});
+       const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
 
        const recommended: Entity[] = [];
 
@@ -122,7 +125,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     async getById(id: string): Promise<Entity | undefined> {
         const query = selectEntityById.replace('?@ids', `wd:${id}`);
 
-        const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint.value}]});
+        const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
 
         if (result.type == 'bindings') {
             const binding = await result.bindings();
@@ -153,7 +156,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
             .replace('?@exclude', this.computeExcluded())
 
         const result = await engine.query(query, {
-            sources: [{type: 'sparql', value: this.endpoint.value}],
+            sources: [{type: 'sparql', value: this.endpoint}],
             initialBindings: new (Bindings as any)({
                 '?pointNE': factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
                 '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
@@ -214,7 +217,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
 
     async describe(entity: Entity): Promise<Quad[]> {
         const query = describeItems.replace('?items', `wd:${entity.id}`);
-        const result = await engine.query(query, { sources: [{type: 'sparql', value: this.endpoint.value}]})
+        const result = await engine.query(query, { sources: [{type: 'sparql', value: this.endpoint}]})
         if (result.type == 'quads') {
             return result.quads();
         }
@@ -306,7 +309,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
             newCategories = [];
 
             const result = await engine.query(selectCategories, {
-                sources: [{type: 'sparql', value: this.endpoint.value}]
+                sources: [{type: 'sparql', value: this.endpoint}]
             });
 
             if (result.type == 'bindings') {

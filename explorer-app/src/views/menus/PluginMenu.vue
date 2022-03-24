@@ -9,7 +9,7 @@
             <ion-item color="warning">
                 <ion-label>
                     <h1>Warning</h1>
-                    <p>Updating of plugin parameters is not yet fully implemented.</p>
+                    <p>Updating of plugin parameters is experimental.</p>
                 </ion-label>
             </ion-item>
 
@@ -28,8 +28,8 @@
                     </ion-item>
                     <ion-item v-for="param in getPluginParams(plugin.metadata.name)" :key="param.name">
                         <ion-label position="floating">{{param.name}}</ion-label>
-                        <ion-input :placeholder="param.default" v-model="param.value" @keyup="modified=true"></ion-input>
-                        <ion-button slot="end" color="light" shape="round" @click="param.value = param.default">
+                        <ion-input :placeholder="param.default" v-model="param.value.value" @keyup="modified=true"></ion-input>
+                        <ion-button slot="end" color="light" shape="round" @click="param.value.value = param.default">
                             <ion-icon :icon="refresh"/>
                         </ion-button>
                     </ion-item>
@@ -48,17 +48,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref} from 'vue';
+import {computed, defineComponent, reactive, ref, WritableComputedRef} from 'vue';
 import {
-    IonAccordion,
-    IonAccordionGroup,
-    IonButton,
+    IonAccordion, IonAccordionGroup,IonButton,
     IonContent, IonFab, IonFabButton, IonIcon,
-    IonInput,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonPage
+    IonInput, IonItem, IonLabel, IonList, IonPage
 } from '@ionic/vue';
 import {refresh, save} from 'ionicons/icons'
 import StandardHeader from "@/components/headers/StandardHeader.vue";
@@ -68,12 +62,28 @@ export default defineComponent({
     name: "PluginMenu",
     components: {StandardHeader, IonContent, IonPage, IonAccordion, IonItem, IonList, IonLabel, IonAccordionGroup, IonInput, IonButton, IonIcon, IonFab, IonFabButton},
     setup() {
-
         const plugins = (services?.pluginManager?.getPluginConfigs() || []);
         const modified = ref(false);
 
         function getPluginParams(name: string) {
-            return reactive(services?.pluginManager?.getPluginParams(name) || []);
+            const params = services?.pluginManager?.getPluginParams(name);
+            if (params) {
+                return params.map(param => {
+                    return {
+                        value: computed<boolean | number | string>({
+                            get: () => {return param.get() as boolean | number | string},
+                            set: (value) => {
+                                console.debug(`setting ${param.name} as ${value}`);
+                                if (param.type == 'string') param.set?.(value as string);
+                                else if (param.type == 'number') param.set?.(value as number);
+                                else if (param.type == 'boolean') param.set?.(value as boolean);
+                            }
+                        }),
+                        ...param,
+                    }
+                })
+            }
+            else return[];
         }
 
         return {plugins, modified, getPluginParams, startCase, refresh, save}

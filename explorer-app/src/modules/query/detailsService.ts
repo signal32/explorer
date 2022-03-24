@@ -101,7 +101,7 @@ export interface SectionDetailElement extends BaseDetailElement {
     type: 'section'
     title: string,
     subtitle?: string,
-    elements: BaseDetailElement[]
+    elements: DetailElement[]
 }
 
 /**

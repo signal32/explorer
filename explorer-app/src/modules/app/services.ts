@@ -12,6 +12,7 @@ import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
 import {categoryService, CategoryService} from '@/modules/app/categoryService';
 import {debugService, DebugService} from '@/modules/app/debugService';
 import {defineDetailService, DetailService} from '@/modules/query/detailsService';
+import {WikipediaPlugin} from '@/modules/plugin/WikipediaPlugin';
 
 export interface Services {
     userService:            UserService,
@@ -30,6 +31,7 @@ const defaultPlugins = [
 /*    wikidataRecommendPlugin,*/
     /*wembedderPlugin,*/
     wikidataPlugin,
+    new WikipediaPlugin(),
 ]
 
 function defineServices(): Services {

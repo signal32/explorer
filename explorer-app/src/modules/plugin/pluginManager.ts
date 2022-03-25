@@ -150,14 +150,14 @@ export class PluginService<Contract> {
     }
 
     public remove(plugin: Plugin) {
-        let toRemoveIdx;
+        let toRemoveIdx = -1;
         for (let i = 0; i < this.plugins.length; i++) {
             if (this.plugins[i].initialise == plugin.initialise) {
                 toRemoveIdx = i;
             }
         }
 
-        if (toRemoveIdx) {
+        if (toRemoveIdx >= 0) {
             this.plugins.splice(toRemoveIdx, 1);
         }
     }

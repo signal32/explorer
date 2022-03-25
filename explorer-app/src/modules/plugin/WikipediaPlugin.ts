@@ -41,14 +41,11 @@ export class WikipediaPlugin implements DetailServiceFormatPlugin, Plugin {
         for (const fact of facts) {
             // If Wikipedia article exists, show its extract
             if (fact.predicate.value.includes('about') && fact.subject.value.includes('en.wikipedia')){
-                console.log(fact.object, fact.subject);
                 const id = fact.subject.value;
-                const title = id.substr(id.lastIndexOf('/') + 1);
-                console.log('title' + title);
+                const title = id.substr(id.lastIndexOf('/') + 1); // id is assumed to be last part of url, consider finding more robust alternative (i.e. page id)
 
-                const res = await this.axios.get(`http://en.wikipedia.org/w/api.php?format=json&origin=*&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}`);
+                const res = await this.axios.get(`https://en.wikipedia.org/w/api.php?format=json&origin=*&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}`);
                 const data = Object.entries(res.data.query.pages)[0][1] as unknown as any;
-                console.log(data?.extract);
                 section.elements.push({
                     id: 'wikipedia_excerpt',
                     title: "Abstract",

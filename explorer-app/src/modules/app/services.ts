@@ -34,13 +34,18 @@ const defaultPlugins = [
     new WikipediaPlugin(),
 ]
 
+const postServicesRunners: ((services: Services)=> any)[] = [];
+export function postServices(run: (services: Services) => any) {
+    postServicesRunners.push(run);
+}
+
 function defineServices(): Services {
     const partialServices: Services = {
+        store:                  useStore,
         userService:            userService,
         notificationService:    notificationService,
         preferenceService:      entityPreferenceService,
         debug:                  debugService,
-        store:                  useStore,
         queryService:           queryService,
         recommendationService:  recommendationService,
         categoryService:        categoryService,
@@ -53,7 +58,13 @@ function defineServices(): Services {
     })
     partialServices.pluginManager = manager;
 
+    postServicesRunners.forEach(runner => runner(partialServices));
+
     return partialServices;
 }
 
 export const services = defineServices();
+
+export function useServices(): Services {
+    return services;
+}

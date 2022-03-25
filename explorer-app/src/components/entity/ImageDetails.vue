@@ -10,7 +10,7 @@
     <!-- Display multiple images within a slider -->
     <ion-item v-if="element.images.length > 0">
         <horizontal-list>
-            <image-card v-for="item in element.images" :key="item.url" :src="item.url"/>
+            <image-card v-for="item in element.images" :key="item.url" :src="item.url" style="height: 300px"/>
         </horizontal-list>
     </ion-item>
 

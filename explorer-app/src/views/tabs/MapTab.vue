@@ -36,7 +36,7 @@
             <MapView v-model:position="position" @update:position="position = $event" @update:selected="openDetailModal($event)"/>
 
             <!-- Selected entity details modal -->
-            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1,0.5, 0.75,0.9]" :initialBreakpoint="0.5" :backdropBreakpoint="0.1" @didDismiss="closeDetailModal">
+            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1, 0.8,1.0]" :initialBreakpoint="0.8" :backdropBreakpoint="0.1" @didDismiss="closeDetailModal">
                 <ion-content>
                     <ion-header translucent>
                         <ion-toolbar>
@@ -57,7 +57,7 @@
                         <ion-label>{{startCase(selected?.category?.name)}}</ion-label>
 
                         <ion-buttons slot="end">
-                            <ion-button @click="closeDetailModal">
+                            <ion-button @click="notInterested(selected?.category)">
                                 Not interested
                                 <ion-icon :icon="icons.remove" size="small" slot="end"></ion-icon>
                             </ion-button>
@@ -81,9 +81,35 @@
             </ion-modal>
 
             <!-- Map view configuration modal -->
-            <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.5,0.8]" :initialBreakpoint="0.5" @didDismiss="optionsModalOpen = false" >
+            <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.3]" :initialBreakpoint="0.3" @didDismiss="optionsModalOpen = false" >
                 <ion-content>
-                    <map-options></map-options>
+                    <ion-item>
+                        <ion-label>Map Configuration</ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label>
+                            <h3>Theme</h3>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-segment value="default">
+                            <ion-segment-button value="default">
+                                <ion-label>Default</ion-label>
+                            </ion-segment-button>
+                            <ion-segment-button value="dark">
+                                <ion-label>Light</ion-label>
+                            </ion-segment-button>
+                            <ion-segment-button value="light">
+                                <ion-label>Dark</ion-label>
+                            </ion-segment-button>
+                        </ion-segment>
+                    </ion-item>
+                    <ion-item button detail @click="router.push('/settings/interests'); optionsModalOpen = false">
+                        <ion-label>
+                            <h3>Your interests</h3>
+                            <p>Control what is shown on the map.</p>
+                        </ion-label>
+                    </ion-item>
                 </ion-content>
             </ion-modal>
 
@@ -95,18 +121,34 @@
 import {defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import {
-    IonButtons, IonCol, IonContent, IonFab, IonFabButton,
-    IonHeader, IonIcon, IonModal, IonPage, IonRow,
-    IonSearchbar, IonTitle, IonToolbar, IonItem, IonLabel, IonAccordion, IonAccordionGroup
+    IonAccordion,
+    IonAccordionGroup,
+    IonButtons,
+    IonCol,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonHeader,
+    IonIcon,
+    IonItem,
+    IonLabel,
+    IonModal,
+    IonPage,
+    IonRow,
+    IonSearchbar,
+    IonSegment,
+    IonSegmentButton,
+    IonTitle,
+    IonToolbar
 } from '@ionic/vue';
-import {locateOutline, planet, settingsOutline, layersOutline, removeCircleOutline, close} from 'ionicons/icons';
+import {close, layersOutline, locateOutline, planet, removeCircleOutline, settingsOutline} from 'ionicons/icons';
 import {startCase} from 'lodash';
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {Entity, GeoEntity} from '@/modules/geo/entity';
-import MapOptions from '@/components/MapOptions.vue';
 import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
 import {services} from '@/modules/app/services';
 import EntityDetails from '@/components/entity/EntityDetails.vue';
+import {NotificationType} from '@/modules/app/notification';
 
 const defaultAbstract: GeoEntity = {
     id: 'unidentified',
@@ -117,9 +159,9 @@ const defaultAbstract: GeoEntity = {
 export default defineComponent({
     components: {
         EntityDetails,
-        RecommendBlock, MapOptions, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
+        RecommendBlock, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
         IonFabButton, IonIcon, IonModal, IonButtons, MapView, IonSearchbar, IonCol, IonRow, IonItem,
-        IonAccordion, IonLabel, IonAccordionGroup
+        IonAccordion, IonLabel, IonAccordionGroup, IonSegment, IonSegmentButton
     },
 
     setup() {
@@ -166,6 +208,15 @@ export default defineComponent({
             isModalOpenRef.value = false;
         }
 
+        function notInterested(entity: Entity) {
+            services.preferenceService.dislike(entity);
+            services.notificationService.pushNotification({
+                title: 'Category Removed',
+                description: `We've removed ${entity.name} from your preferences.`,
+                type: NotificationType.TOAST,
+            })
+        }
+
 
         return {
             icons: {
@@ -183,6 +234,7 @@ export default defineComponent({
             move,
             openDetailModal,
             closeDetailModal,
+            notInterested,
             startCase,
             router,
             services,

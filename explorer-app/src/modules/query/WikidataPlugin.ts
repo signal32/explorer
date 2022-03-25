@@ -41,12 +41,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     constructor(private services?: Services, private endpoint: string = DEFAULT_ENDPOINT) {}
 
     initialise(services: Services): PluginConfig {
-/*        this.services = services;
-        services.queryService.register(this);
-        services.categoryService.register(this);
-        services.detailService.knowledge.register(this);
-        services.detailService.format.register(this);
-        services.recommendationService.register(this);*/
+        this.services = services;
 
         this.getCategoryList().then(result => this.categories = result);
 
@@ -317,10 +312,11 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         let newCategories = await this.services?.store.get(this.categoryStorageKey) as CategoryEntity[];
 
         if (newCategories) {
+            console.debug(`Loading ${newCategories.length} categories from local cache`)
             return Promise.resolve(newCategories);
         }
         else {
-            console.log('Loading categories from WikiData');
+            console.log('Loading categories from WikiData: Cached categories could not be loaded');
             newCategories = [];
 
             const result = await engine.query(selectCategories, {

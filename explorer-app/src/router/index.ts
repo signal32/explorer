@@ -36,6 +36,14 @@ const routes: Array<RouteRecordRaw> = [
       component: () => import('@/views/menus/PluginMenu.vue'),
   },
   {
+    path: '/settings/preferences',
+    component: () => import('@/views/menus/PreferenceMenu.vue'),
+  },
+  {
+    path: '/settings/interests',
+    component: () => import('@/views/menus/InterestMenu.vue'),
+  },
+  {
     path: '/entity',
     name: 'Entity',
     component: () => import('@/views/EntityPage.vue')

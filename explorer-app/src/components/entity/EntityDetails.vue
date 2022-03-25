@@ -12,8 +12,21 @@
                 <action-details :element="detail"/>
             </div>
 
-            <entity-details v-if="detail.type === 'section'"></entity-details>
+            <div v-if="detail.type === 'text'">
+                <text-details :element="detail"/>
+            </div>
 
+            <div v-if="detail.type === 'section'">
+                <ion-item-divider v-if="detail.title">
+                    <ion-label>
+                        <h2>{{detail.title}}</h2>
+                        <p>{{detail.subtitle}}</p>
+                    </ion-label>
+                </ion-item-divider>
+                <entity-details :element="detail.elements"/>
+            </div>
+
+<!--            <div v-else>{{detail}}</div>-->
         </div>
     </div>
 
@@ -23,16 +36,19 @@
 import {defineComponent, PropType, ref} from 'vue';
 import {services} from '@/modules/app/services';
 import {Entity} from '@/modules/geo/entity';
-import {DetailElement, ImageDetailElement} from '@/modules/query/detailsService';
+import {DetailElement, ImageDetailElement, SectionDetailElement} from '@/modules/query/detailsService';
 import ImageDetails from '@/components/entity/ImageDetails.vue';
 import ActionDetails from '@/components/entity/ActionDetails.vue';
+import TextDetails from '@/components/entity/TextDetails.vue';
+import {IonLabel, IonItemDivider} from '@ionic/vue';
 
 
 export default defineComponent({
     name: "EntityDetails",
-    components: {ActionDetails, ImageDetails},
+    components: {TextDetails, ActionDetails, ImageDetails, IonLabel, IonItemDivider},
     props: {
         entity: Object as PropType<Entity>,
+        element: Object as PropType<DetailElement[]>
     },
 
     setup(props) {
@@ -41,8 +57,12 @@ export default defineComponent({
         // Subset of images to display at top of component
         const headerImages = ref<ImageDetailElement>();
 
-        // Get details and divide extract into required parts
-        if (props.entity){
+        // If supplied, use directly supplied element
+        if (props.element) {
+            details.value.push(...props.element)
+        }
+        // Otherwise, use the provided entity to get the required details
+        else if (props.entity){
             services.detailService.getDetails(props.entity)
                 .then(result => {
                     result.forEach(i => {

@@ -1,4 +1,4 @@
-import {DetailElement, DetailServiceFormatPlugin} from '@/modules/query/detailsService';
+import {ActionDetailElement, DetailElement, DetailServiceFormatPlugin} from '@/modules/query/detailsService';
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager'
 import {Entity} from '@/modules/geo/entity';
 import {Quad} from '@rdfjs/types';
@@ -13,14 +13,14 @@ export class WikipediaPlugin implements DetailServiceFormatPlugin, Plugin {
     });
 
     initialise(services: Services): PluginConfig {
-        services.detailService.format.register(this);
         return {
             metadata: {
                 name: "Wikipedia Plugin",
                 version: "0.0.1",
                 description: "Gets textual descriptions for entities from Wikipedia"
             },
-            onEnable: () => services.detailService.format.register(this)
+            onEnable: () => services.detailService.format.register(this),
+            onDisable: () => services.detailService.format.remove(this),
         };
     }
 
@@ -32,7 +32,14 @@ export class WikipediaPlugin implements DetailServiceFormatPlugin, Plugin {
             elements: []
         };
 
+        const actions: ActionDetailElement = {
+            id: 'wikipedia_actions',
+            type: 'actions',
+            actions: [],
+        }
+
         for (const fact of facts) {
+            // If Wikipedia article exists, show its extract
             if (fact.predicate.value.includes('about') && fact.subject.value.includes('en.wikipedia')){
                 console.log(fact.object, fact.subject);
                 const id = fact.subject.value;
@@ -49,17 +56,18 @@ export class WikipediaPlugin implements DetailServiceFormatPlugin, Plugin {
                     body: data?.extract as string,
                 });
 
-
-                section.elements.push({
-                    id: 'wikidata_link',
-                    type: 'actions',
-                    actions: [{title: 'View on Wikipedia', url: fact.subject.value}]
-                })
+                actions.actions.push({title: 'View on Wikipedia', url: fact.subject.value})
             }
-            // Images should have P18 property and a valid URL (a regex check would be better)
+
+            // Link to commons
+            if (fact.predicate.value.includes('about') && fact.subject.value.includes('commons')){
+                actions.actions.push({title: 'See images on Commons', url: fact.subject.value})
+            }
         }
 
-        return [section];
+        // Only return elements and sections if they are populated with something
+        if (actions.actions.length > 0) section.elements.push(actions);
+        return (section.elements.length > 0) ? [section] : [];
     }
 
 }

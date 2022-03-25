@@ -22,7 +22,6 @@ export default defineComponent({
 }
 
 .horizontal-container-slot > *  {
-    height: 300px;
     display: inline-block;
 
 }

@@ -2,6 +2,7 @@ import {Entity, EntityId} from '@/modules/geo/entity';
 import {clamp} from 'lodash';
 import {reactive} from 'vue';
 import {services} from '@/modules/app/services';
+import {useStore} from '@/modules/app/storage';
 
 /**
  * Defines structure of a store containing preferences for an {@link Entity}.
@@ -27,7 +28,7 @@ export interface EntityRating {
 }
 
 function defineEntityPreferencesService(): EntityPreferencesService {
-    return reactive({
+    const service: EntityPreferencesService = reactive({
         ratingMap: new Map<string, EntityRating>(),
         likedThreshold: 0.5,
         likeBonus: 0.1,
@@ -37,15 +38,14 @@ function defineEntityPreferencesService(): EntityPreferencesService {
         hash(): string {return JSON.stringify(this.ratingMap);},
         like(entity): any{
             if (entity.category) {
-                this.nudge(entity.category, this.likeBonus)
+                this.nudge(entity.category, this.likeBonus, 0)
             }
             this.ratingMap.set(entity.id, {entity, value: 1});
             update(this);
         },
         dislike(entity): any {
-            console.log('dislike')
             if (entity.category) {
-                this.nudge(entity.category, -this.likeBonus)
+                this.nudge(entity.category, -this.likeBonus, 0)
             }
             this.ratingMap.set(entity.id, {entity, value: 0})
             update(this);
@@ -64,18 +64,34 @@ function defineEntityPreferencesService(): EntityPreferencesService {
             }
             update(this);
         }
-    })
+    });
+    load().then(r => {
+        service.ratingMap = r;
+        update(service);
+    });
+    return service;
 }
 
 function update(state: EntityPreferencesService) {
     disliked(state);
     liked(state);
+    save(state);
     services.debug.setDiagnosticData({
         scope: 'Preferences',
         name: 'Preference map',
         type: 'map',
         values: state.ratingMap,
     })
+}
+
+function save(state: EntityPreferencesService) {
+    const serialisedMap = JSON.parse(JSON.stringify(Array.from(state.ratingMap.entries())));
+    services.store.set('entity_preferences', serialisedMap);
+}
+
+async function load(): Promise<Map<string, EntityRating>> {
+    const serialisedMap = await useStore.get('entity_preferences') as unknown as  [string, EntityRating][];
+    return new Map(serialisedMap);
 }
 
 function disliked(state: EntityPreferencesService) {

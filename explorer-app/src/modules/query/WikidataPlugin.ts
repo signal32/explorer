@@ -132,7 +132,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         return Promise.reject('not implemented');
     }
 
-    async getById(id: string): Promise<Entity | undefined> {
+    async getById(id: string): Promise<GeoEntity | undefined> {
         const query = selectEntityById.replace('?@ids', `wd:${id}`);
 
         const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
@@ -143,7 +143,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
                 return {
                     id: wikidataIdFromUrl(binding[0].get('?subject').value),
                     name: binding[0].get('?subjectLabel').value,
-                    //position: wktLiteralToLatLng(binding[0].get('?subjectLocation').value),
+                    position: wktLiteralToLatLng(binding[0].get('?subjectLocation').value),
                     category: {
                         id: wikidataIdFromUrl(binding[0].get('?category').value),
                         name: binding[0].get('?categoryLabel').value,

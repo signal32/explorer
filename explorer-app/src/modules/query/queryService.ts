@@ -9,7 +9,7 @@ import {PluginService} from '@/modules/plugin/pluginManager';
 
 
 export interface QueryService {
-    getById: (id: string) => Promise<Entity | undefined>,
+    getById: (id: string) => Promise<GeoEntity | undefined>,
     getByArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>>,
 }
 
@@ -20,13 +20,13 @@ interface QuadInfo {
 }
 
 const tree = new Quad<QuadInfo>({name: 'root', queryCache: new Map<QueryService, FeatureCollection<Geometry, GeoEntity>>()});
-const idMap = new Map<string, Entity>();
+const idMap = new Map<string, GeoEntity>();
 
 function defineQueryService() {
     return new PluginService<QueryService>(plugins => {
         return {
 
-            async getById(id): Promise<Entity | undefined> {
+            async getById(id): Promise<GeoEntity | undefined> {
                 let entity = idMap.get(id);
 
                 if (entity != undefined) return entity;

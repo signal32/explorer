@@ -1,5 +1,5 @@
 <template>
-    <ion-card style="width: 290px">
+    <ion-card button style="width: 290px">
 <!--        <img v-if="entity.category.iconUrl" :src="entity.category.iconUrl"/>-->
         <img :src="require('@/assets/image-placeholder.svg')"/>
         <ion-card-header>
@@ -31,7 +31,3 @@ export default defineComponent({
     components: {IonCard, IonCardContent, IonCardHeader, IonCardTitle}
 })
 </script>
-
-<style scoped>
-
-</style>

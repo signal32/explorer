@@ -10,6 +10,7 @@ SELECT ?subject ?subjectLabel ?subjectLocation ?category ?categoryLabel ?categor
     VALUES ?subject { ?@ids }
 
     ?subject wdt:P31 ?category .
+    ?subject wdt:P625 ?subjectLocation .
     ?category rdfs:label ?categoryLabel FILTER (LANG(?categoryLabel) = "en") .
     ?subject rdfs:label ?subjectLabel FILTER (LANG(?subjectLabel) = "en") .
     OPTIONAL {?category wdt:P2910 ?categoryIcon.}

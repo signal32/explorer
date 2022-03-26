@@ -6,11 +6,12 @@ PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?subject ?subjectLabel ?subjectLocation ?category ?categoryLabel ?categoryIcon WHERE {
+SELECT ?subject ?subjectLabel ?subjectLocation ?subjectImage ?category ?categoryLabel ?categoryIcon WHERE {
     VALUES ?subject { ?@ids }
 
     ?subject wdt:P31 ?category .
     ?subject wdt:P625 ?subjectLocation .
+    OPTIONAL {?subject wdt:P18 ?subjectImage}
     ?category rdfs:label ?categoryLabel FILTER (LANG(?categoryLabel) = "en") .
     ?subject rdfs:label ?subjectLabel FILTER (LANG(?subjectLabel) = "en") .
     OPTIONAL {?category wdt:P2910 ?categoryIcon.}

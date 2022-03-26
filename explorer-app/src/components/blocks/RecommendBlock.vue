@@ -31,6 +31,9 @@ const entities = ref<Entity[]>([]);
 
 if (props.entity) {
     services.recommendationService.methods.recommendForEntity(props.entity)
-        .then(res => entities.value.push(...res))
+        .then(res => {
+            res.sort((a, b) => {return (a.thumbnailUrl)? 0 : 1} )
+            entities.value.push(...res)
+        })
 }
 </script>

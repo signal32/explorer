@@ -74,7 +74,7 @@
                     <ion-accordion-group>
                         <ion-accordion value="colors">
                             <ion-item slot="header">
-                                <ion-label>Details</ion-label>
+                                <ion-label>Developer details</ion-label>
                             </ion-item>
                             <ion-item slot="content">
                                 <pre>{{JSON.stringify(selected, null, 2)}}</pre>

@@ -1,5 +1,5 @@
 <template>
-    <IonItemDivider>
+    <IonItemDivider v-if="entities.length > 0">
         <IonLabel>
             <h2>Similar places</h2>
         </IonLabel>

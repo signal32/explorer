@@ -231,9 +231,8 @@ export default defineComponent({
                     zoom: 16,
                 }
                 detailsModalHeight.value = 0.2;
-                openDetailModal(geoEntity);
+                setTimeout(() => openDetailModal(geoEntity), 500 );
                 setTimeout(() => detailsModalHeight.value = 0.8, 1500 );
-
             }
         }
 

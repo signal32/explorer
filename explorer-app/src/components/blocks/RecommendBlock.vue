@@ -1,52 +1,39 @@
 <template>
-    <ion-item>
-<!--    <ion-title>Related</ion-title>-->
-<!--    <RecycleScroller class="scroller" direction="horizontal" :items="entities" :item-size="300">
-        <template #default="{ item }">
-            <entity-abstract-card :entity="item"></entity-abstract-card>
-        </template>
-    </RecycleScroller>-->
-
-        <horizontal-list>
-            <entity-abstract-card v-for="entity in entities" :key="entity.id" :entity="entity"></entity-abstract-card>
-        </horizontal-list>
-    </ion-item>
+    <IonItemDivider v-if="entities.length > 0">
+        <IonLabel>
+            <h2>Similar places</h2>
+        </IonLabel>
+    </IonItemDivider>
+    <IonItem>
+        <HorizontalList>
+            <EntityAbstractCard v-for="entity in entities" :key="entity.id" :entity="entity" @click="emits('selected', entity)"/>
+        </HorizontalList>
+    </IonItem>
 </template>
 
-<script lang="ts">
-import {defineComponent, PropType, ref} from 'vue';
-import {IonTitle, IonItem} from '@ionic/vue';
+<script setup lang="ts">
+import {IonItem, IonItemDivider, IonLabel} from '@ionic/vue';
 import {Entity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
-import EntityAbstractCard from '@/components/entity/EntityAbstractCard.vue';
+import {defineProps, ref, PropType, defineEmits} from 'vue';
 import HorizontalList from '@/components/util/HorizontalList.vue';
+import EntityAbstractCard from '@/components/entity/EntityAbstractCard.vue';
 
-export default defineComponent({
-    name: "RecommendBlock",
-    components: {HorizontalList, EntityAbstractCard, IonItem },
-
-    props: {
-        entity: Object as PropType<Entity>
-    },
-
-    setup(props) {
-        const entities = ref<Entity[]>([]);
-
-
-        if (props.entity) {
-            services.recommendationService.methods.recommendForEntity(props.entity)
-                .then(res => entities.value.push(...res))
-        }
-
-        return {entities}
-
-    }
-
+const props = defineProps({
+    entity: Object as PropType<Entity>,
 });
-</script>
 
-<style scoped>
-    .scroller {
-        height: 150px;
-    }
-</style>
+const emits = defineEmits({
+    selected: (entity: Entity) => {return entity}
+})
+
+const entities = ref<Entity[]>([]);
+
+if (props.entity) {
+    services.recommendationService.methods.recommendForEntity(props.entity)
+        .then(res => {
+            res.sort((a, b) => {return (a.thumbnailUrl)? 0 : 1} )
+            entities.value.push(...res)
+        })
+}
+</script>

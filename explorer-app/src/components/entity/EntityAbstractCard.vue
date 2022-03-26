@@ -1,11 +1,11 @@
 <template>
-    <ion-card style="width: 290px">
-<!--        <img v-if="entity.category.iconUrl" :src="entity.category.iconUrl"/>-->
-        <img :src="require('@/assets/image-placeholder.svg')"/>
-        <ion-card-header>
-            <ion-card-title>{{entity.name}}</ion-card-title>
-        </ion-card-header>
+    <ion-card button style="width: 290px;">
+        <img v-if="entity.thumbnailUrl" :src="entity.thumbnailUrl" style="height: 200px; width: 290px; object-fit: cover"/>
+        <img v-else :src="require('@/assets/image-placeholder.svg')" style="height: 200px; width: 290px; object-fit: cover"/>
         <ion-card-content>
+            <ion-card-title>
+                {{entity.name}}
+            </ion-card-title>
             {{ startCase(entity?.category?.name) }}
         </ion-card-content>
     </ion-card>
@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {IonCard, IonCardContent, IonCardHeader, IonCardTitle} from '@ionic/vue';
+import {IonCard, IonCardContent, IonCardTitle} from '@ionic/vue';
 import {Entity} from '@/modules/geo/entity';
 import {startCase} from 'lodash';
 
@@ -28,10 +28,6 @@ export default defineComponent({
         startCase,
     },
 
-    components: {IonCard, IonCardContent, IonCardHeader, IonCardTitle}
+    components: {IonCard, IonCardContent, IonCardTitle}
 })
 </script>
-
-<style scoped>
-
-</style>

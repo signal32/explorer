@@ -36,7 +36,7 @@
             <MapView v-model:position="position" @update:position="position = $event" @update:selected="openDetailModal($event)"/>
 
             <!-- Selected entity details modal -->
-            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.1, 0.8,1.0]" :initialBreakpoint="0.8" :backdropBreakpoint="0.1" @didDismiss="closeDetailModal">
+            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.8,1.0]" :initialBreakpoint="detailsModalHeight" :backdropBreakpoint="0.1" @didDismiss="closeDetailModal">
                 <ion-content>
                     <ion-header translucent>
                         <ion-toolbar>
@@ -64,18 +64,22 @@
                         </ion-buttons>
                     </ion-item>
 
+                    <!-- Details Section -->
                     <entity-details :entity="selected"/>
-                    <recommend-block :entity="selected"/>
-                    <ion-accordion-group>
-                    <ion-accordion value="colors">
-                        <ion-item slot="header">
-                            <ion-label>Details</ion-label>
-                        </ion-item>
 
-                        <ion-item slot="content">
-                            <pre>{{JSON.stringify(selected, null, 2)}}</pre>
-                        </ion-item>
-                    </ion-accordion>
+                    <!-- Recommendation Section -->
+                    <recommend-block :entity="selected" @selected="moveToSelected($event); closeDetailModal()"/>
+
+                    <!-- Debug information -->
+                    <ion-accordion-group>
+                        <ion-accordion value="colors">
+                            <ion-item slot="header">
+                                <ion-label>Developer details</ion-label>
+                            </ion-item>
+                            <ion-item slot="content">
+                                <pre>{{JSON.stringify(selected, null, 2)}}</pre>
+                            </ion-item>
+                        </ion-accordion>
                     </ion-accordion-group>
                 </ion-content>
             </ion-modal>
@@ -193,6 +197,7 @@ export default defineComponent({
 
         // Referenced by details modal to open/close dynamically
         const isModalOpenRef = ref(false);
+        const detailsModalHeight = ref<0.2 | 0.8>(0.8);
 
         /// Open detail modal with given entity
         function openDetailModal(item: GeoEntity) {
@@ -217,6 +222,20 @@ export default defineComponent({
             })
         }
 
+        async function moveToSelected(entity: Entity){
+            const geoEntity = await services.queryService.methods.getById(entity.id);
+            if (geoEntity) {
+                position.value = {
+                    lat: geoEntity.position.lat,
+                    lng: geoEntity.position.lng,
+                    zoom: 16,
+                }
+                detailsModalHeight.value = 0.2;
+                setTimeout(() => openDetailModal(geoEntity), 500 );
+                setTimeout(() => detailsModalHeight.value = 0.8, 1500 );
+            }
+        }
+
 
         return {
             icons: {
@@ -230,16 +249,25 @@ export default defineComponent({
             position,
             selected,
             isModalOpenRef,
+            detailsModalHeight,
             optionsModalOpen,
             move,
             openDetailModal,
             closeDetailModal,
+            moveToSelected,
             notInterested,
             startCase,
             router,
             services,
         }
     },
+
+
+    methods: {
+        log(obj: any) {
+            console.log(obj.id);
+        }
+    }
 
 });
 </script>

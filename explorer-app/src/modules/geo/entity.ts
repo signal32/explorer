@@ -4,6 +4,11 @@ export interface Entity {
     id: string,
     name: string,
     category?: CategoryEntity,
+
+    /**
+     * A small image that can be retrieved quickly.
+     */
+    thumbnailUrl?: string,
 }
 
 export interface EntityPosition {
@@ -15,7 +20,16 @@ export interface EntityName {
 }
 
 export interface GeoEntity extends Entity {
-    position: LatLngLike
+
+    /**
+     * Global position of this entity.
+     */
+    position: LatLngLike,
+
+    /**
+     * Some geographic entity within which this resides.
+     */
+    within?: GeoEntity,
 }
 
 export interface DetailsEntity extends Entity{

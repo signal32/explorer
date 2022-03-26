@@ -103,7 +103,8 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
                                name: binding.get('?categoryLabel').value,
                                iconUrl: binding.get('?categoryIcon')?.value,
                            },
-                           name: binding.get('?subjectLabel').value
+                           name: binding.get('?subjectLabel').value,
+                           thumbnailUrl: binding.get('?subjectImage')?.value
                        })
                    }
                })
@@ -132,7 +133,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         return Promise.reject('not implemented');
     }
 
-    async getById(id: string): Promise<Entity | undefined> {
+    async getById(id: string): Promise<GeoEntity | undefined> {
         const query = selectEntityById.replace('?@ids', `wd:${id}`);
 
         const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
@@ -143,7 +144,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
                 return {
                     id: wikidataIdFromUrl(binding[0].get('?subject').value),
                     name: binding[0].get('?subjectLabel').value,
-                    //position: wktLiteralToLatLng(binding[0].get('?subjectLocation').value),
+                    position: wktLiteralToLatLng(binding[0].get('?subjectLocation').value),
                     category: {
                         id: wikidataIdFromUrl(binding[0].get('?category').value),
                         name: binding[0].get('?categoryLabel').value,
@@ -243,6 +244,12 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
             images: [],
         };
 
+        const actions: ActionDetailElement = {
+            id: `${entity.id}_canmoreLink`,
+                type: 'actions',
+            actions: [{title: 'View on WikiData', url: `https://wikidata.org/wiki/${entity.id}/`}]
+        }
+
         facts.forEach(fact => {
 
             // Images should have P18 property and a valid URL (a regex check would be better)
@@ -254,15 +261,12 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
             }
 
             if (wikidataIdFromUrl(fact.predicate.value, true) == 'P718') {
-                details.push({
-                    id: `${entity.id}_canmoreLink`,
-                    type: 'actions',
-                    actions: [{title: 'View on Canmore', url: `https://canmore.org.uk/site/${fact.object.value}/`}]
-                })
+                actions.actions.push({title: 'View on Canmore', url: `https://canmore.org.uk/site/${fact.object.value}`})
             }
         })
 
         details.push(image);
+        details.push(actions);
         return details;
     }
 

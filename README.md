@@ -1,7 +1,16 @@
 # Explorer
 [![Java CI with Maven](https://github.com/signal32/explorer/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/signal32/explorer/actions/workflows/maven.yml)
 
-An app for exploring your world.
+Exploring the world with open data.
+
+# Installation & Deployment
+- Use [OpenMapTiles](https://github.com/openmaptiles/openmaptiles) to generate map tiles.
+  For default configuration these must be names `tiles.mbtiles` and placed within `./resources/tileserver/tiles`.
+  Alternatively set env variable `TILESERVER_TILE_DIR` to point at your tiles directory.
+- Modify configuration in `.env.dev` and `./explorer-app/.env` to your requirements. (optional)
+- Run `$ sh mvnw clean install`
+- Run `$ docker-compose up`
+- Add `$ python ./scripts/update.py` to crontab for automatic updates (optional, not recommended)
 
 # Building from source
 Explorer uses the Maven build system throughout with modules for:

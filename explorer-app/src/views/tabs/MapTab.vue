@@ -33,10 +33,11 @@
             </ion-fab>
 
             <!-- Main map display port -->
-            <MapView v-model:position="position" @update:position="position = $event" @update:selected="openDetailModal($event)"/>
+<!--            <MapView v-if="false" v-model:position="position" @update:position="position = $event" @update:selected="openDetailModal($event)"/>-->
+            <MapView2 :key="style" :position="position" @updatePosition="position = $event" :style="style" :selected="mapSelected" @selected="openDetailModal($event)"></MapView2>
 
             <!-- Selected entity details modal -->
-            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.8,1.0]" :initialBreakpoint="detailsModalHeight" :backdropBreakpoint="0.1" @didDismiss="closeDetailModal">
+            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.4,1.0]" :initialBreakpoint="detailsModalHeight" :backdropBreakpoint="0.1" @didDismiss="closeDetailModal">
                 <ion-content>
                     <ion-header translucent>
                         <ion-toolbar>
@@ -100,10 +101,10 @@
                             <ion-segment-button value="default">
                                 <ion-label>Default</ion-label>
                             </ion-segment-button>
-                            <ion-segment-button value="dark">
+                            <ion-segment-button value="dark" @click="style='light'" >
                                 <ion-label>Light</ion-label>
                             </ion-segment-button>
-                            <ion-segment-button value="light">
+                            <ion-segment-button value="light" @click="style='dark'">
                                 <ion-label>Dark</ion-label>
                             </ion-segment-button>
                         </ion-segment>
@@ -153,6 +154,7 @@ import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
 import {services} from '@/modules/app/services';
 import EntityDetails from '@/components/entity/EntityDetails.vue';
 import {NotificationType} from '@/modules/app/notification';
+import MapView2 from '@/components/MapView2.vue';
 
 const defaultAbstract: GeoEntity = {
     id: 'unidentified',
@@ -162,18 +164,19 @@ const defaultAbstract: GeoEntity = {
 
 export default defineComponent({
     components: {
+        MapView2,
         EntityDetails,
         RecommendBlock, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
-        IonFabButton, IonIcon, IonModal, IonButtons, MapView, IonSearchbar, IonCol, IonRow, IonItem,
+        IonFabButton, IonIcon, IonModal, IonButtons, IonSearchbar, IonCol, IonRow, IonItem,
         IonAccordion, IonLabel, IonAccordionGroup, IonSegment, IonSegmentButton
     },
 
     setup() {
         // Center position of map, initialised by router params if presented
         let position = ref<MapPosition>({
-            lng: router.currentRoute.value.query?.lng as unknown as number,
-            lat: router.currentRoute.value.query?.lat as unknown as number,
-            zoom: router.currentRoute.value.query?.zoom as unknown as number,
+            lng: router.currentRoute.value.query?.lng as unknown as number|| 1,
+            lat: router.currentRoute.value.query?.lat as unknown as number || 1,
+            zoom: router.currentRoute.value.query?.zoom as unknown as number || 1,
         });
 
         // Update router params when internal position value changes
@@ -192,15 +195,18 @@ export default defineComponent({
         // Reference to currently selected 'active' entity
         const selected = ref<Entity>();
 
+        const mapSelected = ref<GeoEntity[]>([]);
+
         // Referenced by options modal to open/close dynamically
         const optionsModalOpen = ref(false);
 
         // Referenced by details modal to open/close dynamically
         const isModalOpenRef = ref(false);
-        const detailsModalHeight = ref<0.2 | 0.8>(0.8);
+        const detailsModalHeight = ref<0.2 | 0.4>(0.4);
 
         /// Open detail modal with given entity
         function openDetailModal(item: GeoEntity) {
+            mapSelected.value = [item];
             services.queryService.methods.getById(item?.id)
                 .then(res => {
                     selected.value = res;
@@ -210,6 +216,7 @@ export default defineComponent({
 
         /// Close the detail modal
         function closeDetailModal() {
+            mapSelected.value = [];
             isModalOpenRef.value = false;
         }
 
@@ -232,9 +239,11 @@ export default defineComponent({
                 }
                 detailsModalHeight.value = 0.2;
                 setTimeout(() => openDetailModal(geoEntity), 500 );
-                setTimeout(() => detailsModalHeight.value = 0.8, 1500 );
+                setTimeout(() => detailsModalHeight.value = 0.4, 1500 );
             }
         }
+
+        const style = ref<'light' |'dark'>('dark');
 
 
         return {
@@ -259,6 +268,8 @@ export default defineComponent({
             startCase,
             router,
             services,
+            style,
+            mapSelected,
         }
     },
 

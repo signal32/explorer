@@ -29,7 +29,7 @@ services:
     image: jboss/keycloak:${KEYCLOAK_VERSION:-16.1.0}
     restart: unless-stopped
     volumes:
-      - ./config/keycloak/realm.json:/tmp/explorer-realm.json
+      - ./resources/keycloak/realm.json:/tmp/explorer-realm.json
     environment:
       - KEYCLOAK_USER=${KEYCLOAK_USER:-admin}
       - KEYCLOAK_PASSWORD=${KEYCLOAK_PASSWORD:-password}
@@ -53,7 +53,7 @@ services:
       POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-password}
       POSTGRES_DB: keycloakdb
     volumes:
-      - ${KEYCLOAK_DB_DIR:-./data/keycloak_db}:/var/lib/postgresql/data
+      - ${KEYCLOAK_DB_DIR:-./resources/keycloak/keycloak_db}:/var/lib/postgresql/data
 
   # Service for providing vector tiles to front-end application
   tileServer:
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     command: --verbose --config /config/tileserver/tileserver.json --mbtiles /tile_data/tiles/tiles.mbtiles --port 8090
     volumes:
-      - ./config:/config
-      - ${TILESERVER_TILE_DIR:-./data/tileserver}:/tile_data
+      - ./resources:/config
+      - ${TILESERVER_TILE_DIR:-./resources/tileserver}:/tile_data
     ports:
       - "${TILESERVER_PORT:-8090}:8090"

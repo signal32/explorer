@@ -137,7 +137,12 @@ export default defineComponent({
                         data.features = [...new Set(data.features)] //todo fix data duplicates
                         map1.addSource('wikidata', {
                             type: 'geojson',
-                            data:  data});
+                            data:  data
+                        });
+                        map1.addSource('selected', {
+                            type: 'geojson',
+                            data: []
+                        });
 
                         map1.addLayer({
                             id: 'wikidata',
@@ -145,15 +150,32 @@ export default defineComponent({
                             source: 'wikidata',
                             layout: {
                                 "text-field": ['get', 'name'],
+                                "text-size": 10,
+                            },
+                            paint: {
+                                "text-color": "#92a7c6"
+                            }
+                        });
+                        map1.addLayer({
+                            id: 'selected',
+                            type: 'symbol',
+                            source: 'selected',
+                            layout: {
+                                "text-field": ['get', 'name'],
+                                "text-size": 15,
                             },
                             paint: {
                                 "text-color": "#ffffff"
                             }
-                        });
+                        })
                         map1.on('click', 'wikidata', (clicked) => {
                             if (clicked.features)
                                 _selected.value = (clicked.features[0] as unknown as Feature<Geometry, GeoEntity>).properties; //todo Use stronger typing within MapView
-                        })
+                        });
+                        map1.on('click', 'place_town', event => {
+                            console.log(event?.features?.[0].properties?.name);
+                            map1.getSource('selected')
+                        });
                     })
             });
 
@@ -204,6 +226,7 @@ export interface MapPosition {
     lat: number,
     zoom?: number,
 }
+
 </script>
 
 <style scoped>

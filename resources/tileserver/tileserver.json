@@ -1,0 +1,50 @@
+{
+  "options": {
+    "paths": {
+      "root": "/config/tileserver",
+      "fonts": "/app/node_modules/tileserver-gl-styles/fonts",
+      "styles": "styles",
+      "mbtiles": "/tile_data/tiles"
+    }
+  },
+  "styles": {
+    "basic-preview": {
+      "style": "dark/style.json",
+      "tilejson": {
+        "bounds": [
+          -14.9907,
+          49.523,
+          2.513672,
+          61.13564
+        ]
+      }
+    },
+    "dark": {
+      "style": "dark/style.json",
+      "tilejson": {
+        "bounds": [
+          -14.9907,
+          49.523,
+          2.513672,
+          61.13564
+        ]
+      }
+    },
+    "light": {
+      "style": "light/style.json",
+      "tilejson": {
+        "bounds": [
+          -14.9907,
+          49.523,
+          2.513672,
+          61.13564
+        ]
+      }
+    }
+  },
+  "data": {
+    "v3": {
+      "mbtiles": "tiles.mbtiles"
+    }
+  }
+}

@@ -21,7 +21,6 @@
         <module>explorer-user</module>
         <module>explorer-app</module>
         <module>explorer-common</module>
-        <module>explorer-services</module>
         <module>explorer-recommend</module>
     </modules>
 

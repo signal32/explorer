@@ -4,8 +4,11 @@
         <ion-router-outlet></ion-router-outlet>
         <ion-content :fullscreen="true">
             <settings-list :items="items"/>
+            <ion-label class="ion-text-sm-center" style="padding-top: 50px">
+                <p>Version {{constants.version}}</p>
+                <p>Built at {{constants.buildDate}}</p>
+            </ion-label>
         </ion-content>
-
     </ion-page>
 </template>
 
@@ -19,10 +22,11 @@ import {personCircleOutline, extensionPuzzleOutline, bugOutline, optionsOutline}
 import router from '@/router';
 import StandardHeader from '@/components/headers/StandardHeader.vue';
 import SettingsList, {SettingsItem} from '@/components/menus/SettingsList.vue';
+import {constants} from '@/constants';
 
 export default defineComponent({
     name: "SettingsMenuList",
-    components: {SettingsList, StandardHeader, IonPage, IonContent, IonRouterOutlet},
+    components: {SettingsList, StandardHeader, IonPage, IonContent, IonRouterOutlet, IonLabel},
     setup() {
 
         const items: SettingsItem[] = [
@@ -48,7 +52,7 @@ export default defineComponent({
             },
         ]
 
-        return {items, router}
+        return {items, router, constants}
     }
 
 });

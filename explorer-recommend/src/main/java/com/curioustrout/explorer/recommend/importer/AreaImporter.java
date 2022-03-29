@@ -60,7 +60,8 @@ public class AreaImporter {
             QueryProvider queryProvider,
             ConfigProperties props,
             @Value("#{${explorer.core.query.sparql-endpoint}}") String endpoint,
-            @Value("#{${explorer.recommend.cache-dir}}") String cachePath) {
+            @Value("#{${explorer.recommend.cache-dir}}") String cachePath)
+    {
         this.queryProvider = queryProvider;
         this.resourceLoader = resourceLoader;
         this.endpoint = endpoint;
@@ -75,6 +76,7 @@ public class AreaImporter {
             var cachedFilesLoaded = loadCache();
             if (cachedFilesLoaded < 1) {
                 loadExternal(area);
+                loadCache();
             }
         }
 
@@ -90,7 +92,7 @@ public class AreaImporter {
         var subAreas = createSubAreas(area, chunkSize);
 
         for (int i = 0; i < subAreas.size(); i++) {
-            if (i > 2) break;
+            //if (i > 2) break;
 
             try {
                 LOGGER.info("Retrieving info: {}/{}", i, subAreas.size());
@@ -112,8 +114,10 @@ public class AreaImporter {
     private int loadCache() {
         areaModel = ModelFactory.createDefaultModel();
         try {
-            new File(cachePath).mkdirs();
+            var dir = new File(cachePath);
+            dir.mkdirs();
             var areaCache = ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("file:" + cachePath + "/**/*.nt");
+            LOGGER.info("Loading cache {}", dir.getAbsolutePath());
             for (int i = 0, areaCacheLength = areaCache.length; i < areaCacheLength; i++) {
                 Resource area = areaCache[i];
                 LOGGER.info("Loading cache {}/{}: {}",i, areaCacheLength, area.getFilename());

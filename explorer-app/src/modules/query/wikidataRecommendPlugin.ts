@@ -1,56 +1,73 @@
 import {RecommendService} from '@/modules/app/recommendationService';
 import {Entity} from '@/modules/geo/entity';
-import {Plugin} from '@/modules/plugin/pluginManager';
+import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {createAxios} from '@/modules/auth/setup';
-
-
-interface WikidataRecommendPlugin extends RecommendService, Plugin {
-    endpoint?: { value: string },
-}
-
-const endpoint = {
-    name: 'endpoint',
-    value: '',
-    default: 'http://10.1.0.20:8087/'
-}
+import {Services} from '@/modules/app/services';
 
 const axios = createAxios({
     timeout: 1500,
 })
 
-function defineWikidataRecommendPlugin(): WikidataRecommendPlugin {
-    return {
+export class WikiDataRecommendPlugin implements RecommendService, Plugin {
 
-        initialise(services) {
-            services.recommendationService.register(this);
-            this.endpoint = {value: 'undefined'};
+    private endpoint = process.env.VUE_APP_EXPLORER_RECOMMEND_API || ""; //http://10.1.0.20:8087/api/recommend/";
+    private method = 'doc2vec';
+    private services: Services | undefined;
 
-            return {
-                metadata: {
-                    name: 'WikiData Recommendation Plugin',
-                    version: '0.0.1',
-                    description: 'Analyses embeddings within the WikiData knowledge graph to provide recommendations for items that are similar to each other.'
+    initialise(services: Services): PluginConfig {
+        this.services = services;
+        return {
+            metadata: {
+                name: 'WikiData Recommendation Plugin',
+                version: '0.0.1',
+                description: 'Analyses embeddings within the WikiData knowledge graph to provide recommendations for items that are similar to each other.'
+            },
+            onEnable: () => services.recommendationService.register(this),
+            onDisable: () => services.recommendationService.remove(this),
+            params: [
+                {
+                    name: 'Endpoint',
+                    type: 'string',
+                    get: () => {
+                        return this.endpoint
+                    },
+                    set: (value) => {
+                        this.endpoint = value
+                    }
                 },
-                configVariables: () => [endpoint]
-            }
-        },
-
-        recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-            return axios.get(endpoint.value + `public/recommend?entity=${entity.id}&limit=50` )
-                .then(res => {
-                    console.debug('Recommendations received:', res.data);
-                    const entities: Entity[] = [];
-                    res.data.forEach((i: any) => entities.push({
-                        id: i, name: 'unnamed ' + i
-                    }))
-                    return entities;
-                })
-        },
-
-        similarity(first: Entity, second: Entity): Promise<number> {
-            return Promise.resolve(0);
-        }
+                {
+                    name: 'Method',
+                    type: 'string',
+                    options: ['word2vec', 'doc2vec'],
+                    get: () => {
+                        return this.method
+                    },
+                    set: (value) => {
+                        this.method = value
+                    }
+                }
+            ]
+        };
     }
-}
 
-export const wikidataRecommendPlugin = defineWikidataRecommendPlugin();
+    recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+        return axios.get(this.endpoint + `public/recommend?entity=${entity.id}&limit=50`)
+            .then(async res => {
+                console.debug('Recommendations received:', res.data);
+                const entities: Entity[] = [];
+
+                for (const id of res.data) {
+                    const entity = await this.services?.queryService.methods.getById(id);
+                    if (entity) entities.push(entity);
+                    else console.debug(`Could not get entity with id=${id}, is this a valid entity?`)
+                }
+
+                return entities;
+            })
+    }
+
+    similarity(first: Entity, second: Entity): Promise<number> {
+        return Promise.resolve(0);
+    }
+
+}

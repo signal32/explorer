@@ -59,13 +59,13 @@ export class AppPluginManager implements PluginManager {
         console.log('Plugin Manager loaded with services:', services);
     }
 
-    async loadPlugin(plugin: Plugin) {
+    async loadPlugin(plugin: Plugin, enable = false) {
         try{
             const config = plugin.initialise(this.services);
             await this.bindVariables(config);
             this.loadedPlugins.set(config.metadata.name, {instance: plugin, config, destroyCb: [], enabled: false});
-            console.log(`Loaded plugin: name: ${config.metadata.name}, version: ${config.metadata.version || 'undefined'}`)
-            this.enablePlugin(config.metadata.name)
+            console.log(`Loaded plugin: name: ${config.metadata.name}, version: ${config.metadata.version || 'undefined'}`);
+            if (enable) this.enablePlugin(config.metadata.name);
         }
         catch (e) {
             console.error('Plugin load failed for plugin: ', plugin);

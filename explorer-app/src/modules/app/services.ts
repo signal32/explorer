@@ -5,14 +5,14 @@ import { notificationService, NotificationService } from '@/modules/app/notifica
 import { RecommendService, recommendationService } from '@/modules/app/recommendationService';
 import {AppPluginManager, PluginManager, PluginService} from '@/modules/plugin/pluginManager';
 import {Storage} from '@ionic/storage';
-import {wikidataRecommendPlugin} from '@/modules/query/wikidataRecommendPlugin';
-import {wembedderPlugin} from '@/modules/plugin/wembedderPlugin';
+import {WikiDataRecommendPlugin} from '@/modules/query/wikidataRecommendPlugin';
 import {queryService, QueryService} from '@/modules/query/queryService';
 import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
 import {categoryService, CategoryService} from '@/modules/app/categoryService';
 import {debugService, DebugService} from '@/modules/app/debugService';
 import {defineDetailService, DetailService} from '@/modules/query/detailsService';
 import {WikipediaPlugin} from '@/modules/plugin/WikipediaPlugin';
+import {Plugin} from '@/modules/plugin/pluginManager'
 
 export interface Services {
     userService:            UserService,
@@ -27,11 +27,12 @@ export interface Services {
     pluginManager?:         PluginManager,
 }
 
-const defaultPlugins = [
-/*    wikidataRecommendPlugin,*/
+/// Plugins which are included with and loaded by the application by default
+const defaultPlugins: {plugin: Plugin, enable: boolean}[] = [
     /*wembedderPlugin,*/
-    wikidataPlugin,
-    new WikipediaPlugin(),
+    {plugin: wikidataPlugin, enable: true},
+    {plugin: new WikipediaPlugin(), enable: true},
+    {plugin: new WikiDataRecommendPlugin(), enable: false},
 ]
 
 const postServicesRunners: ((services: Services)=> any)[] = [];
@@ -53,8 +54,9 @@ function defineServices(): Services {
     }
     const manager = new AppPluginManager(partialServices);
 
-    defaultPlugins.forEach(p => {
-        manager.loadPlugin(p)
+    defaultPlugins.forEach(entry => {
+        manager.loadPlugin(entry.plugin, entry.enable)
+            .catch(err => console.error(`Failed to load default plugin "${entry.plugin}": ${err}`));
     })
     partialServices.pluginManager = manager;
 

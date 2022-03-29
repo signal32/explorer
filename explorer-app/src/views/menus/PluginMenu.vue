@@ -6,11 +6,13 @@
 
         <ion-content :fullscreen="true">
 
-            <ion-item color="warning">
+            <ion-item color="tertiary">
+                <ion-icon slot="start" :icon="extensionPuzzleOutline"></ion-icon>
                 <ion-label>
-                    <h1>Warning</h1>
-                    <p>Updating of plugin parameters is experimental.</p>
+                    <h1>Customise with plugins</h1>
+                    <p>Install plugins to provide custom data and insights.</p>
                 </ion-label>
+                <ion-button size="medium" color="light">Install</ion-button>
             </ion-item>
 
             <ion-accordion-group>
@@ -20,20 +22,26 @@
                 </ion-item>
 
                 <ion-list slot="content">
-                    <ion-item v-on:click="setEnabled(plugin.config.metadata.name, !plugin.enabled)">
-                        <ion-label>Enabled: {{plugin.enabled}}</ion-label>
+                    <ion-item>
+                        <ion-label><h3>Enabled</h3></ion-label>
+                        <ion-checkbox slot="end" :checked="plugin.enabled" v-on:click="setEnabled(plugin.config.metadata.name, !plugin.enabled)"></ion-checkbox>
                     </ion-item>
                     <ion-item>
                         <ion-label class="ion-text-wrap">
                             <p>{{plugin.config.metadata.description}}</p>
                             <p>Version: {{plugin.config.metadata.version}}</p>
-                            <p v-on:click="setEnabled(plugin.config.metadata.name, !plugin.enabled)">Enabled: {{plugin.enabled}}</p>
                         </ion-label>
                     </ion-item>
                     <ion-item v-for="param in getPluginParams(plugin.config.metadata.name)" :key="param.name">
                         <ion-label position="floating">{{param.name}}</ion-label>
-                        <ion-input :placeholder="param.default" v-model="param.value.value" @keyup="modified=true"></ion-input>
-                        <ion-button slot="end" color="light" shape="round" @click="param.value.value = param.default">
+
+                        <ion-select v-if="param.options" placeholder="Select One" interface="popover">
+                            <ion-select-option v-for="option in param.options" :key="option" :value="param.value.value" @click="param.value.value = option">{{ option }}</ion-select-option>
+                        </ion-select>
+
+                        <ion-input v-else :placeholder="param.default" v-model="param.value.value" @keyup="modified=true"/>
+
+                        <ion-button v-if="param.default" slot="end" color="light" shape="round" @click="param.value.value = param.default">
                             <ion-icon :icon="refresh"/>
                         </ion-button>
                     </ion-item>
@@ -56,15 +64,15 @@ import {computed, defineComponent, reactive, ref, WritableComputedRef} from 'vue
 import {
     IonAccordion, IonAccordionGroup,IonButton,
     IonContent, IonFab, IonFabButton, IonIcon,
-    IonInput, IonItem, IonLabel, IonList, IonPage
+    IonInput, IonItem, IonLabel, IonList, IonPage, IonCheckbox, IonSelect, IonSelectOption
 } from '@ionic/vue';
-import {refresh, save} from 'ionicons/icons'
+import {refresh, save, extensionPuzzleOutline} from 'ionicons/icons'
 import StandardHeader from "@/components/headers/StandardHeader.vue";
 import {services} from '@/modules/app/services';
 import {startCase} from 'lodash';
 export default defineComponent({
     name: "PluginMenu",
-    components: {StandardHeader, IonContent, IonPage, IonAccordion, IonItem, IonList, IonLabel, IonAccordionGroup, IonInput, IonButton, IonIcon, IonFab, IonFabButton},
+    components: {StandardHeader, IonContent, IonPage, IonAccordion, IonItem, IonList, IonLabel, IonAccordionGroup, IonInput, IonButton, IonIcon, IonFab, IonFabButton, IonCheckbox, IonSelect, IonSelectOption},
     setup() {
         const plugins = (services?.pluginManager?.getPluginConfigs() || []);
         const modified = ref(false);
@@ -95,7 +103,7 @@ export default defineComponent({
             else services.pluginManager?.disablePlugin(name);
         }
 
-        return {plugins, modified, getPluginParams, startCase, setEnabled, refresh, save}
+        return {plugins, modified, getPluginParams, startCase, setEnabled, refresh, save, extensionPuzzleOutline}
     }
 })
 </script>

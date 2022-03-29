@@ -20,7 +20,7 @@ let _services: Services | undefined = undefined;
 
 export const wembedderPlugin: WembedderPlugin = {
     initialise(services) {
-        _services =services;
+        _services = services;
         services.recommendationService.register(this);
         return {
             metadata: {

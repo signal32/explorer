@@ -48,7 +48,7 @@ function defineQueryService() {
                     features: [],
                 };
 
-                for (const quad of tree.findOrCreate(area, 12)) {
+                for (const quad of tree.findOrCreate(area, 14)) {
                     // Plugins are called to update quads which have been newly created and are still empty.
                     if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked)) {
                         await updateQuad(quad, plugins, area); //todo Make quad updates in parallel

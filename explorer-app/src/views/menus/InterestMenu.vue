@@ -2,15 +2,17 @@
     <ion-page>
         <standard-header :title="'Interests'"></standard-header>
         <ion-content :fullscreen="true">
-            <ion-item>
+            <ion-item color="tertiary">
+                <ion-icon slot="start" :icon="icons.heart"></ion-icon>
                 <ion-label class="ion-text-wrap">
-                    Customise your map by choosing what you want to see and what should remain hidden.
+                    <h1>Personalise your map</h1>
+                    <p>Tell us what you like and we'll build a map that's right for you.</p>
                 </ion-label>
             </ion-item>
 
             <ion-item lines="none">
-                <ion-label position="fixed">Search</ion-label>
-                <ion-input placeholder="Try museums, monuments, parks..." @ionChange="searchTermChanged"></ion-input>
+                <ion-label position="stacked">Search</ion-label>
+                <ion-input placeholder="Search here for museums, monuments, parks and more" @ionChange="searchTermChanged"></ion-input>
             </ion-item>
 
             <ion-item v-if="suggestedCategories.length > 0" lines="none">
@@ -50,7 +52,7 @@
 
             <div v-if="categories2.length == 0" class="ion-text-center" style="padding-top: 50px">
                 <ion-label>
-                    <h1>🥴</h1>
+                    <h2>╰（‵□′）╯</h2>
                     <p>Nothing to show. Try adding some categories.</p>
                     <br>
                     <p><b>Liked</b> categories will be shown on the map.</p>
@@ -75,7 +77,7 @@ import {services} from '@/modules/app/services';
 import {CategoryEntity, Entity} from '@/modules/geo/entity';
 import {startCase} from 'lodash';
 import HorizontalList from '@/components/util/HorizontalList.vue';
-import {trash, arrowUp, thumbsDownSharp, thumbsUpSharp} from 'ionicons/icons'
+import {trash, arrowUp, thumbsDownSharp, thumbsUpSharp, heartOutline} from 'ionicons/icons'
 
 
 export default defineComponent({
@@ -123,6 +125,7 @@ export default defineComponent({
                 up: arrowUp,
                 like: thumbsUpSharp,
                 dislike: thumbsDownSharp,
+                heart: heartOutline,
             }}
     },
 

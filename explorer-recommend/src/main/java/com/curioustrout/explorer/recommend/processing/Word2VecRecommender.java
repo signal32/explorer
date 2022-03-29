@@ -6,7 +6,6 @@ import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.text.sentenceiterator.CollectionSentenceIterator;
 import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
-import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,7 @@ import org.deeplearning4j.models.word2vec.Word2Vec.Builder;
 import javax.annotation.PostConstruct;
 
 @Service
-public class Word2VecRecommender implements IRecomender {
+public class Word2VecRecommender implements IRRecommender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Word2VecRecommender.class);
     public static final Pattern PATTERN = Pattern.compile("[QP]\\d*$");
@@ -57,7 +56,7 @@ public class Word2VecRecommender implements IRecomender {
         var file = new File(cachePath + EXPORT_FILE_NAME);
 
         try {
-            if (file.exists()) {
+            if (false/*file.exists()*/) { //TODO disabled until some cache busting mechanism is added
                 LOGGER.info("Using cached model found at {}{}", cachePath, EXPORT_FILE_NAME);
                 word2VecModel = WordVectorSerializer.readWord2VecModel(file);
             } else {
@@ -81,16 +80,17 @@ public class Word2VecRecommender implements IRecomender {
 
     public void train(Model model) throws IOException {
         var iter = new CollectionSentenceIterator(extractSentences(model));
-        iter.setPreProcessor((SentencePreProcessor) this::encode);
+        iter.setPreProcessor((SentencePreProcessor) (v) -> {return v;});
 
         var tokenizer = new DefaultTokenizerFactory();
-        tokenizer.setTokenPreProcessor(new CommonPreprocessor());
+        tokenizer.setTokenPreProcessor(this::encode);
 
         word2VecModel = new Builder()
-                .minWordFrequency(4)
-                .layerSize(100)
-                .seed(42)
-                .windowSize(1)
+                .minWordFrequency(5)
+                .batchSize(5)
+                .layerSize(512)
+                //.seed(42)
+                .windowSize(10)
                 .iterate(iter)
                 .tokenizerFactory(tokenizer)
                 .build();
@@ -106,10 +106,17 @@ public class Word2VecRecommender implements IRecomender {
 
         model.getGraph().stream().forEach(t -> {
             try{
-                list.add(
-                    stripIdFromUrl(t.getObject().toString()).orElseThrow() + " " +
-                    stripIdFromUrl(t.getPredicate().toString()).orElseThrow() + " " +
-                    stripIdFromUrl(t.getObject().toString()).orElseThrow());
+
+                if (stripIdFromUrl(t.getPredicate().toString()).orElseThrow().contains("P276")){
+                    LOGGER.info("Skipping location property");
+                }
+                else {
+
+                    list.add(
+                            stripIdFromUrl(t.getObject().toString()).orElseThrow() + " " +
+                                    stripIdFromUrl(t.getPredicate().toString()).orElseThrow() + " " +
+                                    stripIdFromUrl(t.getObject().toString()).orElseThrow());
+                }
             }
             catch (Exception ignored) {} //suppress
         });
@@ -184,5 +191,10 @@ public class Word2VecRecommender implements IRecomender {
                 .stream()
                 .map(this::decode)
                 .toList();
+    }
+
+    public static void main(String[] args) {
+        var instance = new Word2VecRecommender(null, "");
+        //instance.encode('Q17770890')
     }
 }

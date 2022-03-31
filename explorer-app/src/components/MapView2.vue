@@ -4,6 +4,23 @@
         <div v-if="isLoading" style="position: absolute; top: -1px; height: 0px; width: 100%">
             <IonProgressBar type="indeterminate"></IonProgressBar>
         </div>
+
+
+
+
+        <div style="padding: 10px; position:absolute; bottom: 20px; width: 100%">
+            <Transition>
+            <IonItem v-if="detailedLoading.loading" style="border-radius: 50pc; margin: 5px">
+                {{ detailedLoading.text }}
+                <IonSpinner slot="end"></IonSpinner>
+            </IonItem>
+            </Transition>
+            <Transition>
+            <IonItem v-if="bottomMessage.show" style="border-radius: 50pc; margin: 5px">
+                {{ bottomMessage.text }}
+            </IonItem>
+            </Transition>
+        </div>
         <div style="position: absolute; bottom: 13px; height: 10px; width: 100%; text-align: right; padding-right: 5px; font-size: 10px; color: grey">
             <p>Data © OpenMapTiles © OpenStreetMap contributors</p>
         </div>
@@ -11,20 +28,19 @@
 </template>
 
 <script setup lang="ts">
-    import {IonProgressBar} from '@ionic/vue';
-    import {defineEmits, defineProps} from 'vue';
-    import 'maplibre-gl/dist/maplibre-gl.css'
-    import {computed, onMounted, PropType, ref, shallowRef, watch} from 'vue';
-    import {GeoEntity} from '@/modules/geo/entity';
-    import {debounce} from 'lodash';
-    import {GeoJSONSource, LayerSpecification, LngLat, Map} from 'maplibre-gl';
-    import {Feature, FeatureCollection, Geometry} from 'geojson';
-    import {toFeatureCollection} from '@/modules/geo/geoJson';
-    import {services} from '@/modules/app/services';
-    import {NotificationType} from '@/modules/app/notification';
-    import {LatLngBounds} from '@/modules/geo/types';
+import {IonItem, IonProgressBar, IonSpinner} from '@ionic/vue';
+import {computed, defineEmits, defineProps, onMounted, PropType, ref, shallowRef, watch} from 'vue';
+import 'maplibre-gl/dist/maplibre-gl.css'
+import {GeoEntity} from '@/modules/geo/entity';
+import {debounce} from 'lodash';
+import {GeoJSONSource, LayerSpecification, LngLat, Map} from 'maplibre-gl';
+import {Feature, FeatureCollection, Geometry} from 'geojson';
+import {toFeatureCollection} from '@/modules/geo/geoJson';
+import {services} from '@/modules/app/services';
+import {NotificationType} from '@/modules/app/notification';
+import {LatLngBounds} from '@/modules/geo/types';
 
-    /// Map rendering style
+/// Map rendering style
     export declare type MapStyle = 'light' | 'dark';
 
     /// Focus of map camera
@@ -87,7 +103,7 @@
             "text-halo-blur": 0.5,
             "text-halo-color": (props.style == "dark" )? "#4b4b4b" : "#666666",
             "text-halo-width": 0.5
-    }
+        },
     };
 
     //-- ENTITY LAYER DEFINITION
@@ -98,11 +114,12 @@
         layout: {
             "text-field": ['get', 'name'],
             "text-size": 12,
-            "symbol-spacing": 400,
+            "symbol-spacing": 600,
         },
         paint: {
             "text-color": (props.style == "dark" )? "#a0a0a0" : "#666666"
-        }
+        },
+        minzoom: 12,
     };
 
     /// Debounced position to prevent race conditions. Should be used by all internal logic.
@@ -117,6 +134,16 @@
     const container = shallowRef('');
     /// Tracks whether the map is in some loading state or not
     const isLoading = ref(false);
+
+    const detailedLoading = ref({
+        loading: false,
+        text: ''
+    });
+    const bottomMessage = ref({
+        show: false,
+        text: '',
+    })
+
     /// Position at which map was last updated
     let lastUpdateCenter = new LngLat(0.0, 0.0);
 
@@ -169,6 +196,12 @@
                 update();
                 lastUpdateCenter = map.value?.getCenter() || new LngLat(0.0, 0.0);
             }
+            const zoom = map.value?.getZoom() || 0;
+            if (zoom < 13) {
+                bottomMessage.value.show = true;
+                bottomMessage.value.text = 'Zoom in to see details';
+            }
+            else bottomMessage.value.show = false;
         });
 
 
@@ -182,26 +215,44 @@
                     position: JSON.parse(feature.properties?.position) || DEFAULT_POSITION,
                     ...feature.properties,
                 });
-                emits('updatePosition', {zoom: 15, ...JSON.parse(feature.properties?.position)} || DEFAULT_POSITION )
+                emits('updatePosition', {zoom: map.value?.getZoom(), ...JSON.parse(feature.properties?.position)} || DEFAULT_POSITION )
 
             }
         })
 
         // Register click event for layers (used for place/area names)
         for (const layer of SELECTABLE_LAYERS) {
-            map.value.on('click', layer, event => {
+            map.value.on('click', layer, async event => {
                 if (event.features) {
-                    const place= {
-                        id: event.features[0].properties?.id || 'no-id',
-                        name: event.features[0].properties?.name || '',
-                        position: (event.features[0].geometry.type == 'Point' ) ? {
-                            lng: event.features[0].geometry.coordinates[0],
-                            lat: event.features[0].geometry.coordinates[1]
-                        } : DEFAULT_POSITION,
-                    ...event.features[0].properties,
-                    };
-                    console.debug('Selected abstract place:', place);
-                    emits('selected', place);
+                    const name = event.features[0].properties?.name || '';
+                    const category = event.features[0].properties?.class;
+                    detailedLoading.value.loading = true;
+                    detailedLoading.value.text = `Finding details for ${name}`
+
+                    try {
+                        const entity = await findEntity(name,category, event.lngLat);
+
+                        // If available use coordinates of clicked position for better UX. //TODO fix undefined var
+/*                        if (event.features[0].geometry.type == 'Point') {
+                            entity.position = {
+                                lng: event.features[0].geometry.coordinates[0],
+                                lat: event.features[0].geometry.coordinates[1]
+                            }
+                        }*/
+
+                        detailedLoading.value.loading = false;
+                        emits('selected', entity);
+                        emits('updatePosition', {zoom: map.value?.getZoom(), ...entity.position} || DEFAULT_POSITION )
+                    }
+                    catch (e) {
+                        console.log(e);
+                        detailedLoading.value.loading = false;
+                        services.notificationService.pushNotification({
+                            title: 'Nothing found',
+                            description: `We were unable to find anything about ${name}.`,
+                            type: NotificationType.TOAST,
+                        })
+                    }
                 }
             })
         }
@@ -235,11 +286,6 @@
     async function update() {
         const zoom = map.value?.getZoom();
         if (zoom && zoom < 13) {
-            services.notificationService.pushNotification({
-                title: 'Zoom in to update map',
-                description: 'Automatic search over large areas is currently disabled.',
-                type: NotificationType.TOAST
-            })
             return;
         }
 
@@ -255,6 +301,18 @@
 
     async function orientate() {
         map.value?.resetNorthPitch();
+    }
+
+    async function findEntity(name: string, type: string, position: LngLat): Promise<GeoEntity> {
+        const categories = await services.categoryService.methods.searchCategoryLabels(type);
+        if (type =='village') categories.push(... await services.categoryService.methods.searchCategoryLabels('town'))
+        console.debug(`Categories deduced for type=${type}:`, categories);
+        const result = await services.queryService.methods.getByArea(LatLngBounds.fromMapBox(position.toBounds(1000)), categories, name, false);
+        const feature = result.features.find(i => {
+            return i.properties.name.toLowerCase().match(name.toLowerCase());
+        });
+        if (feature) return feature.properties;
+        else return Promise.reject('No matching entity found');
     }
 
 
@@ -274,6 +332,28 @@
     position: absolute;
     width: 100%;
     height: 100%;
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 80%;
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    text-align: left;
+    margin: 13% 0;
+    min-height: 300px;
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
 }
 
 </style>

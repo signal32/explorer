@@ -1,0 +1,37 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?subject ?subjectLabel ?subjectLocation ?category ?categoryLabel ?categoryIcon WHERE {
+
+    {
+        #VALUES ?included { wd:Q12280 wd:Q811979 wd:Q3947 } #todo get the array from value
+        VALUES ?included { ?@include }
+
+        ?subject rdfs:label "?@label"@en.
+        ?subject p:P31/ps:P31/wdt:P279* ?included .
+    }
+
+    {
+        SERVICE wikibase:box {
+            ?subject wdt:P625 ?subjectLocation .
+            bd:serviceParam wikibase:cornerSouthWest ?pointSW .
+            bd:serviceParam wikibase:cornerNorthEast ?pointNE .
+        }
+    }
+
+    {
+        ?subject wdt:P31 ?category .
+        ?category rdfs:label ?categoryLabel FILTER (LANG(?categoryLabel) = "en") .
+        OPTIONAL {?category wdt:P2910 ?categoryIcon.}
+
+        ?subject rdfs:label ?subjectLabel FILTER (LANG(?subjectLabel) = "en") .
+    }
+
+}
+LIMIT 1000
+

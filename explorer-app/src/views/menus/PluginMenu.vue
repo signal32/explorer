@@ -12,7 +12,7 @@
                     <h1>Customise with plugins</h1>
                     <p>Install plugins to provide custom data and insights.</p>
                 </ion-label>
-                <ion-button size="medium" color="light">Install</ion-button>
+<!--                <ion-button size="medium" color="light">Install</ion-button>-->
             </ion-item>
 
             <ion-accordion-group>

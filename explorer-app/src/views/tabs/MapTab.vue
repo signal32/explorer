@@ -211,7 +211,11 @@ export default defineComponent({
                 .then(res => {
                     selected.value = res;
                     isModalOpenRef.value = true;
-                });
+                })
+                .catch(err => {
+                    console.log(err);
+                    //services.queryService.methods.
+                })
         }
 
         /// Close the detail modal

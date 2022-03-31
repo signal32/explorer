@@ -1,16 +1,15 @@
 import {Quad} from '@/modules/geo/quadtree';
-import {LatLngBounds} from '@/modules/geo/types';
+import {LatLng, LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
-import {GeoEntity, DetailsEntity, Entity} from '@/modules/geo/entity';
+import {GeoEntity, DetailsEntity, Entity, CategoryEntity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
-import {NotificationType} from '@/modules/app/notification';
-import {notificationService} from '@/modules/app/notificationService';
 import {PluginService} from '@/modules/plugin/pluginManager';
 
 
 export interface QueryService {
     getById: (id: string) => Promise<GeoEntity | undefined>,
-    getByArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>>,
+    getByArea(area: LatLngBounds, categories?: CategoryEntity[], name?: string, cache?: boolean): Promise<FeatureCollection<Geometry, GeoEntity>>,
+    getbyLocation(location: GeoEntity): Promise<GeoEntity[]>,
 }
 
 interface QuadInfo {
@@ -42,26 +41,44 @@ function defineQueryService() {
                 return undefined;
             },
 
-            async getByArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
+            async getByArea(area: LatLngBounds, categories?: CategoryEntity[], name?: string, cache = true): Promise<FeatureCollection<Geometry, GeoEntity>> {
                 const collection: FeatureCollection<Geometry, GeoEntity> = {
                     type: 'FeatureCollection',
                     features: [],
                 };
 
-                for (const quad of tree.findOrCreate(area, 14)) {
-                    // Plugins are called to update quads which have been newly created and are still empty.
-                    if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked)) {
-                        await updateQuad(quad, plugins, area); //todo Make quad updates in parallel
-                        quad.value!.categoriesHash = JSON.stringify(services.preferenceService.liked);
-                    }
+                if (cache){
+                    for (const quad of tree.findOrCreate(area, 13)) {
+                        // Plugins are called to update quads which have been newly created and are still empty.
+                        if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked) || categories || name) {
+                            await updateQuad(quad, plugins, categories, name); //todo Make quad updates in parallel
+                            quad.value!.categoriesHash = JSON.stringify(services.preferenceService.liked);
+                        }
 
-                    // Then geoJson is merged together from each quad
-                    quad.value?.queryCache.forEach(item => {
-                        collection.features.push(...item.features)
-                    })
+                        // Then geoJson is merged together from each quad
+                        quad.value?.queryCache.forEach(item => {
+                            collection.features.push(...item.features)
+                        })
+                    }
+                }
+                else {
+                    for (const plugin of plugins) {
+                        const x = (await plugin.getByArea(area, categories, name)).features
+                        collection.features.push(...x);
+                    }
                 }
 
+
+
                 return Promise.resolve(collection);
+            },
+
+            async getbyLocation(location: GeoEntity): Promise<GeoEntity[]> {
+                const collection: GeoEntity[] = [];
+                for (const p of plugins) {
+                    collection.push(... await p.getbyLocation(location));
+                }
+                return collection
             },
 
         }
@@ -71,12 +88,12 @@ function defineQueryService() {
 export const queryService = defineQueryService();
 
 
-async function updateQuad(quad: Quad<QuadInfo>, plugins: QueryService[], area: LatLngBounds) {
+async function updateQuad(quad: Quad<QuadInfo>, plugins: QueryService[], categories?: CategoryEntity[], name?: string) {
 
     if (!quad.value) quad.value = {queryCache: new Map<QueryService, FeatureCollection<Geometry, GeoEntity>>()};
 
     for (const plugin of plugins) {
-        quad.value?.queryCache.set(plugin, await plugin.getByArea(quad.asArea()));
+        quad.value?.queryCache.set(plugin, await plugin.getByArea(quad.asArea(), categories, name));
     }
     const quadArea = quad.asArea();
     console.debug(`Updated quad with name = ${quad.value?.name}, cs = ${quadArea.crossSection().toFixed(3)}m, values = `, quad.value);

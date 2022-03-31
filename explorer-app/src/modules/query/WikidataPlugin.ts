@@ -11,6 +11,7 @@ import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
 import selectEntityById from './sparql/selectEntityById.sparql';
 import recommendForEntity from './sparql/recommendForEntity.sparql';
+import testQueryNamed from './sparql/testQueryNamed.sparql';
 import {NotificationType} from '@/modules/app/notification';
 import {Plugin, PluginConfig, PluginParam} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
@@ -160,11 +161,20 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      * Searches WikiData for items within an area and returns them as {@link GeoEntity}.
      * @param area The area to search
      */
-    async getByArea(area: LatLngBounds): Promise<FeatureCollection<Geometry, GeoEntity>> {
+    async getByArea(area: LatLngBounds, categories?: CategoryEntity[], name?: string): Promise<FeatureCollection<Geometry, GeoEntity>> {
+        let query: string;
+        if (name) {
+            query  = testQueryNamed
+                .replace('?@include', this.computeIncluded(categories))
+                .replace('?@exclude', this.computeExcluded())
+                .replace('?@label', name);
+        }
 
-        const query = testQuery
-            .replace('?@include', this.computeIncluded())
-            .replace('?@exclude', this.computeExcluded())
+        else {
+            query = testQuery
+                .replace('?@include', this.computeIncluded(categories))
+                .replace('?@exclude', this.computeExcluded())
+        }
 
         const result = await engine.query(query, {
             sources: [{type: 'sparql', value: this.endpoint}],
@@ -212,6 +222,10 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         }
 
         else return Promise.reject('Result type is not bindings');
+    }
+
+    async getbyLocation(location: GeoEntity): Promise<GeoEntity[]> {
+        return [];
     }
 
     getCategoryFromLabel(labels: string[]): Promise<CategoryEntity[]> {
@@ -282,9 +296,12 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      * Hack method to get list of IDs suitable for injecting into SPARQL
      * @private
      */
-    private computeIncluded(): string {
+    private computeIncluded(categories?: CategoryEntity[]): string {
         let included = '';
-        if (this.services && this.services.preferenceService.liked.length > 0) {
+        if (categories) {
+            categories.forEach(category => {included += (`wd:${category.id} `)})
+        }
+        else if (this.services && this.services.preferenceService.liked.length > 0) {
             this.services.preferenceService.liked.forEach( liked => {
                 included += (`wd:${liked.entity.id} `);
             })

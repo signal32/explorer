@@ -12,7 +12,8 @@ import selectCategories from './sparql/selectCategories.sparql';
 import selectEntityById from './sparql/selectEntityById.sparql';
 import recommendForEntity from './sparql/recommendForEntity.sparql';
 import testQueryNamed from './sparql/testQueryNamed.sparql';
-import {NotificationType} from '@/modules/app/notification';
+import testQueryLocation from './sparql/testQueryLocation.sparql';
+import {asFeature} from '@/modules/geo/utils';
 import {Plugin, PluginConfig, PluginParam} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
 import {CategoryService} from '@/modules/app/categoryService';
@@ -24,6 +25,8 @@ import {
 } from '@/modules/query/detailsService';
 import {Quad} from '@rdfjs/types';
 import {RecommendService} from '@/modules/app/recommendationService';
+import {BindingsMapper, bindResults, selectByLocation} from '@/modules/query/wikidataQuery';
+import selectByLocationQuery from '@/modules/query/sparql/testQueryLocation.sparql';
 
 const engine = newEngine();
 const factory = new DataFactory();
@@ -225,7 +228,26 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     }
 
     async getbyLocation(location: GeoEntity): Promise<GeoEntity[]> {
-        return [];
+        const query = testQueryLocation
+            .replace('?@location', `wd:${location.id}`)
+            .replace('?@include', this.computeIncluded())
+            .replace('?@exclude', this.computeExcluded());
+
+        const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
+
+        return bindResults<GeoEntity>(result, data => {
+            return {
+                id: wikidataIdFromUrl(data.get('?subject').value),
+                name: data.get('?subjectLabel').value,
+                thumbnailUrl: data.get('?subjectImage')?.value,
+                position: wktLiteralToLatLng(data.get('?subjectLocation').value),
+                category: {
+                    id: data.get('?category').value,
+                    name: data.get('?categoryLabel').value,
+                    iconUrl: data.get('?categoryIcon')?.value,
+                }
+            }
+        })
     }
 
     getCategoryFromLabel(labels: string[]): Promise<CategoryEntity[]> {
@@ -404,21 +426,6 @@ function wktLiteralToLatLng(literal: string): LatLng {
     else {
         console.warn(`Could not convert wktLiteral to LatLng. Value: ${literal}`);
         return new LatLng(0,0);
-    }
-}
-
-/**
- * Convert a GeoEntity into a GeoJSON feature.
- * @param feature The feature to convert.
- */
-function asFeature(feature: GeoEntity): Feature<Geometry, GeoEntity> {
-    return {
-        type: 'Feature',
-        geometry: {
-            type: 'Point',
-            coordinates: [feature.position.lng, feature.position.lat],
-        },
-        properties: feature,
     }
 }
 

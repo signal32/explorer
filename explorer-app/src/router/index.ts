@@ -58,11 +58,13 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'map',
+        name: 'Map',
         component: () => import('@/views/tabs/MapTab.vue'),
       },
       {
-        path: 'discover',
-        component: () => import('@/views/tabs/BlankTab.vue'),
+        path: 'explore',
+        name: 'Explore',
+        component: () => import('@/views/tabs/ExploreTab.vue'),
       },
       {
         path: 'profile',

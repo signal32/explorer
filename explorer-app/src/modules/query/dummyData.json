@@ -1,0 +1,627 @@
+[
+  {
+    "id": "http://www.wikidata.org/entity/Q17772096",
+    "name": "DUMMY: TOWN",
+    "position": {
+      "lat": 57.284403772,
+      "lng": -2.374436339
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q1364150",
+      "name": "town"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q4957169",
+    "name": "DUMMY: Brandsbutt Stone",
+    "position": {
+      "lat": 57.2916,
+      "lng": -2.4
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q1666255",
+      "name": "DUMMY: Pictish stone"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772074",
+    "name": "DUMMY: Inverurie, 100 High Street",
+    "position": {
+      "lat": 57.2789,
+      "lng": -2.3711
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q3947",
+      "name": "DUMMY: house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772082",
+    "name": "DUMMY: Inverurie, 106 High Street",
+    "position": {
+      "lat": 57.2784,
+      "lng": -2.37088
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q3947",
+      "name": "DUMMY: house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772118",
+    "name": "DUMMY: Inverurie, 123 North Street",
+    "position": {
+      "lat": 57.29,
+      "lng": -2.38846
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q3947",
+      "name": "DUMMY: house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772074",
+    "name": "DUMMY: Inverurie, 100 High Street",
+    "position": {
+      "lat": 57.2789,
+      "lng": -2.3711
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q3947",
+      "name": "DUMMY: house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772082",
+    "name": "DUMMY: Inverurie, 106 High Street",
+    "position": {
+      "lat": 57.2784,
+      "lng": -2.37088
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q3947",
+      "name": "DUMMY: house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772118",
+    "name": "DUMMY: Inverurie, 123 North Street",
+    "position": {
+      "lat": 57.29,
+      "lng": -2.38846
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q3947",
+      "name": "DUMMY: house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772416",
+    "name": "DUMMY: Inverurie, Keithhall Road, Howford Bridge",
+    "position": {
+      "lat": 57.2969,
+      "lng": -2.38845
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q12280",
+      "name": "DUMMY: bridge",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/P%20bridge%20grey.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772124",
+    "name": "DUMMY: Inverurie, Keithhall Road, Urie Bridge",
+    "position": {
+      "lat": 57.2748,
+      "lng": -2.36208
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q12280",
+      "name": "DUMMY: bridge",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/P%20bridge%20grey.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772416",
+    "name": "DUMMY: Inverurie, Keithhall Road, Howford Bridge",
+    "position": {
+      "lat": 57.2969,
+      "lng": -2.38845
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q12280",
+      "name": "DUMMY: bridge",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/P%20bridge%20grey.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772124",
+    "name": "DUMMY: Inverurie, Keithhall Road, Urie Bridge",
+    "position": {
+      "lat": 57.2748,
+      "lng": -2.36208
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q12280",
+      "name": "DUMMY: bridge",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/P%20bridge%20grey.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q6060585",
+    "name": "DUMMY: Inverurie Hospital",
+    "position": {
+      "lat": 57.277222,
+      "lng": -2.378056
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q16917",
+      "name": "DUMMY: hospital",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Q16917-hospital.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772091",
+    "name": "DUMMY: Inverurie, High Street, St Mary's Episcopal Church",
+    "position": {
+      "lat": 57.2779,
+      "lng": -2.36974
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q16970",
+      "name": "DUMMY: church building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772110",
+    "name": "DUMMY: Inverurie, 116 North Street, Church",
+    "position": {
+      "lat": 57.2897,
+      "lng": -2.38683
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q16970",
+      "name": "DUMMY: church building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772140",
+    "name": "DUMMY: Inverurie, West High Street, West Parish Church",
+    "position": {
+      "lat": 57.2842,
+      "lng": -2.37636
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q16970",
+      "name": "DUMMY: church building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17904898",
+    "name": "DUMMY: Inverurie, High Street, St Andrew's Church",
+    "position": {
+      "lat": 57.2801,
+      "lng": -2.37298
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q16970",
+      "name": "DUMMY: church building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772066",
+    "name": "DUMMY: Inverurie, 83 High Street, Kintore Arms Hotel",
+    "position": {
+      "lat": 57.2794,
+      "lng": -2.37248
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q27686",
+      "name": "DUMMY: hotel"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602210",
+    "name": "DUMMY: Inverurie Library",
+    "position": {
+      "lat": 57.284466,
+      "lng": -2.374714
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q28564",
+      "name": "DUMMY: public library"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602220",
+    "name": "DUMMY: Kemnay Library",
+    "position": {
+      "lat": 57.235688,
+      "lng": -2.444981
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q28564",
+      "name": "DUMMY: public library"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602258",
+    "name": "DUMMY: Meldrum Library",
+    "position": {
+      "lat": 57.336834,
+      "lng": -2.331204
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q28564",
+      "name": "DUMMY: public library"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602239",
+    "name": "DUMMY: Kintore Library",
+    "position": {
+      "lat": 57.234617,
+      "lng": -2.34856
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q28564",
+      "name": "DUMMY: public library"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602257",
+    "name": "DUMMY: Aberdeenshire Libraries Headquarters",
+    "position": {
+      "lat": 57.331684,
+      "lng": -2.325629
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q28564",
+      "name": "DUMMY: public library"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q38918625",
+    "name": "DUMMY: Victoria Cinema",
+    "position": {
+      "lat": 57.2798861,
+      "lng": -2.3721949
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q41253",
+      "name": "DUMMY: movie theater"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q2171269",
+    "name": "DUMMY: Inverurie railway station",
+    "position": {
+      "lat": 57.2862,
+      "lng": -2.37359
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q55488",
+      "name": "DUMMY: railway station",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Q55488%20noun%2019262%20ccPierreLucAuclair%20train-station.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q7230610",
+    "name": "DUMMY: Port Elphinstone railway station",
+    "position": {
+      "lat": 57.268,
+      "lng": -2.364
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q55488",
+      "name": "DUMMY: railway station",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Q55488%20noun%2019262%20ccPierreLucAuclair%20train-station.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q88967122",
+    "name": "DUMMY: The Gordon Highlander",
+    "position": {
+      "lat": 57.28476058,
+      "lng": -2.379763126
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q212198",
+      "name": "DUMMY: pub"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q15223055",
+    "name": "DUMMY: Harlaw Park",
+    "position": {
+      "lat": 57.29045278,
+      "lng": -2.38150833
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q483110",
+      "name": "DUMMY: stadium"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q77777791",
+    "name": "DUMMY: Inverurie War Memorial And Gardens",
+    "position": {
+      "lat": 57.283857,
+      "lng": -2.3740991
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q811979",
+      "name": "DUMMY: architectural structure",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772019",
+    "name": "DUMMY: Inverurie Hospital, Administration Block",
+    "position": {
+      "lat": 57.2766,
+      "lng": -2.37961
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q811979",
+      "name": "DUMMY: architectural structure",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772037",
+    "name": "DUMMY: Inverurie Hospital, The Gate House",
+    "position": {
+      "lat": 57.2762,
+      "lng": -2.37981
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q811979",
+      "name": "DUMMY: architectural structure",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772042",
+    "name": "DUMMY: Inverurie Hospital, Double House",
+    "position": {
+      "lat": 57.2766,
+      "lng": -2.38028
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q811979",
+      "name": "DUMMY: architectural structure",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772183",
+    "name": "DUMMY: Inverurie, Harlaw Road, Great North Of Scotland Locomotive Works, Carriage And Wagon Shop",
+    "position": {
+      "lat": 57.2892,
+      "lng": -2.37823
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q811979",
+      "name": "DUMMY: architectural structure",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772234",
+    "name": "DUMMY: Inverurie, Harlaw Road, Great North Of Scotland Locomotive Works, Works Building With Smithy, Furnace And Foundry",
+    "position": {
+      "lat": 57.2882,
+      "lng": -2.37744
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q811979",
+      "name": "DUMMY: architectural structure",
+      "iconUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602257",
+    "name": "DUMMY: Aberdeenshire Libraries Headquarters",
+    "position": {
+      "lat": 57.331684,
+      "lng": -2.325629
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q856584",
+      "name": "DUMMY: library building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602258",
+    "name": "DUMMY: Meldrum Library",
+    "position": {
+      "lat": 57.336834,
+      "lng": -2.331204
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q856584",
+      "name": "DUMMY: library building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602220",
+    "name": "DUMMY: Kemnay Library",
+    "position": {
+      "lat": 57.235688,
+      "lng": -2.444981
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q856584",
+      "name": "DUMMY: library building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602239",
+    "name": "DUMMY: Kintore Library",
+    "position": {
+      "lat": 57.234617,
+      "lng": -2.34856
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q856584",
+      "name": "DUMMY: library building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q59602210",
+    "name": "DUMMY: Inverurie Library",
+    "position": {
+      "lat": 57.284466,
+      "lng": -2.374714
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q856584",
+      "name": "DUMMY: library building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772190",
+    "name": "DUMMY: Inverurie, Harlaw Road, Great North Of Scotland Locomotive Works, Manager's Drawing Office",
+    "position": {
+      "lat": 57.2879,
+      "lng": -2.37905
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q1021645",
+      "name": "DUMMY: office building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q56666747",
+    "name": "DUMMY: Inverurie Cemetery, four symbol stones",
+    "position": {
+      "lat": 57.275697,
+      "lng": -2.3661721
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q1666255",
+      "name": "DUMMY: Pictish stone"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17902957",
+    "name": "DUMMY: Inverurie, Glebe Road, St Andrew's Cottage",
+    "position": {
+      "lat": 57.2798,
+      "lng": -2.37786
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q5783996",
+      "name": "DUMMY: cottage"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17902957",
+    "name": "DUMMY: Inverurie, Glebe Road, St Andrew's Cottage",
+    "position": {
+      "lat": 57.2798,
+      "lng": -2.37786
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q5783996",
+      "name": "DUMMY: cottage"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17571142",
+    "name": "DUMMY: House Of Aquahorthies",
+    "position": {
+      "lat": 57.27,
+      "lng": -2.45113
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q16884952",
+      "name": "DUMMY: country house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17571142",
+    "name": "DUMMY: House Of Aquahorthies",
+    "position": {
+      "lat": 57.27,
+      "lng": -2.45113
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q16884952",
+      "name": "DUMMY: country house"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772068",
+    "name": "DUMMY: Inverurie, 80 High Street, Union Bank",
+    "position": {
+      "lat": 57.2796,
+      "lng": -2.37167
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q18761864",
+      "name": "DUMMY: bank building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772106",
+    "name": "DUMMY: Inverurie, 26 West High Street, Clydesdale Bank",
+    "position": {
+      "lat": 57.2846,
+      "lng": -2.37668
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q18761864",
+      "name": "DUMMY: bank building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17902960",
+    "name": "DUMMY: Inverurie, 1 High Street, Clydesdale Bank",
+    "position": {
+      "lat": 57.2826,
+      "lng": -2.37372
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q18761864",
+      "name": "DUMMY: bank building"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772025",
+    "name": "DUMMY: Inverurie Hospital, Nurses' Home",
+    "position": {
+      "lat": 57.2763,
+      "lng": -2.37855
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q654772",
+      "name": "DUMMY: hostel"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772207",
+    "name": "DUMMY: Inverurie, Harlaw Road, Great North Of Scotland Locomotive Works, Workshop",
+    "position": {
+      "lat": 57.2883,
+      "lng": -2.37881
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q656720",
+      "name": "DUMMY: workshop"
+    }
+  },
+  {
+    "id": "http://www.wikidata.org/entity/Q17772096",
+    "name": "DUMMY: Inverurie, 81 High Street, Town Hall",
+    "position": {
+      "lat": 57.284403772,
+      "lng": -2.374436339
+    },
+    "category": {
+      "id": "http://www.wikidata.org/entity/Q1364150",
+      "name": "DUMMY: tollbooth"
+    }
+  }
+]

@@ -1,0 +1,16 @@
+SELECT DISTINCT ?station ?line ?lineLabel ?serviceLabel ?connection ?terminus
+WHERE
+{
+    VALUES ?origin { ?@originStations }
+
+    # Terminus stations at end of line
+    {?origin wdt:P81/wdt:P2789/wdt:P559 ?station.}
+    # Stations in big cities with connecting services
+    UNION {?origin wdt:P1192 ?service. ?station wdt:P1192 ?service. ?station wdt:P276/wdt:P31 wd:Q515. ?service rdfs:label ?serviceLabel FILTER (LANG(?serviceLabel) = "en") .}
+    # And fist, second and third adjacent stations.
+    UNION {?origin wdt:P197|wdt:P197/wdt:P197|wdt:P197/wdt:P197/wdt:P197 ?station.}
+
+    # Line of station
+    ?station wdt:P81 ?line.
+    ?line rdfs:label ?lineLabel FILTER (LANG(?lineLabel) = "en") .
+}

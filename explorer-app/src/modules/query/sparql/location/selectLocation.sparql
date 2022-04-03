@@ -1,0 +1,22 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?entity WHERE {
+
+    {
+        #VALUES ?included { wd:Q12280 wd:Q811979 wd:Q3947 } #todo get the array from value
+        VALUES ?included { ?@include }
+        VALUES ?location { ?@location }
+
+        ?entity wdt:P276 ?location .
+        ?entity p:P31/ps:P31/wdt:P279* ?included .
+    }
+
+}
+LIMIT 50
+

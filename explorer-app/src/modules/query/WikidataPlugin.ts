@@ -1,20 +1,13 @@
 import {QueryService} from '@/modules/query/queryService';
-import {Bindings} from '@comunica/bus-query-operation';
 import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {newEngine} from '@comunica/actor-init-sparql';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
-import {Feature, FeatureCollection, Geometry} from 'geojson';
-import {GeoEntity, DetailsEntity, CategoryEntity, Entity} from '@/modules/geo/entity';
-import testQuery from './sparql/testQuery.sparql';
+import {FeatureCollection, Geometry} from 'geojson';
+import {GeoEntity, CategoryEntity, Entity} from '@/modules/geo/entity';
 import describeItems from './sparql/describeItems.sparql';
 import {Index} from 'flexsearch';
 import selectCategories from './sparql/selectCategories.sparql';
-import selectEntityById from './sparql/selectEntityById.sparql';
-import recommendForEntity from './sparql/recommendForEntity.sparql';
-import testQueryNamed from './sparql/testQueryNamed.sparql';
-import testQueryLocation from './sparql/testQueryLocation.sparql';
-import {asFeature} from '@/modules/geo/utils';
-import {Plugin, PluginConfig, PluginParam} from '@/modules/plugin/pluginManager';
+import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
 import {CategoryService} from '@/modules/app/categoryService';
 import {
@@ -25,11 +18,13 @@ import {
 } from '@/modules/query/detailsService';
 import {Quad} from '@rdfjs/types';
 import {RecommendService} from '@/modules/app/recommendationService';
-import {BindingsMapper, bindResults, selectByLocation} from '@/modules/query/wikidataQuery';
-import selectByLocationQuery from '@/modules/query/sparql/testQueryLocation.sparql';
+import {
+    getArea, getAreaNamed, getEntity,
+    getGeoEntity, getLocation, getSimilarByCategory, WikiDataId
+} from '@/modules/query/queryAbstractionLayer';
+import {toGeoJsonFeature} from '@/modules/geo/geoJson';
 
 const engine = newEngine();
-const factory = new DataFactory();
 
 const DEFAULT_LIKED = 'wd:Q12280 wd:Q811979 wd:Q3947';
 const DEFAULT_DISLIKED = 'wd:Q13276'
@@ -89,44 +84,13 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      * @param limit Max similar entities to find
      */
    async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-       const query = recommendForEntity.replace(`?@originEntities`, `wd:${entity.id}`)
-       const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
+       const ids = await getSimilarByCategory([entity.id as WikiDataId], this.endpoint);
 
-       const recommended: Entity[] = [];
+       // Do not recommend the original entity
+       const entityIdx = ids.indexOf(entity.id as WikiDataId);
+       if (entityIdx >= 0) ids.splice(entityIdx, 1);
 
-       if (result.type == 'bindings') {
-           return new Promise( (resolve, reject) => {
-               // When each item is complete process it and add to collection
-               // This is faster than awaiting the entire result set.
-               result.bindingsStream.on('data', binding => {
-                   if (wikidataIdFromUrl(binding.get('?subject').value) != entity.id){
-                       recommended.push({
-                           id: wikidataIdFromUrl(binding.get('?subject').value),
-                           category: {
-                               id: binding.get('?category').value,
-                               name: binding.get('?categoryLabel').value,
-                               iconUrl: binding.get('?categoryIcon')?.value,
-                           },
-                           name: binding.get('?subjectLabel').value,
-                           thumbnailUrl: binding.get('?subjectImage')?.value
-                       })
-                   }
-               })
-
-               // Resolve once all results have been read.
-               result.bindingsStream.on('end', () => {
-                   resolve(recommended);
-               });
-
-               // And reject if something went wrong.
-               result.bindingsStream.on('error', (error) => {
-                   console.error('WikiData retrieval failed: ' + error)
-                   reject(error);
-               })
-           })
-       }
-
-       return Promise.reject('Result type is not bindings')
+       return getEntity(ids, this.endpoint);
    }
 
     /**
@@ -138,116 +102,36 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     }
 
     async getById(id: string): Promise<GeoEntity | undefined> {
-        const query = selectEntityById.replace('?@ids', `wd:${id}`);
 
-        const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
-
-        if (result.type == 'bindings') {
-            const binding = await result.bindings();
-            if (binding.length > 0) {
-                return {
-                    id: wikidataIdFromUrl(binding[0].get('?subject').value),
-                    name: binding[0].get('?subjectLabel').value,
-                    position: wktLiteralToLatLng(binding[0].get('?subjectLocation').value),
-                    category: {
-                        id: wikidataIdFromUrl(binding[0].get('?category').value),
-                        name: binding[0].get('?categoryLabel').value,
-                        iconUrl: binding[0].get('?categoryIcon')?.value,
-                    }
-                }
-            }
-        }
-        else return undefined;
+        const entities = await getGeoEntity([id as WikiDataId], this.endpoint);
+        return entities[0] || undefined;
     }
 
     /**
      * Searches WikiData for items within an area and returns them as {@link GeoEntity}.
      * @param area The area to search
+     * @param categories Categories to include for this search only.
+     * @param name Name of entity to find
      */
     async getByArea(area: LatLngBounds, categories?: CategoryEntity[], name?: string): Promise<FeatureCollection<Geometry, GeoEntity>> {
-        let query: string;
-        if (name) {
-            query  = testQueryNamed
-                .replace('?@include', this.computeIncluded(categories))
-                .replace('?@exclude', this.computeExcluded())
-                .replace('?@label', name);
-        }
 
-        else {
-            query = testQuery
-                .replace('?@include', this.computeIncluded(categories))
-                .replace('?@exclude', this.computeExcluded())
-        }
+        const entityIds = (name)
+            ? await getAreaNamed(area, name, [this.computeIncluded(categories) as WikiDataId], [this.computeExcluded() as WikiDataId], this.endpoint)
+            : await getArea(area, [this.computeIncluded(categories) as WikiDataId], [this.computeExcluded() as WikiDataId], this.endpoint)
 
-        const result = await engine.query(query, {
-            sources: [{type: 'sparql', value: this.endpoint}],
-            initialBindings: new (Bindings as any)({
-                '?pointNE': factory.literal(`Point(${area.ne.lng},${area.ne.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
-                '?pointSW': factory.literal(`Point(${area.sw.lng},${area.sw.lat})`, new NamedNode('http://www.opengis.net/ont/geosparql#wktLiteral')),
-            })
-        });
+        const entities = await getGeoEntity(entityIds, this.endpoint);
 
-        const features: FeatureCollection<Geometry, GeoEntity> = {
+        const collection: FeatureCollection<Geometry, GeoEntity> = {
             type: 'FeatureCollection',
-            features: []
+            features: entities.map(toGeoJsonFeature),
         }
 
-        if (result.type == 'bindings') {
-            return new Promise((resolve, reject) => {
-
-                // When each item is complete process it and add to collection
-                // This is faster than awaiting the entire result set.
-                result.bindingsStream.on('data', binding => {
-                    features.features.push(asFeature({
-                        id: wikidataIdFromUrl(binding.get('?subject').value),
-                        position: wktLiteralToLatLng(binding.get('?subjectLocation').value),
-                        category: {
-                            id: binding.get('?category').value,
-                            name: binding.get('?categoryLabel').value,
-                            iconUrl: binding.get('?categoryIcon')?.value,
-                        },
-                        name: binding.get('?subjectLabel').value
-                    }))
-                });
-
-                // Resolve once all results have been read.
-                result.bindingsStream.on('end', () => {
-                    resolve(features);
-                });
-
-                // And reject if something went wrong.
-                result.bindingsStream.on('error', (error) => {
-                    console.error('WikiData retrieval failed: ' + error)
-                    reject(error);
-                })
-
-            })
-        }
-
-        else return Promise.reject('Result type is not bindings');
+        return collection;
     }
 
     async getbyLocation(location: GeoEntity): Promise<GeoEntity[]> {
-        const query = testQueryLocation
-            .replace('?@location', `wd:${location.id}`)
-            .replace('?@include', this.computeIncluded())
-            .replace('?@exclude', this.computeExcluded());
-
-        const result = await engine.query(query, {sources: [{type: 'sparql', value: this.endpoint}]});
-
-        return bindResults<GeoEntity>(result, data => {
-            return {
-                id: wikidataIdFromUrl(data.get('?subject').value),
-                name: data.get('?subjectLabel').value,
-                thumbnailUrl: data.get('?subjectImage')?.value,
-                position: wktLiteralToLatLng(data.get('?subjectLocation').value),
-                category: {
-                    id: data.get('?category').value,
-                    name: data.get('?categoryLabel').value,
-                    iconUrl: data.get('?categoryIcon')?.value,
-                }
-            }
-        })
+        const ids = await getLocation([location.id as WikiDataId], [this.computeIncluded() as WikiDataId], [this.computeExcluded() as WikiDataId], this.endpoint);
+        return getGeoEntity(ids, this.endpoint);
     }
 
     getCategoryFromLabel(labels: string[]): Promise<CategoryEntity[]> {
@@ -263,7 +147,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     }
 
     async describe(entity: Entity): Promise<Quad[]> {
-        const query = describeItems.replace('?items', `wd:${entity.id}`);
+        const query = describeItems.replace('?items', entity.id);
         const result = await engine.query(query, { sources: [{type: 'sparql', value: this.endpoint}]})
         if (result.type == 'quads') {
             return result.quads();

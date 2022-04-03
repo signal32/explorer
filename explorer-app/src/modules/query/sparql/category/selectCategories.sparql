@@ -1,0 +1,18 @@
+# Get a list of geograpgical feature categories and their icons.
+
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?target ?icon ?label WHERE {
+    ?item wdt:P31 wd:Q4167836;                      # Instance of WikiData Category
+    wdt:P301 ?target.                               # Have a main subject ?target
+    OPTIONAL {?target wdt:P2910 ?icon.}             # ?target has icon url
+    ?target wdt:P279* wd:Q618123;                   # ?target is a geographical feature
+    rdfs:label ?label FILTER (LANG(?label) = "en").
+}

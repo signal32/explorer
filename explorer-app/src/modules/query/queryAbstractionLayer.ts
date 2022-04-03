@@ -1,13 +1,14 @@
 import {IQueryResult, newEngine} from '@comunica/actor-init-sparql';
 import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
-import {Entity, GeoEntity} from '@/modules/geo/entity';
+import {CategoryEntity, Entity, GeoEntity} from '@/modules/geo/entity';
 import {Bindings} from '@comunica/bus-query-operation';
 import selectEntity from './sparql/entity/selectEntity.sparql'
 import selectArea from './sparql/location/selectArea.sparql'
 import selectAreaNamed from './sparql/location/selectAreaNamed.sparql'
 import selectLocation from './sparql/location/selectLocation.sparql'
 import selectWithSimilarCategories from './sparql/category/selectWithSimilarCategories.sparql'
+import selectCategories from './sparql/category/selectCategories.sparql';
 
 export type WikiDataId = `wd:${'Q' | `P`}${string | number}`;
 
@@ -132,7 +133,7 @@ export async function getLocation(location: WikiDataId[], included: WikiDataId[]
  * @param endpoint
  */
 export async function getSimilarByCategory(ids: WikiDataId[], endpoint: string): Promise<WikiDataId[]> {
-    const query = selectWithSimilarCategories.replace('?@originEntities', ids.join(''));
+    const query = selectWithSimilarCategories.replace('?@originEntities', ids.join(' '));
     const result = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
     return bindResults(result, data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
 }
@@ -149,6 +150,17 @@ export function bindResults<T>(result: IQueryResult, resolver: (data: any) => T)
         })
     }
     else return Promise.reject();
+}
+
+export async function getCategories(endpoint: string): Promise<CategoryEntity[]> {
+    const result = await queryEngine.query(selectCategories, {sources: [{type: 'sparql', value: endpoint}]});
+    return bindResults(result, data => {
+        return {
+            id: wikidataIdFromUrl(data.get('?target').value) || 'UNDEFINED_ID',
+            name: data.get('?label').value,
+            iconUrl: data.get('?icon')?.value,
+        }
+    })
 }
 
 /**

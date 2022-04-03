@@ -19,7 +19,7 @@ import {
 import {Quad} from '@rdfjs/types';
 import {RecommendService} from '@/modules/app/recommendationService';
 import {
-    getArea, getAreaNamed, getEntity,
+    getArea, getAreaNamed, getCategories, getEntity,
     getGeoEntity, getLocation, getSimilarByCategory, WikiDataId
 } from '@/modules/query/queryAbstractionLayer';
 import {toGeoJsonFeature} from '@/modules/geo/geoJson';
@@ -205,11 +205,11 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     private computeIncluded(categories?: CategoryEntity[]): string {
         let included = '';
         if (categories) {
-            categories.forEach(category => {included += (`wd:${category.id} `)})
+            categories.forEach(category => {included += (`${category.id} `)})
         }
         else if (this.services && this.services.preferenceService.liked.length > 0) {
             this.services.preferenceService.liked.forEach( liked => {
-                included += (`wd:${liked.entity.id} `);
+                included += (`${liked.entity.id} `);
             })
         }
         else included = DEFAULT_LIKED;
@@ -224,7 +224,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         let excluded = '';
         if (this.services && this.services.preferenceService.disliked.length > 0) {
             this.services.preferenceService.disliked.forEach( disliked => {
-                excluded += (`wd:${disliked.entity.id} `);
+                excluded += (`${disliked.entity.id} `);
             })
         }
         else excluded = DEFAULT_DISLIKED;
@@ -244,40 +244,9 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         }
         else {
             console.log('Loading categories from WikiData: Cached categories could not be loaded');
-            newCategories = [];
-
-            const result = await engine.query(selectCategories, {
-                sources: [{type: 'sparql', value: this.endpoint}]
-            });
-
-            if (result.type == 'bindings') {
-                return new Promise(((resolve, reject) => {
-                    // Collect data from categories
-                    result.bindingsStream.on('data', listener => {
-                        const category = {
-                            id: wikidataIdFromUrl(listener.get('?target').value),
-                            name: listener.get('?label').value,
-                            iconUrl: listener.get('?icon')?.value,
-                        };
-                       newCategories.push(category);
-                    });
-
-                    // Should wait and be resolved only when all bindings have been processed
-                    result.bindingsStream.on('end', () => {
-                        this.services?.store.set(this.categoryStorageKey, newCategories)
-                        resolve(newCategories);
-                    });
-
-                    // Catch any errors while reading for rejection
-                    result.bindingsStream.on('error', (error) => {
-                        console.error('WikiData retrieval failed: ' + error)
-                        reject(error);
-                    })
-                }));
-            }
-            else {
-                return Promise.reject('Unable to get categories from WikiData: Not bindings type')
-            }
+            newCategories = await getCategories(this.endpoint);
+            this.services?.store.set(this.categoryStorageKey, newCategories);
+            return newCategories;
         }
     }
 

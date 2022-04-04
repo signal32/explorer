@@ -2,8 +2,9 @@ FROM node:latest as build-stage
 WORKDIR /app
 COPY package*.json ./
 COPY .env.production ./
-RUN npm install
+#RUN npm install
 COPY ./ .
+#COPY ./node_modules ./node_modules
 #RUN npm run build --prod
 RUN npm run build
 

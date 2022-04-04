@@ -1,4 +1,4 @@
-import {RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
 import {Entity} from '@/modules/geo/entity';
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {createAxios} from '@/modules/auth/setup';
@@ -50,7 +50,7 @@ export class WikiDataRecommendPlugin implements RecommendService, Plugin {
         };
     }
 
-    recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+    recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
         return axios.get(this.endpoint + `public/recommend?entity=${entity.id}&limit=50`)
             .then(async res => {
                 console.debug('Recommendations received:', res.data);
@@ -62,7 +62,8 @@ export class WikiDataRecommendPlugin implements RecommendService, Plugin {
                     else console.debug(`Could not get entity with id=${id}, is this a valid entity?`)
                 }
 
-                return entities;
+                //return entities;
+                return [];
             })
     }
 

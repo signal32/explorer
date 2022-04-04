@@ -1,5 +1,5 @@
 import {Plugin} from '@/modules/plugin/pluginManager';
-import {RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
 import {createAxios} from '@/modules/auth/setup';
 import {Entity} from '@/modules/geo/entity';
 import {Services} from '@/modules/app/services';
@@ -32,7 +32,7 @@ export const wembedderPlugin: WembedderPlugin = {
         };
     },
 
-    recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+    recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
         return axios.get(api.value + `/api/most-similar/${entity.id}`)
             .then(res => {
                 console.log(res.data);
@@ -44,7 +44,7 @@ export const wembedderPlugin: WembedderPlugin = {
 
                     })
                 })
-                return entities;
+                return entities.map(e => {return {entity: e}});
             })
             .catch(() => {
                 return []

@@ -17,7 +17,7 @@ import {
     DetailServiceKnowledgePlugin, ImageDetailElement
 } from '@/modules/query/detailsService';
 import {Quad} from '@rdfjs/types';
-import {RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
 import {
     getArea, getAreaNamed, getCategories, getEntity,
     getGeoEntity, getLocation, getSimilarByCategory, WikiDataId
@@ -83,14 +83,21 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      * @param entity Entity to find similar entities for
      * @param limit Max similar entities to find
      */
-   async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+   async recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
        const ids = await getSimilarByCategory([entity.id as WikiDataId], this.endpoint);
 
        // Do not recommend the original entity
        const entityIdx = ids.indexOf(entity.id as WikiDataId);
        if (entityIdx >= 0) ids.splice(entityIdx, 1);
 
-       return getEntity(ids, this.endpoint);
+       const entities = await getGeoEntity(ids, this.endpoint);
+       return entities.map(e => {
+           return {
+               entity: e,
+               relevance: 'low',
+           }
+       })
+       //return getEntity(ids, this.endpoint);
    }
 
     /**

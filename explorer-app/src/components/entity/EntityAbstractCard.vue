@@ -7,6 +7,7 @@
                 {{entity.name}}
             </ion-card-title>
             {{ startCase(entity?.category?.name) }}
+            <slot></slot>
         </ion-card-content>
     </ion-card>
 </template>

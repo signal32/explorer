@@ -1,6 +1,6 @@
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {DetailElement, DetailServiceFormatPlugin} from '@/modules/query/detailsService';
-import {RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
 import {Services} from '@/modules/app/services';
 import {constants} from '@/constants';
 import {Entity} from '@/modules/geo/entity';
@@ -47,12 +47,41 @@ export class TransportPlugin implements DetailServiceFormatPlugin, RecommendServ
         return Promise.resolve([]);
     }
 
-    async recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
+    async recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
         const result = await getSimilarStations([entity.id as WikiDataId], this.endpoint);
-        const seen: WikiDataId[] = [];
-        //result.map(i => i.id);
-        return getEntity(result.filter(i => {if (seen.includes(i.id)) return false; else {seen.push(i.id); return true}}).map(i => i.id), this.endpoint);
 
+        // Extract original entity and remove from array.
+        const origin = result.find(e => {return e.id == entity.id})
+        if (origin) result.splice(result.indexOf(origin), 1);
+
+        // Construct entities from remaining IDs
+        const entities = await getEntity(result.map(i => i.id), this.endpoint);
+
+        return entities.map(e => {
+            const r = result.find(i => {return i.id == e.id});
+            const recommendation: Recommendation = {
+                entity: e,
+                distance: r?.distance
+            };
+
+            if (r?.connection == origin?.connection){
+                recommendation.reason = 'Same line';
+                recommendation.relevance = 'high';
+            }
+
+            else if (r?.connection) {
+                recommendation.reason = `Via ${r.connection}`;
+                recommendation.relevance = 'medium';
+            }
+
+            else if (r?.service) {
+                recommendation.reason = `On ${r.service}`;
+                recommendation.relevance = 'medium';
+            }
+
+            return recommendation;
+
+        })
     }
 
     similarity(first: Entity, second: Entity): Promise<number> {

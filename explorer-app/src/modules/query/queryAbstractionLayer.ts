@@ -202,17 +202,22 @@ interface SimilarStation {
     service?: string,
     connection?: string,
     terminus?: string,
+    distance?: number,
 }
 export async function getSimilarStations(originStations: WikiDataId[], endpoint: string): Promise<SimilarStation[]> {
     const query = selectSimilarStations.replace('?@originStations', originStations.join(' '));
     const result = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
-    return bindResults(result, data => {
+    return mapResults(result, data => {
         return {
-            id: wikidataIdFromUrl(data.get('?station').value),
-            lineId: wikidataIdFromUrl(data.get('?line').value),
-            service: data.get('?serviceLabel')?.value,
-            connection: data.get('?connection')?.value,
-            terminus: data.get('?terminus')?.value,
+            key: wikidataIdFromUrl(data.get('?station').value) as string,
+            value: {
+                id: wikidataIdFromUrl(data.get('?station').value),
+                lineId: wikidataIdFromUrl(data.get('?line').value),
+                service: data.get('?serviceLabel')?.value,
+                connection: data.get('?lineLabel')?.value,
+                terminus: data.get('?terminus')?.value,
+                distance: data.get('?distance')?.value,
+            }
         }
     })
 }
@@ -220,7 +225,9 @@ export async function getSimilarStations(originStations: WikiDataId[], endpoint:
 interface SimilarArchitecture {
     id: WikiDataId,
     heritageDesignation?: string,
-
+    architecturalStyle?: string,
+    architect?: string,
+    distance?: number,
 }
 export async function getSimilarArchitecture(originStations: WikiDataId[], endpoint: string): Promise<SimilarArchitecture[]> {
     const query = selectSimilarArchitecture.replace('?__origins__', originStations.join(' '));
@@ -231,6 +238,9 @@ export async function getSimilarArchitecture(originStations: WikiDataId[], endpo
             value: {
                 id: wikidataIdFromUrl(data.get('?place').value),
                 heritageDesignation: data.get('?heritageDesignationLabel')?.value,
+                architecturalStyle: data.get('?styleLabel')?.value,
+                architect: data.get('?architectLabel')?.value,
+                distance: data.get('?dist')?.value,
             }
         }
     })

@@ -6,7 +6,7 @@ import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
 import dummyEntityList from './dummyData.json';
 import {asFeature} from '@/modules/geo/utils';
-import {RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
 
 const entites: GeoEntity[] = dummyEntityList;
 
@@ -44,8 +44,8 @@ export class DummyPlugin implements QueryService, RecommendService, Plugin {
         return Promise.resolve(entites);
     }
 
-    recommendForEntity(entity: Entity, limit?: number): Promise<Entity[]> {
-        return Promise.resolve(entites);
+    recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
+        return Promise.resolve(entites.map(e => {return {entity: e}}));
     }
 
     similarity(first: Entity, second: Entity): Promise<number> {

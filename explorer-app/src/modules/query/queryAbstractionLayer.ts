@@ -9,11 +9,56 @@ import selectAreaNamed from './sparql/location/selectAreaNamed.sparql'
 import selectLocation from './sparql/location/selectLocation.sparql'
 import selectWithSimilarCategories from './sparql/category/selectWithSimilarCategories.sparql'
 import selectCategories from './sparql/category/selectCategories.sparql';
+import selectSimilarStations from './sparql/transport/selectRelatedStations.sparql';
+import selectSimilarArchitecture from './sparql/historic/selectSimilarArchitecture.sparql';
 
-export type WikiDataId = `wd:${'Q' | `P`}${string | number}`;
+export type WikiDataId = `wd:${'Q' | `P`}${string | number}`| 'UNDEFINED_ID' | undefined;
 
 const queryEngine = newEngine();
 const dataFactory = new DataFactory();
+
+/**
+ * Promises to execute a resolver on each result binding as they arrive and return an array of results.
+ * If duplicate removal is required, use {@link mapResults} instead.
+ * @param result
+ * @param resolver
+ */
+export function bindResults<T>(result: IQueryResult, resolver: (data: any) => T): Promise<T[]> {
+    const collection: T[] = [];
+    if (result.type == 'bindings') {
+        return new Promise((resolve, reject) => {
+            result.bindingsStream.on('data', (data) => collection.push(resolver(data)));
+            result.bindingsStream.on('error', (error) => reject(error));
+            result.bindingsStream.on('end', () => {
+                resolve(collection);
+            });
+        })
+    }
+    else return Promise.reject();
+}
+
+/**
+ * Promises to execute a resolver on each result binding as they arrive and return an array of results without duplicate keys
+ * If duplicate removal is not required, use {@link bindResults} instead.
+ * @param result
+ * @param resolver
+ */
+export function mapResults<T>(result: IQueryResult, resolver: (data: any) => {key: string, value: T }): Promise<T[]> {
+    const map = new Map<string, T>();
+    if (result.type == 'bindings') {
+        return new Promise((resolve, reject) => {
+            result.bindingsStream.on('data', (data) =>  {
+                const entry = resolver(data);
+                map.set(entry.key, entry.value);
+            });
+            result.bindingsStream.on('error', (error) => reject(error));
+            result.bindingsStream.on('end', () => {
+                resolve(Array.from(map.values()));
+            });
+        })
+    }
+    else return Promise.reject();
+}
 
 /**
  * Construct an {@link Entity} from its corresponding {@link WikiDataId}
@@ -138,19 +183,7 @@ export async function getSimilarByCategory(ids: WikiDataId[], endpoint: string):
     return bindResults(result, data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
 }
 
-export function bindResults<T>(result: IQueryResult, resolver: (data: any) => T): Promise<T[]> {
-    const collection: T[] = [];
-    if (result.type == 'bindings') {
-        return new Promise((resolve, reject) => {
-            result.bindingsStream.on('data', (data) => collection.push(resolver(data)));
-            result.bindingsStream.on('error', (error) => reject(error));
-            result.bindingsStream.on('end', () => {
-                resolve(collection);
-            });
-        })
-    }
-    else return Promise.reject();
-}
+
 
 export async function getCategories(endpoint: string): Promise<CategoryEntity[]> {
     const result = await queryEngine.query(selectCategories, {sources: [{type: 'sparql', value: endpoint}]});
@@ -159,6 +192,46 @@ export async function getCategories(endpoint: string): Promise<CategoryEntity[]>
             id: wikidataIdFromUrl(data.get('?target').value) || 'UNDEFINED_ID',
             name: data.get('?label').value,
             iconUrl: data.get('?icon')?.value,
+        }
+    })
+}
+
+interface SimilarStation {
+    id: WikiDataId,
+    lineId: WikiDataId,
+    service?: string,
+    connection?: string,
+    terminus?: string,
+}
+export async function getSimilarStations(originStations: WikiDataId[], endpoint: string): Promise<SimilarStation[]> {
+    const query = selectSimilarStations.replace('?@originStations', originStations.join(' '));
+    const result = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
+    return bindResults(result, data => {
+        return {
+            id: wikidataIdFromUrl(data.get('?station').value),
+            lineId: wikidataIdFromUrl(data.get('?line').value),
+            service: data.get('?serviceLabel')?.value,
+            connection: data.get('?connection')?.value,
+            terminus: data.get('?terminus')?.value,
+        }
+    })
+}
+
+interface SimilarArchitecture {
+    id: WikiDataId,
+    heritageDesignation?: string,
+
+}
+export async function getSimilarArchitecture(originStations: WikiDataId[], endpoint: string): Promise<SimilarArchitecture[]> {
+    const query = selectSimilarArchitecture.replace('?__origins__', originStations.join(' '));
+    const result = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
+    return mapResults(result, data => {
+        return{
+            key: wikidataIdFromUrl(data.get('?place').value) as string,
+            value: {
+                id: wikidataIdFromUrl(data.get('?place').value),
+                heritageDesignation: data.get('?heritageDesignationLabel')?.value,
+            }
         }
     })
 }
@@ -183,7 +256,7 @@ function wktLiteralToLatLng(literal: string): LatLng {
  * @param url Url of WikiData item. e.g. http://www.wikidata.org/prop/direct/P18
  * @param directOnly Only resolve IDs for URLs which point to linked data directly.
  */
-function wikidataIdFromUrl(url: string, directOnly = false): WikiDataId | undefined {
+function wikidataIdFromUrl(url: string, directOnly = false): WikiDataId {
     if (directOnly && !url.includes('direct')) return undefined;
     const matches = url.match(/[Q|P]\d*/gm);
     if (matches) {

@@ -14,6 +14,8 @@ import {defineDetailService, DetailService} from '@/modules/query/detailsService
 import {WikipediaPlugin} from '@/modules/plugin/WikipediaPlugin';
 import {Plugin} from '@/modules/plugin/pluginManager'
 import {DummyPlugin} from '@/modules/query/DummyPlugin';
+import {TransportPlugin} from '@/modules/plugin/transportPlugin';
+import {HistoricPlugin} from '@/modules/plugin/historicPlugin';
 
 export interface Services {
     userService:            UserService,
@@ -34,7 +36,9 @@ const defaultPlugins: {plugin: Plugin, enable: boolean}[] = [
     {plugin: wikidataPlugin, enable: true},
     {plugin: new WikipediaPlugin(), enable: true},
     {plugin: new WikiDataRecommendPlugin(), enable: false},
-    {plugin: new DummyPlugin(), enable: false}
+    {plugin: new DummyPlugin(), enable: false},
+    {plugin: new TransportPlugin(), enable: true},
+    {plugin: new HistoricPlugin(), enable: true}
 ]
 
 const postServicesRunners: ((services: Services)=> any)[] = [];

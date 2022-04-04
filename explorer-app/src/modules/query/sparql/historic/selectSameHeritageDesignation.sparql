@@ -1,0 +1,14 @@
+SELECT ?place ?placeLabel ?heritageDesignationLabel ?countryLabel ?architectLabel ?styleLabel WHERE
+{
+    VALUES ?origin {?@origins}
+
+    ?origin wdt:P276 ?location;
+    wdt:P17 ?country.
+
+
+    {?origin wdt:P1435 ?heritageDesignation. ?place wdt:P276 ?location; wdt:P1435 ?heritageDesignation}
+    UNION {?origin wdt:P1435 ?heritageDesignation. ?place wdt:P276 ?location; wdt:P1435 ?heritageDesignation}
+
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+LIMIT 20

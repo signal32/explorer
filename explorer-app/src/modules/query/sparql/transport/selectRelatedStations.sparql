@@ -1,3 +1,12 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
 SELECT DISTINCT ?station ?line ?lineLabel ?serviceLabel ?connection ?terminus
 WHERE
 {

@@ -40,14 +40,14 @@ describe('Query Abstraction Layer (WikiData)', () => {
     it('getArea', async () => {
         const result = await query.getArea(testArea, ['wd:Q12280', 'wd:Q811979', 'wd:Q3947'], [], endpoint);
         expect(result.length).toBeGreaterThan(0);
-        expect(result[0].startsWith('wd:')).toBe(true); // Consider using a regex
+        if (result[0]) expect(result[0].startsWith('wd:')).toBe(true); // Consider using a regex
     })
 
     it('getAreaNamed', async () => {
         const result = await query.getAreaNamed(testArea, 'Bridge of Dee', ['wd:Q12280', 'wd:Q811979', 'wd:Q3947'], [], endpoint);
         expect(result.length).toBeGreaterThan(0);
         expect(result[0]).toBe('wd:Q3644573')
-        expect(result[0].startsWith('wd:')).toBe(true); // Consider using a regex
+        if (result[0]) expect(result[0].startsWith('wd:')).toBe(true); // Consider using a regex
     })
 
     it('GetLocation', async () => {

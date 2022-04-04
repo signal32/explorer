@@ -1,0 +1,15 @@
+SELECT ?place ?placeLabel ?founderLabel ?founded ?date WHERE
+{
+    VALUES ?origin {wd:Q11838975}
+
+    ?origin wdt:P276 ?location;
+    wdt:P17 ?country;
+    wdt:P571|wdt:p1619 ?founded.
+
+    # Founded by same person, or direct family member
+    {?origin wdt:P112|wdt:P112/wdt:P40|wdt:P112/wdt:25|wdt:P112/wdt:22|wdt:P112/wdt:26 ?founder. ?place wdt:P112 ?founder. }
+    # Founded in same period  -- Does not work well
+    #{?place wdt:P276 ?location; wdt:P571|wdt:p1619 ?date FILTER(YEAR(?date) = FILTER(YEAR(?date) )}
+    # example: FILTER (?died >= "2018-01-01T00:00:00Z"^^xsd:dateTime && ?died < "2019-01-01T00:00:00Z"^^xsd:dateTime)
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+} LIMIT 20

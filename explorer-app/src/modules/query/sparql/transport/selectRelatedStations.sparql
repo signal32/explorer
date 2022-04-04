@@ -1,0 +1,30 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX geof: <http://www.opengis.net/def/geosparql/function/>
+
+SELECT DISTINCT ?station ?line ?lineLabel ?serviceLabel ?connection ?terminus ?distance
+WHERE
+{
+    VALUES ?origin { ?@originStations }
+
+    # Terminus stations at end of line
+    {?origin wdt:P81/wdt:P2789/wdt:P559 ?station.}
+    # Stations in big cities with connecting services
+    UNION {?origin wdt:P1192 ?service. ?station wdt:P1192 ?service. ?station wdt:P276/wdt:P31 wd:Q515. ?service rdfs:label ?serviceLabel FILTER (LANG(?serviceLabel) = "en") .}
+    # And fist, second and third adjacent stations.
+    UNION {?origin wdt:P197|wdt:P197/wdt:P197|wdt:P197/wdt:P197/wdt:P197 ?station.}
+
+    ?origin wdt:P625 ?originPos.
+    ?station wdt:P625 ?stationPos.
+    BIND(geof:distance(?originPos, ?stationPos) AS ?distance).
+
+    # Line of station
+    ?station wdt:P81 ?line.
+    ?line rdfs:label ?lineLabel FILTER (LANG(?lineLabel) = "en") .
+}

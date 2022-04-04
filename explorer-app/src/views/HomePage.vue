@@ -23,9 +23,9 @@
             <ion-label>Map</ion-label>
           </ion-tab-button>
 
-          <ion-tab-button tab="tab2" href="/view/discover">
+          <ion-tab-button tab="tab2" href="/view/explore">
             <ion-icon :icon="compass" />
-            <ion-label>Discover</ion-label>
+            <ion-label>Explore</ion-label>
           </ion-tab-button>
 
           <ion-tab-button tab="tab3" href="/view/profile">

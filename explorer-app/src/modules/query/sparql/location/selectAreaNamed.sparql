@@ -1,0 +1,29 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?entity WHERE
+{
+    {
+        VALUES ?included { ?@include }
+        #VALUES ?excluded { ?@exclude }
+
+        ?entity rdfs:label "?@label"@en.
+        ?entity p:P31/ps:P31/wdt:P279* ?included .
+        #FILTER NOT EXISTS { ?entity p:P31/ps:P31/wdt:P279* ?excluded. }
+    }
+
+    {
+        SERVICE wikibase:box {
+            ?entity wdt:P625 ?subjectLocation .
+            bd:serviceParam wikibase:cornerSouthWest ?pointSW .
+            bd:serviceParam wikibase:cornerNorthEast ?pointNE .
+        }
+    }
+}
+LIMIT 1000
+

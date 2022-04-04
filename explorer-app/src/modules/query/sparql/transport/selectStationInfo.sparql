@@ -1,0 +1,22 @@
+SELECT *
+WHERE
+{
+    VALUES ?base {wd:Q2171269}
+    #?base wdt:P197 ?item.
+    ?base p:P197 ?item.
+
+    ?base wdt:P137 ?operator;
+    wdt:P81 ?line.
+
+    ?line wdt:P361 ?partOf. # Line belongs to
+
+
+    OPTIONAL {
+        ?item pq:P5051 ?dest.  # Place at end of line
+        ?item pq:P81 ?destLine.# Line to place
+    }
+
+    #wdt:P197 a owl:ObjectProperty.
+    #?item wdt:P31 wd:Q146. # Must be of a cat
+    #SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } # Helps get the label in your language, if not, then en language
+}

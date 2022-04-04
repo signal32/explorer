@@ -1,0 +1,15 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+SELECT ?entity WHERE
+{
+    VALUES ?origin {?@originEntities}
+
+    ?origin wdt:P276 ?location.
+    ?origin wdt:P31 ?category.
+
+    ?entity    wdt:P276 ?location; # With same location
+                wdt:P31 ?category;      # With same type
+    
+    #SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } # Helps get the label in your language, if not, then en language
+} LIMIT 10

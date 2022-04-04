@@ -37,7 +37,7 @@
             <MapView2 :key="style" :position="position" @updatePosition="position = $event" :style="style" :selected="mapSelected" @selected="openDetailModal($event)"></MapView2>
 
             <!-- Selected entity details modal -->
-            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.4,1.0]" :initialBreakpoint="detailsModalHeight" :backdropBreakpoint="0.1" @didDismiss="closeDetailModal">
+            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.4,1.0]" :initialBreakpoint="detailsModalHeight" @didDismiss="closeDetailModal">
                 <ion-content>
                     <ion-header translucent>
                         <ion-toolbar>
@@ -52,7 +52,7 @@
 
                     <ion-item>
                         <div  v-if="selected?.category?.iconUrl" slot="start" style="background-color: white; border-radius: 9999px; overflow: clip">
-                            <img :src="selected?.category?.iconUrl" :alt="selected?.category?.name" height="30" >
+                            <img :src="selected?.category?.iconUrl" :alt="selected?.category?.name" height="30">
                         </div>
 
                         <ion-label>{{startCase(selected?.category?.name)}}</ion-label>
@@ -63,6 +63,10 @@
                                 <ion-icon :icon="icons.remove" size="small" slot="end"></ion-icon>
                             </ion-button>
                         </ion-buttons>
+                    </ion-item>
+
+                    <ion-item button detail v-if="exploreCategories.includes(selected?.category.name)" @click="router.push({name: 'Explore', query: {entity: selected?.id, mode: 'within'}}); closeDetailModal()">
+                        <ion-label>Explore <ion-label color="primary">{{selected?.name}}</ion-label></ion-label>
                     </ion-item>
 
                     <!-- Details Section -->
@@ -123,7 +127,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, watch} from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import router from '@/router'
 import {
     IonAccordion,
@@ -162,6 +166,8 @@ const defaultAbstract: GeoEntity = {
     name: 'No selection',
 }
 
+const exploreCategories = ['village', 'town', 'city', 'suburb'];
+
 export default defineComponent({
     components: {
         MapView2,
@@ -182,6 +188,19 @@ export default defineComponent({
         // Update router params when internal position value changes
         watch(position, ({zoom, lat, lng}) => {
             router.replace({query: {zoom, lat, lng}})
+        })
+
+        watch(computed(() => {return router.currentRoute.value.query}), async (now, prev) => {
+            if (router.currentRoute.value.name != 'Map') return;
+            position.value = {
+                lng: now?.lng as unknown as number,
+                lat: now?.lat as unknown as number,
+                zoom: now?.zoom as unknown as number,
+            };
+            if(now.entity && now.entity != prev?.entity){
+                const entity = await services.queryService.methods.getById(now.entity as string)
+                if (entity) openDetailModal(entity);
+            }
         })
 
         // Move map to position
@@ -274,6 +293,7 @@ export default defineComponent({
             services,
             style,
             mapSelected,
+            exploreCategories,
         }
     },
 

@@ -1,0 +1,32 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX geof: <http://www.opengis.net/def/geosparql/function/>
+
+SELECT ?place ?placeLabel ?heritageDesignationLabel ?countryLabel ?architectLabel ?styleLabel ?dist WHERE
+{
+    VALUES ?origin {?__origins__}
+
+    ?origin wdt:P276|wdt:P17 ?location;
+    wdt:P17 ?country;
+    wdt:P625 ?originPos.
+
+    # Same heritage designation
+    {?origin wdt:P1435 ?heritageDesignation. ?place wdt:P276 ?location; wdt:P1435 ?heritageDesignation.}
+    # With same architect in same country
+    UNION {?origin wdt:P84 ?architect. ?place wdt:P84 ?architect }
+    # With same architectural style in same country
+    UNION {?origin wdt:P149 ?style. ?place wdt:P149 ?style; wdt:P276 ?location. }
+
+
+    ?place wdt:P625 ?placePos.
+    BIND(geof:distance(?originPos, ?placePos) AS ?dist).
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+ORDER BY ?dist
+LIMIT 20

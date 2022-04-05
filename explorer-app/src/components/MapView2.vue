@@ -38,7 +38,14 @@ import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {toFeatureCollection} from '@/modules/geo/geoJson';
 import {services} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';
-import {LatLngBounds} from '@/modules/geo/types';
+import {LatLng, LatLngBounds} from '@/modules/geo/types';
+import darkIcon from '@/assets/icons/dark.png';
+import {geolocationService} from '@/modules/app/geolocationService';
+import {Geolocation} from '@awesome-cordova-plugins/geolocation';
+import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
+//import darkIcon from '@/assets/icons/dark.appiconset/dark_128.png';
+
+
 
 /// Map rendering style
     export declare type MapStyle = 'light' | 'dark';
@@ -58,7 +65,9 @@ import {LatLngBounds} from '@/modules/geo/types';
     const SELECTED_LAYER_ID = 'explorer_selected';
     const SELECTED_SOURCE_ID = 'explorer_selected_source'
     const ENTITY_LAYER_ID = 'explorer_entity';
-    const ENTITY_SOURCE_ID = 'explorer_entity_source'
+    const ENTITY_SOURCE_ID = 'explorer_entity_source';
+    const LOCATION_LAYER_ID = 'explorer_location';
+    const LOCATION_SOURCE_ID = 'explorer_location_source';
 
     /// Endpoint serving map vector tiles
     const TILE_API = process.env.VUE_APP_EXPLORER_TILE_API;
@@ -88,6 +97,13 @@ import {LatLngBounds} from '@/modules/geo/types';
         updatePosition: (position: MapPosition) => {return position},
     });
 
+    //-- MAP IMAGES
+    const images = [
+        {id: 'pin-normal', url: (props.style == "dark" )? require('@/assets/icons/dark.png') : require('@/assets/icons/light.png')},
+        {id: 'pin-selected', url: (props.style == "dark" )? require('@/assets/icons/dark_selected.png') : require('@/assets/icons/light_selected.png')},
+        {id: 'location', url:require('@/assets/icons/location.png')},
+    ]
+
     //-- SELECTED LAYER DEFINITION
     const selectedLayerSpec: LayerSpecification = {
         id: SELECTED_LAYER_ID,
@@ -95,14 +111,22 @@ import {LatLngBounds} from '@/modules/geo/types';
         type: 'symbol',
         layout: {
             "text-field": ['get', 'name'],
-            "text-size": 14,
+            "text-size": 12,
             "symbol-z-order": "source",
+            "icon-image": 'pin-selected',
+            "icon-size": 0.04,
+            'text-offset': [1.5, 0],
+            'text-anchor': 'left'
         },
         paint: {
             "text-color": (props.style == "dark" )? "#cc0f05" : "#EA4335",
             "text-halo-blur": 0.5,
             "text-halo-color": (props.style == "dark" )? "#4b4b4b" : "#666666",
-            "text-halo-width": 0.5
+            "text-halo-width": 0.5,
+            "icon-halo-blur": 0.5,
+            "icon-halo-color": (props.style == "dark" )? "#4b4b4b" : "#666666",
+            "icon-halo-width": 0.5,
+
         },
     };
 
@@ -114,7 +138,11 @@ import {LatLngBounds} from '@/modules/geo/types';
         layout: {
             "text-field": ['get', 'name'],
             "text-size": 12,
-            "symbol-spacing": 600,
+            "symbol-spacing": 1000,
+            "icon-image": 'pin-normal',
+            "icon-size": 0.04,
+            'text-offset': [1.5, 0],
+            'text-anchor': 'left'
         },
         paint: {
             "text-color": (props.style == "dark" )? "#a0a0a0" : "#666666"
@@ -122,12 +150,19 @@ import {LatLngBounds} from '@/modules/geo/types';
         minzoom: 12,
     };
 
-    /// Debounced position to prevent race conditions. Should be used by all internal logic.
-    const safePosition = computed({
-        get: () => props.position,
-        set: (value) => debounce(async() => emits('updatePosition', value), 300)
-    });
+    const locationLayerSpec: LayerSpecification = {
+        id: LOCATION_LAYER_ID,
+        source: LOCATION_SOURCE_ID,
+        type: 'symbol',
+        layout: {
+            "symbol-spacing": 1000,
+            "icon-image": 'location',
+            "icon-size": 0.04,
+        },
+        paint: {
+        },
 
+    };
     /// Reference to main map object, initialised when component is mounted.
     const map = shallowRef<Map>();
     /// Reference to html div container element for map
@@ -146,6 +181,18 @@ import {LatLngBounds} from '@/modules/geo/types';
 
     /// Position at which map was last updated
     let lastUpdateCenter = new LngLat(0.0, 0.0);
+
+    /// Debounce updatePosition event to prevent race conditions and feedback loops.
+    const updateExternalPosition = debounce(async () => {
+        const {lng, lat} = map.value?.getCenter() || DEFAULT_POSITION;
+        const zoom = map.value?.getZoom() || DEFAULT_POSITION.zoom;
+        const newPosition = {lng, lat, zoom};
+
+        if (JSON.stringify(props.position) !== JSON.stringify(newPosition)) {
+            emits('updatePosition', newPosition);
+        }
+    }, 500);
+
 
     // Setup map
     onMounted(() => {
@@ -172,21 +219,24 @@ import {LatLngBounds} from '@/modules/geo/types';
                 data: DEFAULT_FEATURES,
             });
 
+            // Layer for gps location marker
+            map.value?.addSource(LOCATION_SOURCE_ID, {
+                type: 'geojson',
+                data: DEFAULT_FEATURES,
+            });
+
             map.value?.addLayer(entityLayerSpec);
             map.value?.addLayer(selectedLayerSpec);
+            map.value?.addLayer(locationLayerSpec);
+
+            loadImages();
 
             update();
         })
 
         // Emit new map position after moving
         map.value.on('moveend', () => {
-            const {lng, lat} = map.value?.getCenter() || DEFAULT_POSITION;
-            const zoom = map.value?.getZoom() || DEFAULT_POSITION.zoom;
-            const newPosition = {lng, lat, zoom};
-
-            if (JSON.stringify(props.position) !== JSON.stringify(newPosition)) {
-                emits('updatePosition', newPosition);
-            }
+            updateExternalPosition();
         });
 
         // Update map after move completes and new area is in focus
@@ -226,23 +276,18 @@ import {LatLngBounds} from '@/modules/geo/types';
                 if (event.features) {
                     const name = event.features[0].properties?.name || '';
                     const category = event.features[0].properties?.class;
+                    const position: LngLat = (event.features[0].geometry.type == 'Point')
+                        ? new LngLat(event.features[0].geometry.coordinates[0], event.features[0].geometry.coordinates[1])
+                        : event.lngLat;
                     detailedLoading.value.loading = true;
                     detailedLoading.value.text = `Finding details for ${name}`
-
                     try {
-                        const entity = await findEntity(name,category, event.lngLat);
-
-                        // If available use coordinates of clicked position for better UX. //TODO fix undefined var
-/*                        if (event.features[0].geometry.type == 'Point') {
-                            entity.position = {
-                                lng: event.features[0].geometry.coordinates[0],
-                                lat: event.features[0].geometry.coordinates[1]
-                            }
-                        }*/
+                        const entity = await findEntity(name,category, position);
+                        entity.position = position;
 
                         detailedLoading.value.loading = false;
                         emits('selected', entity);
-                        emits('updatePosition', {zoom: map.value?.getZoom(), ...entity.position} || DEFAULT_POSITION )
+                        emits('updatePosition', {zoom: map.value?.getZoom(), ...position} || DEFAULT_POSITION )
                     }
                     catch (e) {
                         console.log(e);
@@ -282,6 +327,24 @@ import {LatLngBounds} from '@/modules/geo/types';
         }
     })
 
+    const locationWatch = Geolocation.watchPosition({maximumAge: 40000000});
+    locationWatch.subscribe((data => {
+        if ('coords' in data) {
+            //console.log(`New location ${data.coords.latitude} ${data.coords.longitude}`)
+
+            const newLocation = DEFAULT_FEATURES;
+            newLocation.features = [{
+                geometry: {
+                    type: 'Point',
+                    coordinates: [data.coords.longitude, data.coords.latitude],
+                },
+                properties: {id: '', name: '', position: {lat: 0, lng: 0}}, type: 'Feature'
+            }];
+            (map.value?.getSource(LOCATION_SOURCE_ID) as any).setData(newLocation, map.value?.getZoom());
+        }
+        else console.error(data);
+    }));
+
     /// Fetch and update map entity data
     async function update() {
         const zoom = map.value?.getZoom();
@@ -313,6 +376,18 @@ import {LatLngBounds} from '@/modules/geo/types';
         });
         if (feature) return feature.properties;
         else return Promise.reject('No matching entity found');
+    }
+
+    function loadImages() {
+        images.forEach(imageDescription => {
+            console.log(imageDescription.url);
+            map.value?.loadImage(imageDescription.url, function(error, image) {
+                if (error) throw error;
+                if (!map.value?.hasImage(imageDescription.id) && image) {
+                    map.value?.addImage(imageDescription.id, image, {content: [16, 16, 300, 384]});
+                }
+            });
+        })
     }
 
 

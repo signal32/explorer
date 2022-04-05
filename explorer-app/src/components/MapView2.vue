@@ -326,7 +326,7 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
             });
         }
     })
-
+/*
     const locationWatch = Geolocation.watchPosition({maximumAge: 40000000});
     locationWatch.subscribe((data => {
         if ('coords' in data) {
@@ -343,7 +343,7 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
             (map.value?.getSource(LOCATION_SOURCE_ID) as any).setData(newLocation, map.value?.getZoom());
         }
         else console.error(data);
-    }));
+    }));*/
 
     /// Fetch and update map entity data
     async function update() {

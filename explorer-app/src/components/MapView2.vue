@@ -226,23 +226,19 @@ import {LatLngBounds} from '@/modules/geo/types';
                 if (event.features) {
                     const name = event.features[0].properties?.name || '';
                     const category = event.features[0].properties?.class;
+                    const position: LngLat = (event.features[0].geometry.type == 'Point')
+                        ? new LngLat(event.features[0].geometry.coordinates[0], event.features[0].geometry.coordinates[1])
+                        : event.lngLat;
                     detailedLoading.value.loading = true;
                     detailedLoading.value.text = `Finding details for ${name}`
-
+                    console.log(position);
                     try {
-                        const entity = await findEntity(name,category, event.lngLat);
-
-                        // If available use coordinates of clicked position for better UX. //TODO fix undefined var
-/*                        if (event.features[0].geometry.type == 'Point') {
-                            entity.position = {
-                                lng: event.features[0].geometry.coordinates[0],
-                                lat: event.features[0].geometry.coordinates[1]
-                            }
-                        }*/
+                        const entity = await findEntity(name,category, position);
+                        entity.position = position;
 
                         detailedLoading.value.loading = false;
                         emits('selected', entity);
-                        emits('updatePosition', {zoom: map.value?.getZoom(), ...entity.position} || DEFAULT_POSITION )
+                        emits('updatePosition', {zoom: map.value?.getZoom(), ...position} || DEFAULT_POSITION )
                     }
                     catch (e) {
                         console.log(e);

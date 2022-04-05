@@ -141,8 +141,8 @@ import {LatLngBounds} from '@/modules/geo/types';
     /// Position at which map was last updated
     let lastUpdateCenter = new LngLat(0.0, 0.0);
 
-    const updateExternalPosition = debounce(async (position: MapPosition) => {
-
+    /// Debounce updatePosition event to prevent race conditions and feedback loops.
+    const updateExternalPosition = debounce(async () => {
         const {lng, lat} = map.value?.getCenter() || DEFAULT_POSITION;
         const zoom = map.value?.getZoom() || DEFAULT_POSITION.zoom;
         const newPosition = {lng, lat, zoom};
@@ -164,7 +164,6 @@ import {LatLngBounds} from '@/modules/geo/types';
         })
 
         map.value.on('load', () => {
-            console.log('m-load')
             map.value?.resize(); // Required to auto-fit viewport on some browsers
 
             // Layer for all entities
@@ -188,13 +187,11 @@ import {LatLngBounds} from '@/modules/geo/types';
         // Emit new map position after moving
         map.value.on('moveend', () => {
             updateExternalPosition();
-            console.log('m-end')
         });
 
         // Update map after move completes and new area is in focus
         // This is quite a basic check but works surprisingly well in most cases.
         map.value.on('moveend', () => {
-            console.debug('m-end')
             if (!map.value?.getBounds().contains(lastUpdateCenter)) {
                 update();
                 lastUpdateCenter = map.value?.getCenter() || new LngLat(0.0, 0.0);
@@ -210,7 +207,6 @@ import {LatLngBounds} from '@/modules/geo/types';
 
         // Fire select event when an entity is selected
         map.value.on('click', ENTITY_LAYER_ID, event => {
-            console.debug('m-click');
             const feature  = event?.features?.[0];
             if (feature) {
                 emits('selected', {
@@ -227,7 +223,6 @@ import {LatLngBounds} from '@/modules/geo/types';
         // Register click event for layers (used for place/area names)
         for (const layer of SELECTABLE_LAYERS) {
             map.value.on('click', layer, async event => {
-                console.debug('m-click');
                 if (event.features) {
                     const name = event.features[0].properties?.name || '';
                     const category = event.features[0].properties?.class;

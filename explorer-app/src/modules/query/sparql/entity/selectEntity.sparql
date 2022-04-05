@@ -6,13 +6,19 @@ PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?subject ?subjectLabel ?subjectLocation ?subjectImage ?category ?categoryLabel ?categoryIcon WHERE {
-VALUES ?subject { ?@entityIds }
+SELECT ?subject ?subjectLabel ?subjectLocation ?subjectImage ?category ?categoryLabel ?categoryIcon ?subjectWithin ?withinLocation ?withinLabel WHERE {
+    VALUES ?subject { ?@entityIds }
 
-OPTIONAL {?subject wdt:P625 ?subjectLocation .}
-?subject wdt:P31 ?category .
-?category rdfs:label ?categoryLabel FILTER (LANG(?categoryLabel) = "en") .
-OPTIONAL {?category wdt:P2910 ?categoryIcon.}
-?subject rdfs:label ?subjectLabel FILTER (LANG(?subjectLabel) = "en") .
-OPTIONAL {?subject wdt:P18 ?subjectImage.}
+    OPTIONAL {?subject wdt:P625 ?subjectLocation .}
+    ?subject wdt:P31 ?category .
+    ?category rdfs:label ?categoryLabel FILTER (LANG(?categoryLabel) = "en") .
+    OPTIONAL {?category wdt:P2910 ?categoryIcon.}
+    ?subject rdfs:label ?subjectLabel FILTER (LANG(?subjectLabel) = "en") .
+    OPTIONAL {?subject wdt:P18 ?subjectImage.}
+    OPTIONAL {
+        ?subject wdt:P276 ?subjectWithin.
+        ?subjectWithin  wdt:P625 ?withinLocation;
+                        rdfs:label ?withinLabel FILTER (LANG(?withinLabel) = "en") .
+
+    }
 }

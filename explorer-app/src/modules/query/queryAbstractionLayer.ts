@@ -23,11 +23,11 @@ const dataFactory = new DataFactory();
  * @param result
  * @param resolver
  */
-export function bindResults<T>(result: IQueryResult, resolver: (data: any) => T): Promise<T[]> {
+export function bindResults<T>(result: IQueryResult, resolver: (data: any) => Promise<T>): Promise<T[]> {
     const collection: T[] = [];
     if (result.type == 'bindings') {
         return new Promise((resolve, reject) => {
-            result.bindingsStream.on('data', (data) => collection.push(resolver(data)));
+            result.bindingsStream.on('data', async (data) => collection.push(await resolver(data)));
             result.bindingsStream.on('error', (error) => reject(error));
             result.bindingsStream.on('end', () => {
                 resolve(collection);
@@ -69,7 +69,7 @@ export async function getEntity(ids: WikiDataId[], endpoint: string): Promise<En
     const query = selectEntity.replace('?@entityIds', ids.join(' '));
     const result  = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
 
-    return bindResults(result, data => {
+    return bindResults(result, async data => {
         return {
             id: wikidataIdFromUrl(data.get('?subject').value) || 'UNDEFINED_ID',
             name: data.get('?subjectLabel').value,
@@ -88,18 +88,26 @@ export async function getEntity(ids: WikiDataId[], endpoint: string): Promise<En
  * @param ids
  * @param endpoint
  */
-export async function getGeoEntity(ids: WikiDataId[], endpoint: string): Promise<GeoEntity[]> {
+export async function getGeoEntity(ids: WikiDataId[], endpoint: string, withinRecursionDepth = 0): Promise<GeoEntity[]> {
     const query = selectEntity.replace('?@entityIds', ids.join(' '));
     const result  = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
 
-    return bindResults(result, data => {
+    return bindResults(result, async data => {
+
+        //const withinItem = (withinRecursionDepth < 3) ? (await getGeoEntity([wikidataIdFromUrl(data.get('?subjectWithin'))], endpoint, withinRecursionDepth + 1)) : undefined
+        const within = (data.get('?subjectWithin')?.value)? {
+            id: wikidataIdFromUrl(data.get('?subjectWithin').value) || 'UNDEFINED_ID',
+            name: data.get('?withinLabel').value,
+            position: wktLiteralToLatLng(data.get('?withinLocation').value),
+        } : undefined;
         return {
             id: wikidataIdFromUrl(data.get('?subject').value) || 'UNDEFINED_ID',
             name: data.get('?subjectLabel').value,
             thumbnailUrl: data.get('?subjectImage')?.value,
             position: wktLiteralToLatLng(data.get('?subjectLocation').value),
+            within,
             category: {
-                id:  wikidataIdFromUrl(data.get('?category').value) || 'UNDEFINED_ID',
+                id: wikidataIdFromUrl(data.get('?category').value) || 'UNDEFINED_ID',
                 name: data.get('?categoryLabel').value,
                 iconUrl: data.get('?categoryIcon')?.value,
             }
@@ -127,7 +135,7 @@ export async function getArea(area: LatLngBounds, included: WikiDataId[], exclud
         })
     });
 
-    return bindResults(result, data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
+    return bindResults(result, async data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
 }
 
 /**
@@ -153,7 +161,7 @@ export async function getAreaNamed(area: LatLngBounds, name: string, included: W
         })
     });
 
-    return bindResults(result, data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
+    return bindResults(result, async data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
 }
 
 /**
@@ -169,7 +177,7 @@ export async function getLocation(location: WikiDataId[], included: WikiDataId[]
         .replace('?@include', included.join(' '))
         .replace('?@exclude', (excluded.length > 0) ? excluded.join(' ') : 'wd:Q154242');
     const result = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
-    return bindResults(result, data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
+    return bindResults(result, async data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
 }
 
 /**
@@ -180,14 +188,14 @@ export async function getLocation(location: WikiDataId[], included: WikiDataId[]
 export async function getSimilarByCategory(ids: WikiDataId[], endpoint: string): Promise<WikiDataId[]> {
     const query = selectWithSimilarCategories.replace('?@originEntities', ids.join(' '));
     const result = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
-    return bindResults(result, data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
+    return bindResults(result, async data => {return wikidataIdFromUrl(data.get('?entity').value) || 'UNDEFINED_ID' as WikiDataId })
 }
 
 
 
 export async function getCategories(endpoint: string): Promise<CategoryEntity[]> {
     const result = await queryEngine.query(selectCategories, {sources: [{type: 'sparql', value: endpoint}]});
-    return bindResults(result, data => {
+    return bindResults(result, async data => {
         return {
             id: wikidataIdFromUrl(data.get('?target').value) || 'UNDEFINED_ID',
             name: data.get('?label').value,

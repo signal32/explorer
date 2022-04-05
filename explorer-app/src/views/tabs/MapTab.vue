@@ -58,15 +58,31 @@
                         <ion-label>{{startCase(selected?.category?.name)}}</ion-label>
 
                         <ion-buttons slot="end">
-                            <ion-button @click="notInterested(selected?.category)">
-                                Not interested
-                                <ion-icon :icon="icons.remove" size="small" slot="end"></ion-icon>
-                            </ion-button>
+                            <ion-button id="trigger-button"><ion-icon :icon="icons.more" size="small" slot="end"></ion-icon></ion-button>
+                            <ion-popover trigger="trigger-button" dismissOnSelect="true">
+                                <ion-content>
+                                    <ion-list>
+                                        <ion-item button @click="notInterested(selected?.category)">
+                                            <ion-icon :icon="icons.remove" size="small" slot="start"></ion-icon>
+                                            Hide&nbsp;<ion-text color="primary"> {{startCase(selected?.category?.name)}}</ion-text>
+                                        </ion-item>
+                                        <ion-item button>
+                                            <ion-icon :icon="icons.save" size="small" slot="start"></ion-icon>
+                                            Bookmark Location
+                                        </ion-item>
+                                    </ion-list>
+                                </ion-content>
+                            </ion-popover>
+
                         </ion-buttons>
                     </ion-item>
 
+                    <ion-item button detail v-if="selected?.within" @click="openDetailModal(selected?.within); closeDetailModal()">
+                        <ion-label>Located within <ion-text color="primary">{{selected?.within?.name}}</ion-text></ion-label>
+                    </ion-item>
+
                     <ion-item button detail v-if="exploreCategories.includes(selected?.category.name)" @click="router.push({name: 'Explore', query: {entity: selected?.id, mode: 'within'}}); closeDetailModal()">
-                        <ion-label>Explore <ion-label color="primary">{{selected?.name}}</ion-label></ion-label>
+                        <ion-label>Explore <ion-text color="primary">{{selected?.name}}</ion-text></ion-label>
                     </ion-item>
 
                     <!-- Details Section -->
@@ -148,9 +164,12 @@ import {
     IonSegment,
     IonSegmentButton,
     IonTitle,
-    IonToolbar
+    IonToolbar,
+    IonPopover,
+    IonList,
+    IonText
 } from '@ionic/vue';
-import {close, layersOutline, locateOutline, planet, removeCircleOutline, settingsOutline} from 'ionicons/icons';
+import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark} from 'ionicons/icons';
 import {startCase} from 'lodash';
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {Entity, GeoEntity} from '@/modules/geo/entity';
@@ -166,15 +185,15 @@ const defaultAbstract: GeoEntity = {
     name: 'No selection',
 }
 
-const exploreCategories = ['village', 'town', 'city', 'suburb'];
+const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', 'big city'];
 
 export default defineComponent({
     components: {
         MapView2,
-        EntityDetails,
+        EntityDetails, IonList, IonText,
         RecommendBlock, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
         IonFabButton, IonIcon, IonModal, IonButtons, IonSearchbar, IonCol, IonRow, IonItem,
-        IonAccordion, IonLabel, IonAccordionGroup, IonSegment, IonSegmentButton
+        IonAccordion, IonLabel, IonAccordionGroup, IonSegment, IonSegmentButton, IonPopover,
     },
 
     setup() {
@@ -212,7 +231,7 @@ export default defineComponent({
             }
         }
         // Reference to currently selected 'active' entity
-        const selected = ref<Entity>();
+        const selected = ref<GeoEntity>();
 
         const mapSelected = ref<GeoEntity[]>([]);
 
@@ -276,7 +295,9 @@ export default defineComponent({
                 gps: locateOutline,
                 mapConfig: layersOutline,
                 close: close,
-                remove: removeCircleOutline,
+                remove: removeCircle,
+                more: ellipsisVertical,
+                save: bookmark,
             },
             position,
             selected,

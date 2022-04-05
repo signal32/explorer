@@ -106,7 +106,10 @@ async function findEntities(origin: GeoEntity, mode: ExploreMode, distance: numb
 }
 
 // Mutations to entity query param should trigger re-calculation of selected entity
-watch(router.currentRoute, () => getBaseEntity().then( res => originEntity.value = res), {immediate: true});
+watch(router.currentRoute, (route) => {
+    if (route.name == 'Explore') //TODO prevent watch from being fired when page not visible
+        getBaseEntity().then( res => originEntity.value = res), {immediate: true};
+}, {immediate: true});
 
 // Need to find entities again whenever the base/origin entity mutates
 watch(computed(() => { return {originEntity: originEntity.value, mode, distance}}), () => {

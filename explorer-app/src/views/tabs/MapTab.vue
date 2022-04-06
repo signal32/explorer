@@ -2,29 +2,25 @@
   <ion-page>
       <!-- Map overlay -->
       <div class="explorer-above">
-          <ion-row>
-              <ion-col size="2">
-                  <ion-button shape="round" color="light" @click="router.push('/auth')">
-                      <ion-icon slot="icon-only" :icon="icons.logo"></ion-icon>
-                  </ion-button>
-              </ion-col>
-              <ion-col size="8">
-                  <div style="background-color: transparent; border-radius: 15pc; contain: content; box-shadow: 1px 1px 4px 2px rgba(2,2,2,0.45);">
+          <div style="display: flex">
+              <ion-button shape="round" color="light" @click="router.push('/auth')" style="flex: 1">
+                  <ion-icon slot="icon-only" :icon="icons.logo"></ion-icon>
+              </ion-button>
+              <div style="flex: 1; flex-basis: 500px;" >
+                  <div v-show="false" style="background-color: #1f1f1f; border-radius: 9999px; contain: content; box-shadow: 1px 1px 4px 2px rgba(2,2,2,0.45);">
                       <ion-searchbar style="padding: 0"></ion-searchbar>
                   </div>
-              </ion-col>
-              <ion-col size="2">
-                  <ion-button shape="round" color="light" @click="router.push('/settings')">
-                      <ion-icon slot="icon-only" :icon="icons.settings"></ion-icon>
-                  </ion-button>
-              </ion-col>
-          </ion-row>
+              </div>
+              <ion-button shape="round" color="light" @click="router.push('/settings')">
+                  <ion-icon slot="icon-only" :icon="icons.settings"></ion-icon>
+              </ion-button>
+          </div>
       </div>
 
         <ion-content :fullscreen="true">
             <!-- Action buttons -->
-            <ion-fab vertical="top" horizontal="end" slot="fixed" style="margin-top: 60px">
-                <ion-fab-button color="light" @click="move()" >
+            <ion-fab v-show="false" vertical="top" horizontal="end" slot="fixed" style="margin-top: 60px">
+                <ion-fab-button color="light" @click="move()" style="margin-bottom: 5px">
                     <ion-icon :icon="icons.gps"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button color="light" @click="optionsModalOpen = true">
@@ -32,9 +28,22 @@
                 </ion-fab-button>
             </ion-fab>
 
+
+            <div class="overlay" style="background-color: #3dc2ff;"></div>
             <!-- Main map display port -->
 <!--            <MapView v-if="false" v-model:position="position" @update:position="position = $event" @update:selected="openDetailModal($event)"/>-->
-            <MapView2 :key="style" :position="position" @updatePosition="position = $event" :style="style" :selected="mapSelected" @selected="openDetailModal($event)"></MapView2>
+            <MapView2 :key="style" :position="position" @updatePosition="position = $event" :style="style" :selected="mapSelected" @selected="openDetailModal($event)" :buttons="[{name: 'test', icon:icons.mapConfig, action: () => optionsModalOpen = true}]">
+
+                <div slot="fab">
+                        <ion-fab-button color="light" @click="move()" style="margin-bottom: 5px">
+                            <ion-icon :icon="icons.gps"></ion-icon>
+                        </ion-fab-button>
+                        <ion-fab-button color="light" @click="optionsModalOpen = true">
+                            <ion-icon :icon="icons.mapConfig"></ion-icon>
+                        </ion-fab-button>
+                </div>
+
+            </MapView2>
 
             <!-- Selected entity details modal -->
             <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.4,1.0]" :initialBreakpoint="detailsModalHeight" @didDismiss="closeDetailModal">
@@ -106,16 +115,16 @@
             </ion-modal>
 
             <!-- Map view configuration modal -->
-            <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.3]" :initialBreakpoint="0.3" @didDismiss="optionsModalOpen = false" >
+            <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.5]" :initialBreakpoint="0.5" @didDismiss="optionsModalOpen = false" >
                 <ion-content>
                     <ion-item>
                         <ion-label>Map Configuration</ion-label>
                     </ion-item>
-                    <ion-item lines="none">
+                    <ion-item-divider>
                         <ion-label>
-                            <h3>Theme</h3>
+                            <h2>Theme</h2>
                         </ion-label>
-                    </ion-item>
+                    </ion-item-divider>
                     <ion-item>
                         <ion-segment value="default">
                             <ion-segment-button value="default">
@@ -129,10 +138,25 @@
                             </ion-segment-button>
                         </ion-segment>
                     </ion-item>
+
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>Categories</h2>
+                            <p>Select what is shown on the map.</p>
+                        </ion-label>
+                    </ion-item-divider>
+
+                    <ion-item v-for="category in categories" :key="category.id" @click="setCategory(category)">
+                        <div v-if="category.iconUrl" style="background-color: white; height: 30px; border-radius: 5px" slot="start">
+                            <img :src="category.iconUrl" height="30" style="padding: 2px"/>
+                        </div>
+                        <ion-label>{{category.name}}</ion-label>
+                        <ion-checkbox slot="end" :checked="isLiked(category.id)"></ion-checkbox>
+                    </ion-item>
                     <ion-item button detail @click="router.push('/settings/interests'); optionsModalOpen = false">
                         <ion-label>
-                            <h3>Your interests</h3>
-                            <p>Control what is shown on the map.</p>
+                            <h3>Advanced filtering</h3>
+                            <p>Choose from over 4000 different categories.</p>
                         </ion-label>
                     </ion-item>
                 </ion-content>
@@ -149,7 +173,6 @@ import {
     IonAccordion,
     IonAccordionGroup,
     IonButtons,
-    IonCol,
     IonContent,
     IonFab,
     IonFabButton,
@@ -159,7 +182,6 @@ import {
     IonLabel,
     IonModal,
     IonPage,
-    IonRow,
     IonSearchbar,
     IonSegment,
     IonSegmentButton,
@@ -167,12 +189,13 @@ import {
     IonToolbar,
     IonPopover,
     IonList,
-    IonText
+    IonText,
+    IonCheckbox, IonItemDivider,
 } from '@ionic/vue';
 import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark} from 'ionicons/icons';
 import {startCase} from 'lodash';
 import MapView, {MapPosition} from '@/components/MapView.vue';
-import {Entity, GeoEntity} from '@/modules/geo/entity';
+import {CategoryEntity, Entity, GeoEntity} from '@/modules/geo/entity';
 import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
 import {services} from '@/modules/app/services';
 import EntityDetails from '@/components/entity/EntityDetails.vue';
@@ -190,18 +213,18 @@ const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', '
 export default defineComponent({
     components: {
         MapView2,
-        EntityDetails, IonList, IonText,
+        EntityDetails, IonList, IonText, IonCheckbox, IonItemDivider,
         RecommendBlock, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
-        IonFabButton, IonIcon, IonModal, IonButtons, IonSearchbar, IonCol, IonRow, IonItem,
+        IonFabButton, IonIcon, IonModal, IonButtons, IonSearchbar, IonItem,
         IonAccordion, IonLabel, IonAccordionGroup, IonSegment, IonSegmentButton, IonPopover,
     },
 
     setup() {
         // Center position of map, initialised by router params if presented
         let position = ref<MapPosition>({
-            lng: router.currentRoute.value.query?.lng as unknown as number|| 1,
-            lat: router.currentRoute.value.query?.lat as unknown as number || 1,
-            zoom: router.currentRoute.value.query?.zoom as unknown as number || 1,
+            lng: router.currentRoute.value.query?.lng as unknown as number|| -2,
+            lat: router.currentRoute.value.query?.lat as unknown as number || 57,
+            zoom: router.currentRoute.value.query?.zoom as unknown as number || 8,
         });
 
         // Update router params when internal position value changes
@@ -287,6 +310,29 @@ export default defineComponent({
 
         const style = ref<'light' |'dark'>('dark');
 
+        const categories = ref<CategoryEntity[]>([
+            {name: 'Castles', id: 'wd:Q23413', iconUrl: 'http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg'},
+            { name: 'Parks', id: 'wd:Q22698', iconUrl: 'http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20883674%20cc%20Symbolon%20tree%20icon.svg' },
+            { name: 'Railway Stations', id: "wd:Q55488", iconUrl: 'http://commons.wikimedia.org/wiki/Special:FilePath/Q55488%20noun%2019262%20ccPierreLucAuclair%20train-station.svg' },
+        ]);
+
+        function setCategory(category: CategoryEntity) {
+            if (services.preferenceService.liked.some(i => {return (i.entity.id == category.id)})) {
+                services.preferenceService.forget(category);
+            }
+            else {
+                services.preferenceService.like(category);
+            }
+        }
+
+        function isLiked(id: string) {
+            return !!services.preferenceService.liked.find(i => {
+                return (i.entity.id) == id
+            });
+        }
+
+        const noCategoriesSelected = computed(() => {return services.preferenceService.liked.length == 0});
+
 
         return {
             icons: {
@@ -315,6 +361,10 @@ export default defineComponent({
             style,
             mapSelected,
             exploreCategories,
+            categories,
+            setCategory,
+            isLiked,
+            noCategoriesSelected,
         }
     },
 
@@ -334,6 +384,8 @@ div.explorer-above {
 /*    background:#fff4c8;
     border:1px solid #ffcc00;*/
     width:100%;
+    padding-right: 6px;
+    padding-left: 6px;
     z-index:100;
     top:5px;
 }

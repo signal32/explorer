@@ -9,7 +9,7 @@ import PluginMenu from '@/views/menus/PluginMenu.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/view/map'
   },
   {
     path: '/home',

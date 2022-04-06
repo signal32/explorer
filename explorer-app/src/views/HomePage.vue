@@ -1,18 +1,5 @@
 <template>
   <ion-page>
-<!--    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Explorer</ion-title>
-
-        <ion-buttons slot="primary">
-          <login-status v-if="store.loggedIn"></login-status>
-          <ion-button v-else @click="router.push('/auth')">Login</ion-button>
-        </ion-buttons>
-
-        
-      </ion-toolbar>
-    </ion-header>-->
-    
     <ion-content :fullscreen="true " id="main">
 
       <ion-tabs>
@@ -28,10 +15,10 @@
             <ion-label>Explore</ion-label>
           </ion-tab-button>
 
-          <ion-tab-button tab="tab3" href="/view/profile">
+<!--          <ion-tab-button tab="tab3" href="/view/profile">
             <ion-icon :icon="person" />
             <ion-label>Profile</ion-label>
-          </ion-tab-button>
+          </ion-tab-button>-->
         </ion-tab-bar>
       </ion-tabs>
     
@@ -67,7 +54,6 @@ export default defineComponent({
         IonContent,
         IonPage,
         IonTabs, IonTabBar, IonIcon, IonLabel, IonRouterOutlet, IonTabButton,
-        //LoginStatus, IonToolbar, IonHeader, IonButtons, IonTitle
     },
 
     setup() {

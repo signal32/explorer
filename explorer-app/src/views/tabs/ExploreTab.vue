@@ -24,9 +24,16 @@
             <IonButton slot="end"> Search nearby</IonButton>
         </ion-item>-->
 
+        <ion-item color="light" v-if="sortedEntities.length > 0">
+            <ion-label v-if="sortedEntities.length > 0">
+                <p>Showing {{sortedEntities.length}} out of {{relatedEntities.length}} results</p>
+            </ion-label>
+        </ion-item>
+
         <LocationGrid v-if="sortedEntities.length > 0" :entities="sortedEntities"/>
         <ion-progress-bar v-else type="indeterminate"></ion-progress-bar>
 
+        <IonButton v-if="sortedEntities.length > 0 && sortedEntities.length <= relatedEntities.length" shape="round" expand="full" @click="limit += 10">Load More</IonButton>
 <!--        <p v-for="relatedEntity in relatedEntities" :key="relatedEntity">{{relatedEntity.name}}</p>-->
     </IonContent>
   </IonPage>
@@ -63,6 +70,10 @@ const distance = computed(() => {
     if (distanceParam) return parseFloat(distanceParam);
     else return 500;
 })
+
+const limit = ref(10);
+const uniqueItems = ref<number>();
+
 // Active mode, should default to nearby as this is most likely to work well
 const mode = computed<ExploreMode>(() => {
     const modeParam = router.currentRoute.value.query?.mode as string || undefined;
@@ -71,10 +82,17 @@ const mode = computed<ExploreMode>(() => {
 })
 
 const sortedEntities = computed(() => {
-    const entities = relatedEntities.value;
-    const withImages = relatedEntities.value.filter(e => e.thumbnailUrl)
-    if (withImages.length > 4) return withImages.slice(0,10);
-    else return entities.slice(0,10);
+    const seen: string[] = [];
+    const entities = relatedEntities.value
+        .filter(i => {
+        if (seen.includes(i.id)) return false;
+        else seen.push(i.id); return true;
+        })
+        return entities
+        .sort(i => {
+           return ( i.thumbnailUrl)? 0: 1
+        })
+        .slice(0,limit.value);
 })
 
 async function getBaseEntity(): Promise<GeoEntity> {

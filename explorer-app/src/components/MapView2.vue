@@ -5,6 +5,16 @@
             <IonProgressBar type="indeterminate"></IonProgressBar>
         </div>
 
+        <IonFab vertical="top" horizontal="end" slot="fixed" style="margin-top: 60px">
+            <IonFabButton color="light" @click="moveToGpsLocation" style="margin-bottom: 5px">
+                <IonIcon :icon="locate"></IonIcon>
+            </IonFabButton>
+            <IonFabButton v-for="button in props.buttons" :key="button.name" color="light" @click="button.action" style="margin-bottom: 5px">
+                <IonIcon :icon="button.icon"></IonIcon>
+            </IonFabButton>
+            <slot name="fab"></slot>
+        </IonFab>
+
 
 
 
@@ -28,8 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import {IonItem, IonProgressBar, IonSpinner} from '@ionic/vue';
-import {computed, defineEmits, defineProps, onMounted, PropType, ref, shallowRef, watch} from 'vue';
+import {IonItem, IonProgressBar, IonSpinner, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
+import {computed, defineEmits, defineProps, onMounted, onUnmounted, PropType, ref, shallowRef, watch} from 'vue';
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {GeoEntity} from '@/modules/geo/entity';
 import {debounce} from 'lodash';
@@ -39,13 +49,15 @@ import {toFeatureCollection} from '@/modules/geo/geoJson';
 import {services} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';
 import {LatLng, LatLngBounds} from '@/modules/geo/types';
-import darkIcon from '@/assets/icons/dark.png';
-import {geolocationService} from '@/modules/app/geolocationService';
-import {Geolocation} from '@awesome-cordova-plugins/geolocation';
-import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
-//import darkIcon from '@/assets/icons/dark.appiconset/dark_128.png';
+import {locate} from 'ionicons/icons';
+import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
 
 
+    export interface MapActionButton {
+        name: string,
+        icon: string,
+        action: () => any
+    }
 
 /// Map rendering style
     export declare type MapStyle = 'light' | 'dark';
@@ -88,6 +100,10 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
         selected: {
             type: Object as PropType<GeoEntity[]>,
             default: [] as GeoEntity[],
+        },
+        buttons: {
+            type: Object as PropType<MapActionButton[]>,
+            default: [] as MapActionButton[],
         }
     });
 
@@ -114,7 +130,7 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
             "text-size": 12,
             "symbol-z-order": "source",
             "icon-image": 'pin-selected',
-            "icon-size": 0.04,
+            "icon-size": 0.06,
             'text-offset': [1.5, 0],
             'text-anchor': 'left'
         },
@@ -140,7 +156,7 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
             "text-size": 12,
             "symbol-spacing": 1000,
             "icon-image": 'pin-normal',
-            "icon-size": 0.04,
+            "icon-size": 0.07,
             'text-offset': [1.5, 0],
             'text-anchor': 'left'
         },
@@ -157,7 +173,7 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
         layout: {
             "symbol-spacing": 1000,
             "icon-image": 'location',
-            "icon-size": 0.04,
+            "icon-size": 0.1,
         },
         paint: {
         },
@@ -169,11 +185,12 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
     const container = shallowRef('');
     /// Tracks whether the map is in some loading state or not
     const isLoading = ref(false);
-
+    /// Configuration of loading message overlay
     const detailedLoading = ref({
         loading: false,
         text: ''
     });
+    /// Configuration of information overlay
     const bottomMessage = ref({
         show: false,
         text: '',
@@ -181,6 +198,9 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
 
     /// Position at which map was last updated
     let lastUpdateCenter = new LngLat(0.0, 0.0);
+
+    /// Position of user/device
+    const gpsLocation = ref<MapPosition>();
 
     /// Debounce updatePosition event to prevent race conditions and feedback loops.
     const updateExternalPosition = debounce(async () => {
@@ -192,7 +212,6 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
             emits('updatePosition', newPosition);
         }
     }, 500);
-
 
     // Setup map
     onMounted(() => {
@@ -302,6 +321,14 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
             })
         }
 
+        // GPS location marker should be updated periodically to track movement
+        setLocationMarker();
+        const updateLocation = setInterval(setLocationMarker, 60000);
+        onUnmounted(() => {
+            clearInterval(updateLocation)
+        })
+
+
         console.debug('Map initialisation complete');
     })
 
@@ -320,30 +347,51 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
         if (now && prev && (Math.abs(now.lng - center.lng) > 0.01 || Math.abs(now.lat - center.lat) > 0.001)) {
             map.value?.flyTo({
                 center: [now.lng, now.lat],
-                zoom: now?.zoom || 0,
+                zoom: now?.zoom || prev.zoom || map.value?.getZoom() || 0,
                 speed: 2.0,
                 curve: 1,
             });
         }
     })
-/*
-    const locationWatch = Geolocation.watchPosition({maximumAge: 40000000});
-    locationWatch.subscribe((data => {
-        if ('coords' in data) {
-            //console.log(`New location ${data.coords.latitude} ${data.coords.longitude}`)
 
-            const newLocation = DEFAULT_FEATURES;
-            newLocation.features = [{
+    // Make sure that the map is always up-to-date with category preferences
+    watch(services.preferenceService.ratingMap, () => {
+        console.log('Updating map to reflect preference change');
+        update();
+    })
+
+
+    async function setLocationMarker() {
+        console.debug('Updating location')
+        const location = await Geolocation.getCurrentPosition();
+
+
+        // Update stored value
+        gpsLocation.value = {
+            lat: location.coords.latitude,
+            lng: location.coords.longitude,
+        };
+
+        // Set map marker
+        const locationData: FeatureCollection<Geometry, Geoposition> = {
+            type: 'FeatureCollection',
+            features: [{
+                type: 'Feature',
+                properties: location,
                 geometry: {
                     type: 'Point',
-                    coordinates: [data.coords.longitude, data.coords.latitude],
+                    coordinates: [location.coords.longitude, location.coords.latitude],
                 },
-                properties: {id: '', name: '', position: {lat: 0, lng: 0}}, type: 'Feature'
-            }];
-            (map.value?.getSource(LOCATION_SOURCE_ID) as any).setData(newLocation, map.value?.getZoom());
-        }
-        else console.error(data);
-    }));*/
+            }]
+        };
+
+        (map.value?.getSource(LOCATION_SOURCE_ID) as any).setData(locationData, map.value?.getZoom());
+    }
+
+    function moveToGpsLocation() {
+        if (gpsLocation.value) emits('updatePosition', {...gpsLocation.value, zoom: 12})
+        else console.error('GPS position is not defined');
+    }
 
     /// Fetch and update map entity data
     async function update() {
@@ -380,7 +428,6 @@ import {Geoposition} from '@awesome-cordova-plugins/geolocation/ngx';
 
     function loadImages() {
         images.forEach(imageDescription => {
-            console.log(imageDescription.url);
             map.value?.loadImage(imageDescription.url, function(error, image) {
                 if (error) throw error;
                 if (!map.value?.hasImage(imageDescription.id) && image) {

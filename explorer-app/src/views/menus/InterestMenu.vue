@@ -100,7 +100,6 @@ export default defineComponent({
             set: (v) => console.log(v),
         })
 
-
         function segmentChanged(ev: CustomEvent) {
             if (ev.detail.value == 'liked') viewMode.value = 'liked';
             else if (ev.detail.value == 'disliked') viewMode.value = 'disliked';

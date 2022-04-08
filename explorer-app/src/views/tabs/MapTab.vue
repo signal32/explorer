@@ -17,6 +17,13 @@
           </div>
       </div>
 
+      <div v-if="showTutorial" class="explorer-above" style="background-color: rgba(42,42,42,0.71); height: 100%" @click="showTutorial = false">
+          <AppTutorial/>
+          <div style="padding: 10px">
+              <ion-button @click="showTutorial = false" shape="round" expand="full">Close</ion-button>
+          </div>
+      </div>
+
         <ion-content :fullscreen="true">
             <!-- Action buttons -->
             <ion-fab v-show="false" vertical="top" horizontal="end" slot="fixed" style="margin-top: 60px">
@@ -27,12 +34,17 @@
                     <ion-icon :icon="icons.mapConfig"></ion-icon>
                 </ion-fab-button>
             </ion-fab>
-
-
             <div class="overlay" style="background-color: #3dc2ff;"></div>
             <!-- Main map display port -->
 <!--            <MapView v-if="false" v-model:position="position" @update:position="position = $event" @update:selected="openDetailModal($event)"/>-->
-            <MapView2 :key="style" :position="position" @updatePosition="position = $event" :style="style" :selected="mapSelected" @selected="openDetailModal($event)" :buttons="[{name: 'test', icon:icons.mapConfig, action: () => optionsModalOpen = true}]">
+            <MapView2
+                :key="style"
+                :position="position"
+                @updatePosition="position = $event"
+                :style="style"
+                :selected="mapSelected"
+                @selected="openDetailModal($event)"
+                :buttons="[{name: 'test', icon:icons.mapConfig, action: () => optionsModalOpen = true}, {name: 'tutorial', icon:icons.info, action: () => showTutorial = !showTutorial}]">
 
                 <div slot="fab">
                         <ion-fab-button color="light" @click="move()" style="margin-bottom: 5px">
@@ -192,7 +204,7 @@ import {
     IonText,
     IonCheckbox, IonItemDivider,
 } from '@ionic/vue';
-import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark} from 'ionicons/icons';
+import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark, informationOutline} from 'ionicons/icons';
 import {startCase} from 'lodash';
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {CategoryEntity, Entity, GeoEntity} from '@/modules/geo/entity';
@@ -201,6 +213,7 @@ import {services} from '@/modules/app/services';
 import EntityDetails from '@/components/entity/EntityDetails.vue';
 import {NotificationType} from '@/modules/app/notification';
 import MapView2 from '@/components/MapView2.vue';
+import AppTutorial from '@/components/AppTutorial.vue';
 
 const defaultAbstract: GeoEntity = {
     id: 'unidentified',
@@ -212,6 +225,7 @@ const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', '
 
 export default defineComponent({
     components: {
+        AppTutorial,
         MapView2,
         EntityDetails, IonList, IonText, IonCheckbox, IonItemDivider,
         RecommendBlock, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab,
@@ -264,6 +278,8 @@ export default defineComponent({
         // Referenced by details modal to open/close dynamically
         const isModalOpenRef = ref(false);
         const detailsModalHeight = ref<0.2 | 0.4>(0.4);
+
+        const showTutorial = ref(false);
 
         /// Open detail modal with given entity
         function openDetailModal(item: GeoEntity) {
@@ -344,6 +360,7 @@ export default defineComponent({
                 remove: removeCircle,
                 more: ellipsisVertical,
                 save: bookmark,
+                info: informationOutline,
             },
             position,
             selected,
@@ -365,6 +382,7 @@ export default defineComponent({
             setCategory,
             isLiked,
             noCategoriesSelected,
+            showTutorial,
         }
     },
 
@@ -380,7 +398,7 @@ export default defineComponent({
 
 <style>
 div.explorer-above {
-    position:fixed;
+    position:absolute;
 /*    background:#fff4c8;
     border:1px solid #ffcc00;*/
     width:100%;

@@ -250,6 +250,8 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
 
             loadImages();
 
+            setLocationMarker();
+
             update();
         })
 
@@ -322,7 +324,6 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
         }
 
         // GPS location marker should be updated periodically to track movement
-        setLocationMarker();
         const updateLocation = setInterval(setLocationMarker, 60000);
         onUnmounted(() => {
             clearInterval(updateLocation)

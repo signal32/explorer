@@ -193,7 +193,12 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         })
 
         details.push(image);
-        details.push(actions);
+        details.push({
+            type: 'section',
+            title: 'Further Information',
+            id: 'links',
+            elements: [actions]
+        });
         return details;
     }
 

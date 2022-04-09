@@ -5,7 +5,7 @@ import {Services} from '@/modules/app/services';
 import {constants} from '@/constants';
 import {Entity} from '@/modules/geo/entity';
 import {Quad} from '@rdfjs/types';
-import {getEntity, getSimilarStations, WikiDataId} from '@/modules/query/queryAbstractionLayer';
+import {getEntity, getSimilarStations, getStationDetails, WikiDataId} from '@/modules/query/queryAbstractionLayer';
 
 const DEFAULT_ENDPOINT = 'https://query.wikidata.org/sparql';
 
@@ -43,8 +43,42 @@ export class TransportPlugin implements DetailServiceFormatPlugin, RecommendServ
         };
     }
 
-    format(entity: Entity, knowledge: Quad[]): Promise<DetailElement[]> {
-        return Promise.resolve([]);
+    async format(entity: Entity, knowledge: Quad[]): Promise<DetailElement[]> {
+
+        const section: DetailElement = {
+            id: 'transport',
+            type: 'section',
+            title: 'Public Transport',
+            elements: [],
+        }
+
+        if (knowledge.some(i => i.object.value.includes('Q55488'))) { // railway station
+            const details = await getStationDetails([entity.id as WikiDataId], this.endpoint);
+            if (details[0]){
+                section.elements.push({
+                    id: 'station_operator',
+                    type: 'text',
+                    title: 'Operator',
+                    body: details[0]?.operator || 'none',
+                })
+                section.elements.push({
+                    id: 'station_line',
+                    type: 'text',
+                    title: 'Line',
+                    body: details[0]?.line || 'none',
+                })
+                section.elements.push({
+                    id: 'station_line',
+                    type: 'actions',
+                    actions: [
+                        {title: 'National Rail', url: `https://www.nationalrail.co.uk/stations/${details[0]?.code}/details.html`},
+                        {title: 'RealTimeTrains', url: `https://www.realtimetrains.co.uk/search/detailed/gb-nr:${details[0]?.code}`}
+                    ]
+                })
+            }
+        }
+
+        return Promise.resolve((section.elements.length>0)?[section]:[]);
     }
 
     async recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {

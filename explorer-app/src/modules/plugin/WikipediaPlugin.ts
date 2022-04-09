@@ -28,7 +28,7 @@ export class WikipediaPlugin implements DetailServiceFormatPlugin, Plugin {
         const section: DetailElement = {
             id: 'wikipedia',
             type: 'section',
-            title: 'Wikipedia',
+            title: 'About',
             elements: []
         };
 
@@ -48,7 +48,7 @@ export class WikipediaPlugin implements DetailServiceFormatPlugin, Plugin {
                 const data = Object.entries(res.data.query.pages)[0][1] as unknown as any;
                 section.elements.push({
                     id: 'wikipedia_excerpt',
-                    title: "Abstract",
+                    title: "Description",
                     type: 'text',
                     body: data?.extract as string,
                 });

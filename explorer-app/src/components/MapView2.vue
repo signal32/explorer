@@ -334,7 +334,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
     })
 
     // Update selected entities when changed
-    watch(computed(() => {return props.selected}), (now, prev) => {
+    watch(computed(() => {return props.selected}), (now) => {
         if (map.value?.getSource(SELECTED_SOURCE_ID)?.type == 'geojson'){
             const source = map.value?.getSource(SELECTED_SOURCE_ID) as GeoJSONSource;
             const x = toFeatureCollection(now);
@@ -366,7 +366,6 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
         console.debug('Updating location')
         const location = await Geolocation.getCurrentPosition();
 
-
         // Update stored value
         gpsLocation.value = {
             lat: location.coords.latitude,
@@ -386,11 +385,11 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
             }]
         };
 
-        (map.value?.getSource(LOCATION_SOURCE_ID) as any).setData(locationData, map.value?.getZoom());
+        (map.value?.getSource(LOCATION_SOURCE_ID) as any)?.setData(locationData, map.value?.getZoom());
     }
 
     function moveToGpsLocation() {
-        if (gpsLocation.value) emits('updatePosition', {...gpsLocation.value, zoom: 12})
+        if (gpsLocation.value) emits('updatePosition', {...gpsLocation.value, zoom: 14})
         else console.error('GPS position is not defined');
     }
 

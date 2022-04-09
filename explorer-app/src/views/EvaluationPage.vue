@@ -32,14 +32,10 @@
 
             <IonCard>
                 <IonCardContent>
-                    <p> Enough for now? See this guide again anytime by tapping the info <IonIcon :icon="informationCircle"/> button.</p>
-
-                    <IonButton expand="block" @click="router.push('/')">Start now!</IonButton>
+                    <p>Enough for now? See this guide again anytime by tapping the info <IonIcon :icon="informationCircle"/> button.</p>
+                    <IonButton expand="block" @click="router.push('/')">Launch App</IonButton>
                 </IonCardContent>
-
             </IonCard>
-
-
         </IonContent>
     </IonPage>
 </template>
@@ -76,7 +72,7 @@ async function installApp() {
     else {
         services.notificationService.pushNotification({
             title: 'Unable to install',
-            description: 'Installation is not supported on your device.',
+            description: 'Installation is not supported from this browser. Please try again from Chrome or Safari.',
             type: NotificationType.TOAST,
         })
     }

@@ -127,7 +127,7 @@
             </ion-modal>
 
             <!-- Map view configuration modal -->
-            <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.5]" :initialBreakpoint="0.5" @didDismiss="optionsModalOpen = false" >
+            <ion-modal :is-open="optionsModalOpen" :breakpoints="[0.75, 1.0]" :initialBreakpoint="0.75" @didDismiss="optionsModalOpen = false" >
                 <ion-content>
                     <ion-item>
                         <ion-label>Map Configuration</ion-label>
@@ -160,7 +160,7 @@
 
                     <ion-item v-for="category in categories" :key="category.id" @click="setCategory(category)">
                         <div v-if="category.iconUrl" style="background-color: white; height: 30px; border-radius: 5px" slot="start">
-                            <img :src="category.iconUrl" height="30" style="padding: 2px"/>
+                            <img :src="category.iconUrl" height="30" width="30" style="padding: 2px"/>
                         </div>
                         <ion-label>{{category.name}}</ion-label>
                         <ion-checkbox slot="end" :checked="isLiked(category.id)"></ion-checkbox>
@@ -168,7 +168,7 @@
                     <ion-item button detail @click="router.push('/settings/interests'); optionsModalOpen = false">
                         <ion-label>
                             <h3>Advanced filtering</h3>
-                            <p>Choose from over 4000 different categories.</p>
+                            <p>Choose from thousands of categories.</p>
                         </ion-label>
                     </ion-item>
                 </ion-content>
@@ -179,7 +179,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, watch} from 'vue';
+import {computed, defineComponent, onMounted, ref, watch} from 'vue';
 import router from '@/router'
 import {
     IonAccordion,
@@ -329,7 +329,12 @@ export default defineComponent({
         const categories = ref<CategoryEntity[]>([
             {name: 'Castles', id: 'wd:Q23413', iconUrl: 'http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg'},
             { name: 'Parks', id: 'wd:Q22698', iconUrl: 'http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20883674%20cc%20Symbolon%20tree%20icon.svg' },
+            { name: 'Museums', id: 'wd:Q33506', iconUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Noun%2026864%20ccCorneliusDanger%20artwork.svg' },
+            { name: 'Coffee Houses', id: 'wd:Q30022', iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/AB-Autobahnkiosk.svg'},
+            { name: 'Public Toilets', id: ' wd:Q813966', iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/36/Male_and_female_toilets_symbol-Wuhan_Metro.svg'},
             { name: 'Railway Stations', id: "wd:Q55488", iconUrl: 'http://commons.wikimedia.org/wiki/Special:FilePath/Q55488%20noun%2019262%20ccPierreLucAuclair%20train-station.svg' },
+            {name: 'Architectural Structures', id: 'wd:Q811979', iconUrl: 'http://commons.wikimedia.org/wiki/Special:FilePath/Noun%20232996%20cc%20Castle.svg'},
+            { name: 'Nuclear Power Stations', id: 'wd:Q134447', iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Nuclear_power_plant.svg'}
         ]);
 
         function setCategory(category: CategoryEntity) {
@@ -348,6 +353,11 @@ export default defineComponent({
         }
 
         const noCategoriesSelected = computed(() => {return services.preferenceService.liked.length == 0});
+
+        onMounted(() => {
+            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            style.value = (isDarkMode)? 'dark' : 'light';
+        })
 
 
         return {

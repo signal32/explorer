@@ -72,8 +72,8 @@
                     </ion-header>
 
                     <ion-item>
-                        <div  v-if="selected?.category?.iconUrl" slot="start" style="background-color: white; border-radius: 9999px; overflow: clip">
-                            <img :src="selected?.category?.iconUrl" :alt="selected?.category?.name" height="30">
+                        <div  v-if="selected?.category?.iconUrl" slot="start" style="background-color: white; border-radius: 5px; overflow: clip">
+                            <img :src="selected?.category?.iconUrl" :alt="selected?.category?.name" height="30" width="30" style="padding: 2px">
                         </div>
 
                         <ion-label>{{startCase(selected?.category?.name)}}</ion-label>
@@ -221,7 +221,7 @@ const defaultAbstract: GeoEntity = {
     name: 'No selection',
 }
 
-const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', 'big city'];
+const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', 'large burgh', 'big city'];
 
 export default defineComponent({
     components: {

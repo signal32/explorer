@@ -418,7 +418,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
         const categories = await services.categoryService.methods.searchCategoryLabels(type);
         if (type =='village') categories.push(... await services.categoryService.methods.searchCategoryLabels('town'))
         console.debug(`Categories deduced for type=${type}:`, categories);
-        const result = await services.queryService.methods.getByArea(LatLngBounds.fromMapBox(position.toBounds(1000)), categories, name, false);
+        const result = await services.queryService.methods.getByArea(LatLngBounds.fromMapBox(position.toBounds(500)), categories, name, false);
         const feature = result.features.find(i => {
             return i.properties.name.toLowerCase().match(name.toLowerCase());
         });

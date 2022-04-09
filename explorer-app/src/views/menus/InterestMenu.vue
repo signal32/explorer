@@ -19,7 +19,7 @@
                 <ion-label>
                     <p>Suggested:</p>
                     <horizontal-list>
-                        <ion-chip outline color="dark" v-for="s in suggestedCategories" :key="s" @click="addCategory(s)">
+                        <ion-chip outline color="dark" v-for="s in suggestedCategories" :key="s" @click="addCategory(s)" @click.ctrl="logCategory(s)">
                             <ion-label>{{ startCase(s.name) }}</ion-label>
                         </ion-chip>
                     </horizontal-list>
@@ -118,8 +118,12 @@ export default defineComponent({
             services.preferenceService.forget(category);
         }
 
+        function logCategory(category: CategoryEntity) {
+            console.log(`Selected category name: ${category.name}, id: ${category.id}`, category);
+        }
 
-        return {router, viewMode, categories2, suggestedCategories, segmentChanged, addCategory, removeCategory, searchTermChanged, startCase, icons: {
+
+        return {router, viewMode, categories2, suggestedCategories, segmentChanged, addCategory, removeCategory, searchTermChanged, startCase, logCategory, icons: {
             remove: trash,
                 up: arrowUp,
                 like: thumbsUpSharp,

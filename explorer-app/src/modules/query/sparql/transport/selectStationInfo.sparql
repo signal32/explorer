@@ -1,7 +1,15 @@
-SELECT *
-WHERE
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
+
+SELECT ?operatorLabel ?lineLabel ?dest ?destLabel ?code WHERE
 {
-    VALUES ?base {wd:Q2171269}
+    VALUES ?base {?__baseStations__}
     #?base wdt:P197 ?item.
     ?base p:P197 ?item.
 
@@ -14,9 +22,10 @@ WHERE
     OPTIONAL {
         ?item pq:P5051 ?dest.  # Place at end of line
         ?item pq:P81 ?destLine.# Line to place
+        ?base wdt:P4755 ?code
     }
 
     #wdt:P197 a owl:ObjectProperty.
     #?item wdt:P31 wd:Q146. # Must be of a cat
-    #SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } # Helps get the label in your language, if not, then en language
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } # Helps get the label in your language, if not, then en language
 }

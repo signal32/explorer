@@ -18,7 +18,11 @@ SELECT ?subject ?subjectLabel ?subjectLocation ?subjectImage ?category ?category
     OPTIONAL {
         ?subject wdt:P276 ?subjectWithin.
         ?subjectWithin  wdt:P625 ?withinLocation;
-                        rdfs:label ?withinLabel FILTER (LANG(?withinLabel) = "en") .
+        rdfs:label ?withinLabel FILTER (LANG(?withinLabel) = "en") .
 
     }
-}
+
+    #?category wikibase:statements ?outcoming2 . #Both more or less equivalent to 'page rank' # Discussion https://stackoverflow.com/questions/39438022/wikidata-results-sorted-by-something-similar-to-a-pagerank
+    ?category wikibase:sitelinks ?sitelinks .
+
+} ORDER BY DESC(?sitelinks)

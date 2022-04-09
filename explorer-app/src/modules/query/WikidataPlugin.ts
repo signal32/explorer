@@ -193,14 +193,22 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         })
 
         details.push(image);
-        details.push(actions);
+        details.push({
+            type: 'section',
+            title: 'Further Information',
+            id: 'links',
+            elements: [actions]
+        });
         return details;
     }
 
     async searchCategoryLabels(term: string): Promise<CategoryEntity[]> {
         if (!this.index) await this.setupCategoryIndex();
 
-        const ids = this.index?.search(term, 10) || [];
+        const ids = this.index?.search(term, {
+            limit: 10,
+            suggest: true,
+        }) || [];
         const names = this.categories.filter(c => ids.includes(c.id)); // HACK This will be slow!
         return Promise.resolve(names);
     }
@@ -262,6 +270,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
             charset: 'latin:extra',
             preset: 'match',
             tokenize: 'strict',
+            context: true,
             cache: false,
         });
 

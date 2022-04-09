@@ -10,6 +10,7 @@ import selectLocation from './sparql/location/selectLocation.sparql'
 import selectWithSimilarCategories from './sparql/category/selectWithSimilarCategories.sparql'
 import selectCategories from './sparql/category/selectCategories.sparql';
 import selectSimilarStations from './sparql/transport/selectRelatedStations.sparql';
+import selectStationDetails from './sparql/transport/selectStationInfo.sparql';
 import selectSimilarArchitecture from './sparql/historic/selectSimilarArchitecture.sparql';
 
 export type WikiDataId = `wd:${'Q' | `P`}${string | number}`| 'UNDEFINED_ID' | undefined;
@@ -226,6 +227,26 @@ export async function getSimilarStations(originStations: WikiDataId[], endpoint:
                 terminus: data.get('?terminus')?.value,
                 distance: data.get('?distance')?.value,
             }
+        }
+    })
+}
+
+interface StationDetails {
+    line?: string,
+    operator?: string,
+    code?: string,
+    dest?: WikiDataId,
+    prevStation?: WikiDataId,
+
+}
+export async function getStationDetails(originStations: WikiDataId[], endpoint: string): Promise<StationDetails[]> {
+    const query = selectStationDetails.replace('?__baseStations__', originStations.join(' '));
+    const results = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
+    return bindResults<StationDetails>(results, async data => {
+        return {
+            operator: data.get('?operatorLabel')?.value,
+            line: data.get('?lineLabel')?.value,
+            code: data.get('?code')?.value,
         }
     })
 }

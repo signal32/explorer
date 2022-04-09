@@ -13,6 +13,6 @@ SELECT DISTINCT ?target ?icon ?label WHERE {
     ?item wdt:P31 wd:Q4167836;                      # Instance of WikiData Category
     wdt:P301 ?target.                               # Have a main subject ?target
     OPTIONAL {?target wdt:P2910 ?icon.}             # ?target has icon url
-    ?target wdt:P279* wd:Q618123;                   # ?target is a geographical feature
+    ?target wdt:P279* wd:Q27096213;                  # ?target is a geographical entity
     rdfs:label ?label FILTER (LANG(?label) = "en").
 }

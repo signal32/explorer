@@ -16,8 +16,6 @@
         </IonFab>
 
 
-
-
         <div style="padding: 10px; position:absolute; bottom: 20px; width: 100%">
             <Transition>
             <IonItem v-if="detailedLoading.loading" style="border-radius: 50pc; margin: 5px">
@@ -41,7 +39,7 @@
 import {IonItem, IonProgressBar, IonSpinner, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import {computed, defineEmits, defineProps, onMounted, onUnmounted, PropType, ref, shallowRef, watch} from 'vue';
 import 'maplibre-gl/dist/maplibre-gl.css'
-import {GeoEntity} from '@/modules/geo/entity';
+import {CategoryEntity, GeoEntity} from '@/modules/geo/entity';
 import {debounce} from 'lodash';
 import {GeoJSONSource, LayerSpecification, LngLat, Map} from 'maplibre-gl';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
@@ -84,7 +82,13 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
     /// Endpoint serving map vector tiles
     const TILE_API = process.env.VUE_APP_EXPLORER_TILE_API;
 
-
+    const DEFAULT_WIKIDATA_CATEGORIES: CategoryEntity[] = [ // HACK WikiData KG keeps changing and breaking queries for geographic regions.
+        { name: 'city', id: 'wd:Q515'},
+        { name: 'village', id: 'wd:Q532'},
+        { name: 'town', id: 'wd:Q3957'},
+        { name: 'suburb', id: 'wd:Q188509'},
+        { name: 'geographic region', id: ' wd:Q82794'},
+    ];
 
     //-- COMPONENT PROPERTY DEFINITIONS
     const props = defineProps({
@@ -417,6 +421,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
     async function findEntity(name: string, type: string, position: LngLat): Promise<GeoEntity> {
         const categories = await services.categoryService.methods.searchCategoryLabels(type);
         if (type =='village') categories.push(... await services.categoryService.methods.searchCategoryLabels('town'))
+        categories.push(...DEFAULT_WIKIDATA_CATEGORIES);
         console.debug(`Categories deduced for type=${type}:`, categories);
         const result = await services.queryService.methods.getByArea(LatLngBounds.fromMapBox(position.toBounds(500)), categories, name, false);
         const feature = result.features.find(i => {

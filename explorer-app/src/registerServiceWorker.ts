@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'production') {
     updatefound () {
       console.log('New content is downloading.')
     },
-    async updated() {
+    async updated(registration) {
       console.log('New content is available; please refresh.');
       const alert = await alertController.create({
         header: 'Update available',
@@ -38,6 +38,7 @@ if (process.env.NODE_ENV === 'production') {
             id: 'restart-button',
             handler: () => {
               console.log('Restarting app to apply update');
+              registration.waiting?.postMessage({ type: 'SKIP_WAITING' })
               location.reload();
             }
           }

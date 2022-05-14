@@ -204,7 +204,7 @@ import {
     IonText,
     IonCheckbox, IonItemDivider,
 } from '@ionic/vue';
-import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark, informationOutline} from 'ionicons/icons';
+import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark, helpOutline} from 'ionicons/icons';
 import {startCase} from 'lodash';
 import MapView, {MapPosition} from '@/components/MapView.vue';
 import {CategoryEntity, Entity, GeoEntity} from '@/modules/geo/entity';
@@ -359,7 +359,6 @@ export default defineComponent({
             style.value = (isDarkMode)? 'dark' : 'light';
         })
 
-
         return {
             icons: {
                 logo: planet,
@@ -370,7 +369,7 @@ export default defineComponent({
                 remove: removeCircle,
                 more: ellipsisVertical,
                 save: bookmark,
-                info: informationOutline,
+                info: helpOutline,
             },
             position,
             selected,

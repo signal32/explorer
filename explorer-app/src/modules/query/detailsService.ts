@@ -104,6 +104,9 @@ export interface SectionDetailElement extends BaseDetailElement {
     elements: DetailElement[]
 }
 
+const detailsCache = new Map<string, DetailElement[]>();
+const detailsStack: string[] = [];
+
 /**
  * Create a new {@link DetailService} instance.
  */
@@ -135,8 +138,23 @@ export function defineDetailService(): DetailService {
         }),
 
         async getDetails(entity: Entity): Promise<DetailElement[]> {
-            const k = await this.knowledge.methods.describe(entity);
-            return this.format.methods.format(entity, k);
+            // Try to get from cache first
+            let details = detailsCache.get(entity.id)
+            if (details) return Promise.resolve(details);
+
+            else {
+                const k = await this.knowledge.methods.describe(entity);
+                details = await this.format.methods.format(entity, k);
+                detailsCache.set(entity.id, details);
+
+                // Only keep the most recent 10 items in cache
+                detailsStack.unshift(entity.id)
+                if (detailsStack.length > 10) {
+                    detailsCache.delete(detailsStack.pop() || '');
+                }
+
+                return Promise.resolve(details)
+            }
         }
     }
 }

@@ -1,0 +1,209 @@
+<http://www.wikidata.org/entity/Q103925217> <http://schema.org/description> "schip"@nl .
+<http://www.wikidata.org/entity/Q103925217> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103925217> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q11446> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103925217-7A0A5703-2D32-494A-B310-A58FAB9BB771> .
+<http://www.wikidata.org/entity/Q103925217> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103925217-3281229C-1DA9-433E-9623-03A4C7E24324> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P625> "Point(-1.968501491 57.243703336)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103925217-D448B5FF-026F-4657-AE6D-03C06510212F> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103925217-77467682-C07C-40C3-90BA-A38AB8874EFA> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.w3.org/2000/01/rdf-schema#label> "Vrow Sara"@pap .
+<http://www.wikidata.org/entity/Q103925217> <http://www.w3.org/2000/01/rdf-schema#label> "Vrow Sara"@en .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103925217-adb67bcb-209e-4d19-b9ae-8127baa4cc11> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103925217-5CF40016-6636-4B36-A99B-0A0DB0BB4B9F> .
+<http://www.wikidata.org/entity/Q103925217> <http://schema.org/version> "1415582433"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103925217-0282B269-DD32-4BA8-A00B-043BA7C38292> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103925217-563A812D-36C8-432E-8C27-93AD4A276A39> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P718> "292869" .
+<http://www.wikidata.org/entity/Q103925217> <http://schema.org/dateModified> "2021-05-05T23:07:09Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103925217> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103925217> <http://schema.org/description> "barku den Reino Uni"@pap .
+<http://www.wikidata.org/entity/Q103925217> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103925217-F5424B0F-1642-4DFF-87DA-C76E964E4503> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P625> "Point(-1.902223681 57.243669383)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103773679> <http://schema.org/dateModified> "2021-05-05T19:52:01Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q12859788> .
+<http://www.wikidata.org/entity/Q103773679> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103773679> <http://schema.org/version> "1415456870"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103773679-78278ff5-99fc-449d-889e-f3456ac81af4> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103773679-F36CC976-90A7-4B21-A423-6E089A081045> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P718> "101752" .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103773679-8BD87C83-70BB-465D-87A6-701227D38EC8> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103773679-D21FA564-5D40-47A4-BF3C-18251F49AC96> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103773679-5DB9BDDB-91A8-4C61-A5FD-B305E41195EB> .
+<http://www.wikidata.org/entity/Q103773679> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103773679-C77A763D-38A5-43D2-B815-F6A06E4C975E> .
+<http://www.wikidata.org/entity/Q103773679> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103773679-CA3F1FBF-1CA6-43AD-A8DB-14954B8FC1D2> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103773679-E26C0228-7E03-4A07-9661-84CC71F3CB95> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.w3.org/2000/01/rdf-schema#label> "Trevorian"@en .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103773679-817A0532-E4F2-4841-87FA-11941D1397FA> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103773679> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103773679> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q1137441> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103947005-2540F59D-C4B1-4C6B-B7BF-B81B8184ABF1> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103947005-65141574-8865-4F4A-8374-3E7B67E6C6E2> .
+<http://www.wikidata.org/entity/Q103947005> <http://schema.org/dateModified> "2021-05-06T00:22:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P625> "Point(-2.001640396 57.243707205)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103947005> <http://schema.org/version> "1415629020"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103947005-40950F09-BBC9-48A0-B46F-0E892EF7D557> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103947005-5CE40FE3-556E-4F75-9C1B-7A0B4A312DE3> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.w3.org/2000/01/rdf-schema#label> "Excel - Canmore 292868"@en .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103947005> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103947005> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103947005-05C54580-56B5-4D62-AADC-00C7A507BA31> .
+<http://www.wikidata.org/entity/Q103947005> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P718> "292868" .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103947005-E5FA13B4-4A73-4465-AAAE-87450C5250B1> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103947005-0ce8ef1e-074c-4de2-b1e2-4099e14393bb> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103947005-BD052BC1-D5E7-4D08-A903-DE10730D77CA> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103947005> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103947005> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103947005-2A94092A-8CE9-4374-8B25-421E63DA4263> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P718> "321878" .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103951369-575C2C49-2AE4-4397-829E-1CBEBD07D356> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103951369-1A8377C3-33C9-4A94-8693-3612711EDE32> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P625> "Point(-2.003877954 57.249797534)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.w3.org/2000/01/rdf-schema#label> "Archangel - Canmore 321878"@en .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103951369-EF767A8C-A047-491C-91C6-E3F107E603F8> .
+<http://www.wikidata.org/entity/Q103951369> <http://schema.org/version> "1415450252"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103951369-bb05d224-108c-4c81-add0-7bcafcd37012> .
+<http://www.wikidata.org/entity/Q103951369> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103951369> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103951369> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103951369-11888CEE-0DC2-48FA-8053-CB9DC19C3CBD> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103951369-0A7B5340-A8D9-4EBA-9E5A-7A50539D223D> .
+<http://www.wikidata.org/entity/Q103951369> <http://schema.org/dateModified> "2021-05-05T19:38:13Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103951369-8C14FC51-15CC-4A6F-BA51-6A93AE71F791> .
+<http://www.wikidata.org/entity/Q103951369> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q12859788> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103951369-B4666916-C1B3-4001-8085-B919859D74C4> .
+<http://www.wikidata.org/entity/Q103951369> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103951369-31C9ED33-879A-4872-AE5F-3198951DA0C7> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P718> "208229" .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103912591-26FD6372-1ADF-4C9A-BFAB-3DE2534AD162> .
+<http://www.wikidata.org/entity/Q103912591> <http://schema.org/version> "1415605079"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103912591-EFD7F282-9F08-4F0E-ACBA-07B5D20CCF97> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.w3.org/2000/01/rdf-schema#label> "Caersin"@pap .
+<http://www.wikidata.org/entity/Q103912591> <http://www.w3.org/2000/01/rdf-schema#label> "Caersin"@en .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103912591-7FAFD51C-DB17-4E40-8AC6-C27BA83528AF> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P625> "Point(-1.933715275 57.238300148)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103912591> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q11446> .
+<http://www.wikidata.org/entity/Q103912591> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103912591-21AA62A1-1B70-4B90-8065-15EC725E4C43> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103912591-8CB34FAB-0818-45D9-804D-EC1AE2ECA174> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103912591-9fefb801-1ee1-4c0f-b700-a88e0c8740f2> .
+<http://www.wikidata.org/entity/Q103912591> <http://schema.org/dateModified> "2021-05-05T23:43:54Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103912591> <http://schema.org/description> "schip"@nl .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103912591-D1F2FAF9-3F75-43AE-B801-275A9D2F3D1B> .
+<http://www.wikidata.org/entity/Q103912591> <http://schema.org/description> "barku den Reino Uni"@pap .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103912591-6319B246-72F3-466B-83BF-B9A0267069D0> .
+<http://www.wikidata.org/entity/Q103912591> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103912591> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103912591> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103912591-01AC5B2D-BCBF-4B10-B3E9-CA4B7684B665> .
+<http://www.wikidata.org/entity/Q103772886> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P625> "Point(-2.003795115 57.24999516)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103772886-E726D8D7-6EF1-44D8-AE55-7DAB9043B37F> .
+<http://www.wikidata.org/entity/Q103772886> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103772886-D025EE4A-B3B9-4F91-917C-89622708732E> .
+<http://www.wikidata.org/entity/Q103772886> <http://schema.org/version> "1415450251"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103772886-B30853E4-678E-42E5-A96B-CEF8B05BA875> .
+<http://www.wikidata.org/entity/Q103772886> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103772886-C0171968-EDB8-4A09-BB09-3B2FB3A81EC1> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103772886-5EBF529F-3BE2-4B83-AB7C-6B8FF6E33029> .
+<http://www.wikidata.org/entity/Q103772886> <http://schema.org/dateModified> "2021-05-05T19:38:13Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P718> "101749" .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103772886-5866DDBD-4000-4B41-910D-03908DE734A8> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103772886-C4973ABC-08B2-4D23-9187-6C523B79BEB2> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q12859788> .
+<http://www.wikidata.org/entity/Q103772886> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.w3.org/2000/01/rdf-schema#label> "Archangel"@en .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103772886-46EF07E0-1BD1-4284-9AB8-100D45F852F8> .
+<http://www.wikidata.org/entity/Q103772886> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103772886-381d1654-898c-469b-a821-838041c127f6> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103916634> <http://schema.org/description> "schip"@nl .
+<http://www.wikidata.org/entity/Q103916634> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103916634-ba30e01f-1831-4f28-b428-ed37bbc056b2> .
+<http://www.wikidata.org/entity/Q103916634> <http://schema.org/version> "1415548137"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103916634> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103916634-83C97F1F-A4E9-4B3E-BC65-8CE8B177499F> .
+<http://www.wikidata.org/entity/Q103916634> <http://schema.org/description> "barku den Reino Uni"@pap .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103916634-5BBA218B-ABCE-4D14-8187-71C7E8A19178> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103916634-585D7D41-095D-4FB3-9577-382088A26701> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103916634-EF52D1BE-54E6-45A9-BA54-BA104E68AD46> .
+<http://www.wikidata.org/entity/Q103916634> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q11446> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103916634> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103916634-BF0CBEBC-C252-4AB4-834E-219BE96EA5AE> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.w3.org/2000/01/rdf-schema#label> "Lamberta"@pap .
+<http://www.wikidata.org/entity/Q103916634> <http://www.w3.org/2000/01/rdf-schema#label> "Lamberta"@en .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103916634-21271131-83B1-4943-94AB-C0D3FCC2AFA2> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P718> "249534" .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103916634-8390CDA7-54C2-4A37-A61F-F60A98DA5396> .
+<http://www.wikidata.org/entity/Q103916634> <http://schema.org/dateModified> "2021-05-05T22:18:30Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/direct/P625> "Point(-2.00164132 57.26167292)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103916634> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103916634-A304D8ED-56E7-4EB9-8239-A17D7F7721AE> .
+<http://www.wikidata.org/entity/Q103924717> <http://wikiba.se/ontology#sitelinks> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P625> <http://www.wikidata.org/entity/statement/Q103924717-D96DC7C9-1FF6-4544-BE57-BF55599CA1F9> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P625> "Point(-1.918793134 57.243681148)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .
+<http://www.wikidata.org/entity/Q103924717> <http://wikiba.se/ontology#identifiers> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P131> <http://www.wikidata.org/entity/statement/Q103924717-484EE643-2DF8-4E81-8A0F-955AF2B4BA89> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q1137441> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P718> <http://www.wikidata.org/entity/statement/Q103924717-A879D926-DA6B-4B12-8C45-4C62F2739F92> .
+<http://www.wikidata.org/entity/Q103924717> <http://schema.org/dateModified> "2021-05-05T22:39:36Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P793> <http://www.wikidata.org/entity/statement/Q103924717-71312764-31BC-4B74-976C-8E09D597C15B> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P7959> <http://www.wikidata.org/entity/Q3290674> .
+<http://www.wikidata.org/entity/Q103924717> <http://wikiba.se/ontology#statements> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P17> <http://www.wikidata.org/entity/Q145> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103924717-FDCEA8BC-BF5C-453A-A034-ADA5DBB3F5D0> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P718> "292872" .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P17> <http://www.wikidata.org/entity/statement/Q103924717-8F577D2C-46A7-48A2-96C8-6915984BFC0C> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P1343> <http://www.wikidata.org/entity/statement/Q103924717-181FF5C9-B3C9-4162-9FEC-C80E4F628BA7> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.w3.org/2000/01/rdf-schema#label> "Lothian Rose"@en .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P1343> <http://www.wikidata.org/entity/Q5032525> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P7959> <http://www.wikidata.org/entity/statement/Q103924717-08a14873-3e3b-4547-a72a-903559b5b463> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q852190> .
+<http://www.wikidata.org/entity/Q103924717> <http://schema.org/description> "Shipwreck off the Scottish Coast, imported from Canmore Nov 2020"@en .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P793> <http://www.wikidata.org/entity/Q906512> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/P31> <http://www.wikidata.org/entity/statement/Q103924717-87217DC4-56FE-406B-87FE-65D3B2C3CF87> .
+<http://www.wikidata.org/entity/Q103924717> <http://www.wikidata.org/prop/direct/P131> <http://www.wikidata.org/entity/Q189912> .
+<http://www.wikidata.org/entity/Q103924717> <http://schema.org/version> "1415562891"^^<http://www.w3.org/2001/XMLSchema#integer> .

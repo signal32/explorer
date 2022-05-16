@@ -10,6 +10,7 @@
       <env name="VUE_APP_EXPLORER_AUTH_API" value="http://10.1.0.20:8083/auth/realms/Explorer/" />
       <env name="VUE_APP_EXPLORER_USER_API" value="http://10.1.0.20:8081/" />
       <env name="VUE_APP_EXPLORER_TILE_API" value="http://10.1.0.20:8090/" />
+      <env name="VUE_APP_EXPLORER_RECOMMEND_API" value="http://10.1.0.20:8087/api/recommend/" />
     </envs>
     <method v="2" />
   </configuration>

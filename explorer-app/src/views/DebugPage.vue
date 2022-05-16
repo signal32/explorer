@@ -64,7 +64,7 @@
                 <ion-list v-for="item in items" :key="item.name" slot="content">
                     <ion-item>
                         <ion-label class="ion-text-wrap">
-                            {{ startCase(item.name) }}
+                            {{ item.name }}
                             <div v-if="item.type=='map'">
                                 <div v-for="[key, value] in item.values" :key="key">
                                     <p>{{key}}: {{value}}</p>

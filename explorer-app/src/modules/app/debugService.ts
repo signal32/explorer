@@ -1,4 +1,5 @@
 import {reactive} from 'vue';
+import changelog from '@/assets/changelog.json';
 
 export interface DebugService {
     diagnostics: Map<string, DiagnosticData[]>,
@@ -48,4 +49,18 @@ function defineDebugService(): DebugService {
     });
 }
 
+/// Populates a changelog section of the info screen
+function loadChangelog() {
+    changelog.forEach(item => {
+        debugService.setDiagnosticData({
+            name: item.version,
+            type: 'list', values: item.changes,
+            scope:'Changelog',
+        })
+    })
+}
+
 export const debugService = defineDebugService();
+loadChangelog();
+
+

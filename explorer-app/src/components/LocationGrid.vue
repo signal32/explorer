@@ -7,9 +7,8 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, ref} from 'vue';
-import {Entity, GeoEntity} from '@/modules/geo/entity';
-import {services} from '@/modules/app/services';
+import {defineProps} from 'vue';
+import {GeoEntity} from '@/modules/geo/entity';
 import EntityAbstractCard from '@/components/entity/EntityAbstractCard.vue';
 import router from '@/router';
 

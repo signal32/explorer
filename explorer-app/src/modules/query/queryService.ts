@@ -1,10 +1,9 @@
 import {Quad} from '@/modules/geo/quadtree';
-import {LatLng, LatLngBounds} from '@/modules/geo/types';
-import {FeatureCollection, Geometry} from 'geojson';
-import {GeoEntity, DetailsEntity, Entity, CategoryEntity} from '@/modules/geo/entity';
+import {LatLngBounds} from '@/modules/geo/types';
+import {Feature, FeatureCollection, Geometry} from 'geojson';
+import {GeoEntity, CategoryEntity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
 import {PluginService} from '@/modules/plugin/pluginManager';
-
 
 export interface QueryService {
     getById: (id: string) => Promise<GeoEntity | undefined>,
@@ -48,19 +47,24 @@ function defineQueryService() {
                 };
 
                 if (cache){
-                    for (const quad of tree.findOrCreate(area, 13)) {
-                        // Plugins are called to update quads which have been newly created and are still empty.
-                        if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked) || categories || name) {
-                            await updateQuad(quad, plugins, categories, name); //todo Make quad updates in parallel
-                            quad.value!.categoriesHash = JSON.stringify(services.preferenceService.liked);
-                        }
+                    console.debug("Updating quads asynchronously");
+                    const quads = tree.findOrCreate(area, 13);
+                    const allFeatures = await Promise.all(quads.map(async (quad): Promise<Feature<Geometry, GeoEntity>[]> => {
 
-                        // Then geoJson is merged together from each quad
+                        if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked) || categories || name) {
+                            await updateQuad(quad, plugins, categories, name);
+                            if (quad.value?.categoriesHash) quad.value.categoriesHash = JSON.stringify(services.preferenceService.liked);
+                        }
+                        const features: Feature<Geometry, GeoEntity>[] = [];
                         quad.value?.queryCache.forEach(item => {
-                            collection.features.push(...item.features)
+                            features.push(...item.features)
                         })
-                    }
+                        console.log(`Quad (name=${quad.value?.name}) updated with ${features.length} entities`);
+                        return features;
+                    }))
+                    allFeatures.forEach(f => collection.features.push(...f))
                 }
+
                 else {
                     for (const plugin of plugins) {
                         const x = (await plugin.getByArea(area, categories, name)).features

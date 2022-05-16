@@ -1,5 +1,4 @@
 import {Services, services} from '@/modules/app/services';
-import {Ref, WritableComputedRef} from 'vue';
 
 export interface PluginManager {
     loadPlugin: (plugin: Plugin) => void,
@@ -72,7 +71,8 @@ export class AppPluginManager implements PluginManager {
         }
     }
 
-    unloadPlugin(name: string): boolean {
+    unloadPlugin(): boolean {
+        console.error('Plugin was not unloaded: unloadPlugin() not implemented')
         return false;
     }
 

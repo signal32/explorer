@@ -45,7 +45,7 @@ import {location} from 'ionicons/icons';
 import {computed, ref, watch} from 'vue';
 import {services} from '@/modules/app/services';
 import router from '@/router';
-import {Entity, GeoEntity} from '@/modules/geo/entity';
+import {GeoEntity} from '@/modules/geo/entity';
 import MapView2 from '@/components/MapView2.vue';
 import LocationGrid from '@/components/LocationGrid.vue';
 import {Geolocation} from '@awesome-cordova-plugins/geolocation';
@@ -72,7 +72,6 @@ const distance = computed(() => {
 })
 
 const limit = ref(10);
-const uniqueItems = ref<number>();
 
 // Active mode, should default to nearby as this is most likely to work well
 const mode = computed<ExploreMode>(() => {

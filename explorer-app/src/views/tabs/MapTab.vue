@@ -58,14 +58,14 @@
             </MapView2>
 
             <!-- Selected entity details modal -->
-            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.4,1.0]" :initialBreakpoint="detailsModalHeight" @didDismiss="closeDetailModal">
+            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0, 0.2, 0.4,1]" :initialBreakpoint="detailsModalHeight" @didDismiss="closeDetailModal" :canDismiss="true" :swipeToClose="true" :backdropBreakpoint="0.5">
                 <ion-content>
                     <ion-header translucent>
                         <ion-toolbar>
                             <ion-title>{{selected?.name}}</ion-title>
                             <ion-buttons slot="end">
                                 <ion-button @click="closeDetailModal">
-                                    <ion-icon :icon="icons.close"></ion-icon>
+                                    <ion-icon :icon="icons.down"></ion-icon>
                                 </ion-button>
                             </ion-buttons>
                         </ion-toolbar>
@@ -98,7 +98,7 @@
                         </ion-buttons>
                     </ion-item>
 
-                    <ion-item button detail v-if="selected?.within" @click="openDetailModal(selected?.within); closeDetailModal()">
+                    <ion-item button detail v-if="selected?.within" @click="openDetailModal(selected?.within, true); closeDetailModal()">
                         <ion-label>Located within <ion-text color="primary">{{selected?.within?.name}}</ion-text></ion-label>
                     </ion-item>
 
@@ -204,9 +204,9 @@ import {
     IonText,
     IonCheckbox, IonItemDivider,
 } from '@ionic/vue';
-import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark, informationOutline} from 'ionicons/icons';
+import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark, helpOutline, chevronDownOutline} from 'ionicons/icons';
 import {startCase} from 'lodash';
-import MapView, {MapPosition} from '@/components/MapView.vue';
+import {MapPosition} from '@/components/MapView.vue';
 import {CategoryEntity, Entity, GeoEntity} from '@/modules/geo/entity';
 import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
 import {services} from '@/modules/app/services';
@@ -215,13 +215,7 @@ import {NotificationType} from '@/modules/app/notification';
 import MapView2 from '@/components/MapView2.vue';
 import AppTutorial from '@/components/AppTutorial.vue';
 
-const defaultAbstract: GeoEntity = {
-    id: 'unidentified',
-    position: {lat: 0, lng: 0},
-    name: 'No selection',
-}
-
-const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', 'large burgh', 'big city'];
+const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', 'large burgh', 'big city', 'human settlement', 'territory', 'neighborhood'];
 
 export default defineComponent({
     components: {
@@ -282,16 +276,20 @@ export default defineComponent({
         const showTutorial = ref(false);
 
         /// Open detail modal with given entity
-        function openDetailModal(item: GeoEntity) {
+        function openDetailModal(item: GeoEntity, move = false) {
             mapSelected.value = [item];
             services.queryService.methods.getById(item?.id)
                 .then(res => {
                     selected.value = res;
                     isModalOpenRef.value = true;
+                    if (res && move) position.value = {
+                        lat: res.position.lat,
+                        lng: res.position.lng,
+                        zoom: 12,
+                    }
                 })
                 .catch(err => {
                     console.log(err);
-                    //services.queryService.methods.
                 })
         }
 
@@ -359,7 +357,6 @@ export default defineComponent({
             style.value = (isDarkMode)? 'dark' : 'light';
         })
 
-
         return {
             icons: {
                 logo: planet,
@@ -367,10 +364,11 @@ export default defineComponent({
                 gps: locateOutline,
                 mapConfig: layersOutline,
                 close: close,
+                down: chevronDownOutline,
                 remove: removeCircle,
                 more: ellipsisVertical,
                 save: bookmark,
-                info: informationOutline,
+                info: helpOutline,
             },
             position,
             selected,

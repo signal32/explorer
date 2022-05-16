@@ -1,12 +1,10 @@
 import {QueryService} from '@/modules/query/queryService';
-import {DataFactory, NamedNode} from 'rdf-data-factory';
 import {newEngine} from '@comunica/actor-init-sparql';
-import {LatLng, LatLngBounds} from '@/modules/geo/types';
+import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
 import {GeoEntity, CategoryEntity, Entity} from '@/modules/geo/entity';
 import describeItems from './sparql/describeItems.sparql';
 import {Index} from 'flexsearch';
-import selectCategories from './sparql/selectCategories.sparql';
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
 import {CategoryService} from '@/modules/app/categoryService';
@@ -19,7 +17,7 @@ import {
 import {Quad} from '@rdfjs/types';
 import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
 import {
-    getArea, getAreaNamed, getCategories, getEntity,
+    getArea, getAreaNamed, getCategories,
     getGeoEntity, getLocation, getSimilarByCategory, WikiDataId
 } from '@/modules/query/queryAbstractionLayer';
 import {toGeoJsonFeature} from '@/modules/geo/geoJson';
@@ -83,7 +81,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      * @param entity Entity to find similar entities for
      * @param limit Max similar entities to find
      */
-   async recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
+   async recommendForEntity(entity: Entity): Promise<Recommendation[]> {
        const ids = await getSimilarByCategory([entity.id as WikiDataId], this.endpoint);
 
        // Do not recommend the original entity
@@ -104,7 +102,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      * Not implemented for WikiData plugin as this is hard to calculate
      * with using only a WikiData endpoint. See separate WikiData Recommend Plugin.
      */
-    similarity(first: Entity, second: Entity): Promise<number> {
+    similarity(): Promise<number> {
         return Promise.reject('not implemented');
     }
 
@@ -141,7 +139,7 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
         return getGeoEntity(ids, this.endpoint);
     }
 
-    getCategoryFromLabel(labels: string[]): Promise<CategoryEntity[]> {
+    getCategoryFromLabel(): Promise<CategoryEntity[]> {
         console.warn('getCategoryFromLabel() not implemented for WikiDataPlugin');
         return Promise.resolve([]);
     }
@@ -282,21 +280,6 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
 }
 
 export const wikidataPlugin  = new WikiDataPlugin();
-
-/**
- * Convert RDF type wktLiteral to a {@link LatLng} for use internally.
- * @param literal The literal to convert. Of form 'Point(lat, lng)' where lat, lng are numbers.
- */
-function wktLiteralToLatLng(literal: string): LatLng {
-    const values = literal.match(/-?\d+.\d*/gm);
-    if (values) {
-        return new LatLng(parseFloat(values[1]), parseFloat(values[0]));
-    }
-    else {
-        console.warn(`Could not convert wktLiteral to LatLng. Value: ${literal}`);
-        return new LatLng(0,0);
-    }
-}
 
 /**
  * Extract WikiData ID, e.g. P317, from a URL.

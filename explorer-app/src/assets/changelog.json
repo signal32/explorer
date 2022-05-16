@@ -1,0 +1,25 @@
+[
+  {
+    "version" : "0.2.0",
+    "changes" : [
+      "Fix: Unable to swipe down to dismiss information panel",
+      "Improvement: Made map interactive when information panel is small",
+      "Improvement: Details of the last 10 entities details are now cached for faster re-opening",
+      "Improvement: Map areas are loaded in parallel (~4x faster)",
+      "New: Added this changelog!",
+      "+ Other behind the scenes improvements"
+    ]
+  },
+  {
+    "version" : "0.1.1",
+    "changes" : [
+      "Fix: Unable to discover information about all places."
+    ]
+  },
+  {
+    "version" : "0.1.0",
+    "changes" : [
+      "Initial release for public testing."
+    ]
+  }
+]

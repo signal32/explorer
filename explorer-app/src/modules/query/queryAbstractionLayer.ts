@@ -89,7 +89,7 @@ export async function getEntity(ids: WikiDataId[], endpoint: string): Promise<En
  * @param ids
  * @param endpoint
  */
-export async function getGeoEntity(ids: WikiDataId[], endpoint: string, withinRecursionDepth = 0): Promise<GeoEntity[]> {
+export async function getGeoEntity(ids: WikiDataId[], endpoint: string): Promise<GeoEntity[]> {
     const query = selectEntity.replace('?@entityIds', ids.join(' '));
     const result  = await queryEngine.query(query, {sources: [{type: 'sparql', value: endpoint}]});
 

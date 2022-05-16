@@ -3,11 +3,11 @@ import {Recommendation, RecommendService} from '@/modules/app/recommendationServ
 import {Services} from '@/modules/app/services';
 import {constants} from '@/constants';
 import {Entity} from '@/modules/geo/entity';
-import {getEntity, getSimilarArchitecture, getSimilarStations, WikiDataId} from '@/modules/query/queryAbstractionLayer';
+import {getEntity, getSimilarArchitecture, WikiDataId} from '@/modules/query/queryAbstractionLayer';
 
 const DEFAULT_ENDPOINT = 'https://query.wikidata.org/sparql';
 
-export class HistoricPlugin implements /*DetailServiceFormatPlugin, */RecommendService, Plugin {
+export class HistoricPlugin implements RecommendService, Plugin {
 
     constructor(private endpoint: string = DEFAULT_ENDPOINT) {}
 
@@ -37,7 +37,7 @@ export class HistoricPlugin implements /*DetailServiceFormatPlugin, */RecommendS
         };
     }
 
-    async recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
+    async recommendForEntity(entity: Entity): Promise<Recommendation[]> {
         const result = await getSimilarArchitecture([entity.id as WikiDataId], this.endpoint);
 
         const origin = result.find(e => {return e.id == entity.id});
@@ -72,7 +72,7 @@ export class HistoricPlugin implements /*DetailServiceFormatPlugin, */RecommendS
         });
     }
 
-    similarity(first: Entity, second: Entity): Promise<number> {
+    similarity(): Promise<number> {
         return Promise.resolve(0);
     }
 

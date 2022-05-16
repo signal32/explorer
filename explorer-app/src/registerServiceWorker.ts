@@ -4,6 +4,7 @@ import {register} from 'register-service-worker'
 import {alertController} from '@ionic/vue';
 import {services} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';
+import changelog from '@/assets/changelog.json';
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
@@ -26,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is available; please refresh.');
       const alert = await alertController.create({
         header: 'Update available',
-        message: 'Restart the app to apply update.',
+        message: 'Restart the app to apply update.' + latestChanges(),
         buttons: [
           {
             text: 'Later',
@@ -58,4 +59,8 @@ if (process.env.NODE_ENV === 'production') {
       console.error('Error during service worker registration:', error)
     }
   })
+}
+
+function latestChanges() {
+  return changelog[0].version + ':\n' + changelog[0].changes.join('\n');
 }

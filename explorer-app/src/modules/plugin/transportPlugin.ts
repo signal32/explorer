@@ -81,7 +81,7 @@ export class TransportPlugin implements DetailServiceFormatPlugin, RecommendServ
         return Promise.resolve((section.elements.length>0)?[section]:[]);
     }
 
-    async recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
+    async recommendForEntity(entity: Entity): Promise<Recommendation[]> {
         const result = await getSimilarStations([entity.id as WikiDataId], this.endpoint);
 
         // Extract original entity and remove from array.
@@ -118,7 +118,7 @@ export class TransportPlugin implements DetailServiceFormatPlugin, RecommendServ
         })
     }
 
-    similarity(first: Entity, second: Entity): Promise<number> {
+    similarity(): Promise<number> {
         return Promise.resolve(0);
     }
 }

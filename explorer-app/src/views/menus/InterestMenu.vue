@@ -37,20 +37,16 @@
                 </ion-segment>
             </ion-item>
 
-            <ion-list v-if="categories2.length > 0">
-                <ion-item v-for="c in categories2" :key="c">
+            <ion-list v-if="categories.length > 0">
+                <ion-item v-for="c in categories" :key="c">
                     <ion-label>{{startCase(c.entity.name)}}</ion-label>
                     <ion-button slot="end" color="light" @click="removeCategory(c.entity)">
                         <ion-icon slot="icon-only" :icon="icons.remove"/>
                     </ion-button>
-<!--                    <ion-button slot="end" color="light" size="small" @click="removeCategory(c.entity)">
-                        <ion-icon v-if="c.value > 0.5" slot="icon-only" :icon="icons.dislike"/>
-                        <ion-icon v-else slot="icon-only" :icon="icons.like"/>
-                    </ion-button>-->
                 </ion-item>
             </ion-list>
 
-            <div v-if="categories2.length == 0" class="ion-text-center" style="padding-top: 50px">
+            <div v-if="categories.length == 0" class="ion-text-center" style="padding-top: 50px">
                 <ion-label>
                     <h2>╰（‵□′）╯</h2>
                     <p>Nothing to show. Try adding some categories.</p>
@@ -68,8 +64,8 @@
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
 import {
-    IonPage, IonContent,IonSearchbar, IonInput,IonButton, IonChip,
-    IonList, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonSegment, IonSegmentButton
+    IonPage, IonContent, IonInput,IonButton, IonChip,
+    IonList, IonItem, IonIcon, IonLabel, IonSegment, IonSegmentButton
 } from '@ionic/vue';
 import router from '@/router';
 import StandardHeader from '@/components/headers/StandardHeader.vue';
@@ -88,10 +84,9 @@ export default defineComponent({
     },
     setup() {
         const viewMode = ref<'liked' | 'disliked'>('liked');
-        const categories = ref(services.preferenceService.ratingMap);
         const suggestedCategories = ref<CategoryEntity[]>([])
 
-        const categories2 = computed({
+        const categories = computed({
             get: () => {
                 if (viewMode.value == 'liked') return services.preferenceService.liked;
                 else if (viewMode.value == 'disliked') return services.preferenceService.disliked;
@@ -123,7 +118,7 @@ export default defineComponent({
         }
 
 
-        return {router, viewMode, categories2, suggestedCategories, segmentChanged, addCategory, removeCategory, searchTermChanged, startCase, logCategory, icons: {
+        return {router, viewMode, categories, suggestedCategories, segmentChanged, addCategory, removeCategory, searchTermChanged, startCase, logCategory, icons: {
             remove: trash,
                 up: arrowUp,
                 like: thumbsUpSharp,

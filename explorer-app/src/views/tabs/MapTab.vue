@@ -58,14 +58,14 @@
             </MapView2>
 
             <!-- Selected entity details modal -->
-            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0.2, 0.4,1.0]" :initialBreakpoint="detailsModalHeight" @didDismiss="closeDetailModal">
+            <ion-modal :is-open="isModalOpenRef" :breakpoints="[0, 0.2, 0.4,1]" :initialBreakpoint="detailsModalHeight" @didDismiss="closeDetailModal" :canDismiss="true" :swipeToClose="true" :backdropBreakpoint="0.5">
                 <ion-content>
                     <ion-header translucent>
                         <ion-toolbar>
                             <ion-title>{{selected?.name}}</ion-title>
                             <ion-buttons slot="end">
                                 <ion-button @click="closeDetailModal">
-                                    <ion-icon :icon="icons.close"></ion-icon>
+                                    <ion-icon :icon="icons.down"></ion-icon>
                                 </ion-button>
                             </ion-buttons>
                         </ion-toolbar>
@@ -204,7 +204,7 @@ import {
     IonText,
     IonCheckbox, IonItemDivider,
 } from '@ionic/vue';
-import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark, helpOutline} from 'ionicons/icons';
+import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutline, ellipsisVertical, bookmark, helpOutline, chevronDownOutline} from 'ionicons/icons';
 import {startCase} from 'lodash';
 import {MapPosition} from '@/components/MapView.vue';
 import {CategoryEntity, Entity, GeoEntity} from '@/modules/geo/entity';
@@ -364,6 +364,7 @@ export default defineComponent({
                 gps: locateOutline,
                 mapConfig: layersOutline,
                 close: close,
+                down: chevronDownOutline,
                 remove: removeCircle,
                 more: ellipsisVertical,
                 save: bookmark,

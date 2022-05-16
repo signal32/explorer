@@ -14,10 +14,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import {
-    IonPage, IonContent,
-    IonList, IonItem, IonIcon, IonLabel, IonRouterOutlet
-} from '@ionic/vue';
+import {IonPage, IonContent, IonLabel, IonRouterOutlet} from '@ionic/vue';
 import {personCircleOutline, extensionPuzzleOutline, bugOutline, optionsOutline} from 'ionicons/icons'
 import router from '@/router';
 import StandardHeader from '@/components/headers/StandardHeader.vue';

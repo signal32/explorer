@@ -50,7 +50,7 @@ export class WikiDataRecommendPlugin implements RecommendService, Plugin {
         };
     }
 
-    recommendForEntity(entity: Entity, limit?: number): Promise<Recommendation[]> {
+    recommendForEntity(entity: Entity): Promise<Recommendation[]> {
         return axios.get(this.endpoint + `public/recommend?entity=${entity.id}&limit=50`)
             .then(async res => {
                 console.debug('Recommendations received:', res.data);
@@ -67,7 +67,7 @@ export class WikiDataRecommendPlugin implements RecommendService, Plugin {
             })
     }
 
-    similarity(first: Entity, second: Entity): Promise<number> {
+    similarity(): Promise<number> {
         return Promise.resolve(0);
     }
 

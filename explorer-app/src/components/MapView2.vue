@@ -15,7 +15,6 @@
             <slot name="fab"></slot>
         </IonFab>
 
-
         <div style="padding: 10px; position:absolute; bottom: 20px; width: 100%">
             <Transition>
             <IonItem v-if="detailedLoading.loading" style="border-radius: 50pc; margin: 5px">
@@ -25,6 +24,7 @@
             </Transition>
             <Transition>
             <IonItem v-if="bottomMessage.show" style="border-radius: 50pc; margin: 5px">
+                <IonIcon :icon="searchOutline" slot="start"/>
                 {{ bottomMessage.text }}
             </IonItem>
             </Transition>
@@ -36,20 +36,19 @@
 </template>
 
 <script setup lang="ts">
-import {IonItem, IonProgressBar, IonSpinner, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import {computed, defineEmits, defineProps, onMounted, onUnmounted, PropType, ref, shallowRef, watch} from 'vue';
-import 'maplibre-gl/dist/maplibre-gl.css'
-import {CategoryEntity, GeoEntity} from '@/modules/geo/entity';
-import {debounce} from 'lodash';
-import {GeoJSONSource, LayerSpecification, LngLat, Map} from 'maplibre-gl';
-import {Feature, FeatureCollection, Geometry} from 'geojson';
-import {toFeatureCollection} from '@/modules/geo/geoJson';
-import {services} from '@/modules/app/services';
-import {NotificationType} from '@/modules/app/notification';
-import {LatLng, LatLngBounds} from '@/modules/geo/types';
-import {locate} from 'ionicons/icons';
-import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
-
+    import {IonItem, IonProgressBar, IonSpinner, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
+    import {computed, defineEmits, defineProps, onMounted, onUnmounted, PropType, ref, shallowRef, watch} from 'vue';
+    import 'maplibre-gl/dist/maplibre-gl.css'
+    import {CategoryEntity, GeoEntity} from '@/modules/geo/entity';
+    import {debounce} from 'lodash';
+    import {GeoJSONSource, LayerSpecification, LngLat, Map} from 'maplibre-gl';
+    import {Feature, FeatureCollection, Geometry} from 'geojson';
+    import {toFeatureCollection} from '@/modules/geo/geoJson';
+    import {services} from '@/modules/app/services';
+    import {NotificationType} from '@/modules/app/notification';
+    import {LatLngBounds} from '@/modules/geo/types';
+    import {locate, searchOutline} from 'ionicons/icons';
+    import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
 
     export interface MapActionButton {
         name: string,
@@ -57,7 +56,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
         action: () => any
     }
 
-/// Map rendering style
+    /// Map rendering style
     export declare type MapStyle = 'light' | 'dark';
 
     /// Focus of map camera
@@ -217,7 +216,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
         }
     }, 500);
 
-    // Setup map
+    // Create and setup map for first time
     onMounted(() => {
         map.value = new Map({
             container: container.value,
@@ -227,6 +226,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
             attributionControl: false,
         })
 
+        // Setup map layers after initialisation is complete
         map.value.on('load', () => {
             map.value?.resize(); // Required to auto-fit viewport on some browsers
 
@@ -253,9 +253,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
             map.value?.addLayer(locationLayerSpec);
 
             loadImages();
-
             setLocationMarker();
-
             update();
         })
 
@@ -264,7 +262,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
             updateExternalPosition();
         });
 
-        // Update map after move completes and new area is in focus
+        // Update map data to cover the visible area.
         // This is quite a basic check but works surprisingly well in most cases.
         map.value.on('moveend', () => {
             if (!map.value?.getBounds().contains(lastUpdateCenter)) {
@@ -274,11 +272,10 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
             const zoom = map.value?.getZoom() || 0;
             if (zoom < 13) {
                 bottomMessage.value.show = true;
-                bottomMessage.value.text = 'Zoom in to see details';
+                bottomMessage.value.text = 'Tap on a place or zoom in to see details.';
             }
             else bottomMessage.value.show = false;
         });
-
 
         // Fire select event when an entity is selected
         map.value.on('click', ENTITY_LAYER_ID, event => {
@@ -315,7 +312,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
                         emits('updatePosition', {zoom: map.value?.getZoom(), ...position} || DEFAULT_POSITION )
                     }
                     catch (e) {
-                        console.log(e);
+                        console.debug(e);
                         detailedLoading.value.loading = false;
                         services.notificationService.pushNotification({
                             title: 'Nothing found',
@@ -332,7 +329,6 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
         onUnmounted(() => {
             clearInterval(updateLocation)
         })
-
 
         console.debug('Map initialisation complete');
     })
@@ -365,7 +361,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
         update();
     })
 
-
+    /// Fetch current device position and update location marker
     async function setLocationMarker() {
         console.debug('Updating location')
         const location = await Geolocation.getCurrentPosition();
@@ -389,7 +385,7 @@ import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
             }]
         };
 
-        (map.value?.getSource(LOCATION_SOURCE_ID) as any)?.setData(locationData, map.value?.getZoom());
+        (map.value?.getSource(LOCATION_SOURCE_ID) as any)?.setData(locationData, map.value?.getZoom()); // Hack around maplibre API
     }
 
     function moveToGpsLocation() {

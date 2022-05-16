@@ -1,7 +1,7 @@
 import {Quad} from '@/modules/geo/quadtree';
-import {LatLng, LatLngBounds} from '@/modules/geo/types';
+import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
-import {GeoEntity, DetailsEntity, Entity, CategoryEntity} from '@/modules/geo/entity';
+import {GeoEntity, CategoryEntity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
 import {PluginService} from '@/modules/plugin/pluginManager';
 
@@ -52,7 +52,8 @@ function defineQueryService() {
                         // Plugins are called to update quads which have been newly created and are still empty.
                         if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked) || categories || name) {
                             await updateQuad(quad, plugins, categories, name); //todo Make quad updates in parallel
-                            quad.value!.categoriesHash = JSON.stringify(services.preferenceService.liked);
+                            if (quad.value?.categoriesHash)
+                                quad.value.categoriesHash = JSON.stringify(services.preferenceService.liked);
                         }
 
                         // Then geoJson is merged together from each quad

@@ -28,9 +28,7 @@
 
 <script lang="ts">
 import {
-    IonButtons,
     IonContent,
-    IonHeader,
     IonIcon,
     IonLabel,
     IonPage,
@@ -38,11 +36,8 @@ import {
     IonTabBar,
     IonTabButton,
     IonTabs,
-    IonTitle,
-    IonToolbar
 } from '@ionic/vue';
 import {compass, map, person} from 'ionicons/icons';
-import LoginStatus from '@/components/LoginStatus.vue'
 import {defineComponent} from 'vue';
 import {useRouter} from 'vue-router';
 import router from '@/router';

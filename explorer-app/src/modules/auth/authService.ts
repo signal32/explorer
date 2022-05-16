@@ -61,7 +61,7 @@ class AuthService {
         const token = userService.userState.refreshToken;
         return instance
             .post(LOGOUT_PATH, `client_id=${CLIENT_ID}&refresh_token=${token}`)
-            .then( res => {
+            .then( () => {
                 console.log("logged out");
                 userService.clearUser();
             })

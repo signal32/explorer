@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, reactive, ref, WritableComputedRef} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import {
     IonAccordion, IonAccordionGroup,IonButton,
     IonContent, IonFab, IonFabButton, IonIcon,

@@ -17,7 +17,7 @@
 import {IonItem, IonItemDivider, IonLabel} from '@ionic/vue';
 import {Entity} from '@/modules/geo/entity';
 import {services} from '@/modules/app/services';
-import {defineProps, ref, PropType, defineEmits} from 'vue';
+import {defineProps, ref, defineEmits} from 'vue';
 import HorizontalList from '@/components/util/HorizontalList.vue';
 import EntityAbstractCard from '@/components/entity/EntityAbstractCard.vue';
 import {Recommendation} from '@/modules/app/recommendationService';

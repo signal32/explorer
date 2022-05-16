@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {defineComponent} from 'vue';
 import {
     IonAccordion,
     IonAccordionGroup,

@@ -13,6 +13,9 @@
                 <IonIcon :icon="button.icon"></IonIcon>
             </IonFabButton>
             <slot name="fab"></slot>
+            <IonFabButton v-if="bearing!=0" color="light" @click="orientate()" style="margin-bottom: 5px">
+                <IonIcon :icon="caretUpCircleOutline"></IonIcon>
+            </IonFabButton>
         </IonFab>
 
         <div style="padding: 10px; position:absolute; bottom: 20px; width: 100%">
@@ -24,7 +27,7 @@
             </Transition>
             <Transition>
             <IonItem v-if="bottomMessage.show" style="border-radius: 50pc; margin: 5px">
-                <IonIcon :icon="searchOutline" slot="start"/>
+                <IonIcon :icon="searchOutline" slot="end" color="dark"/>
                 {{ bottomMessage.text }}
             </IonItem>
             </Transition>
@@ -47,7 +50,7 @@
     import {services} from '@/modules/app/services';
     import {NotificationType} from '@/modules/app/notification';
     import {LatLngBounds} from '@/modules/geo/types';
-    import {locate, searchOutline} from 'ionicons/icons';
+    import {locate, searchOutline, caretUpCircleOutline} from 'ionicons/icons';
     import {Geolocation, Geoposition} from '@awesome-cordova-plugins/geolocation';
 
     export interface MapActionButton {
@@ -202,6 +205,9 @@
     /// Position at which map was last updated
     let lastUpdateCenter = new LngLat(0.0, 0.0);
 
+    /// Map bearing
+    const bearing = ref(0);
+
     /// Position of user/device
     const gpsLocation = ref<MapPosition>();
 
@@ -272,7 +278,7 @@
             const zoom = map.value?.getZoom() || 0;
             if (zoom < 13) {
                 bottomMessage.value.show = true;
-                bottomMessage.value.text = 'Tap on a place or zoom in to see details.';
+                bottomMessage.value.text = 'Tap on a place or zoom in to see details';
             }
             else bottomMessage.value.show = false;
         });
@@ -291,6 +297,10 @@
 
             }
         })
+
+        map.value.on('rotateend', () => {
+            bearing.value = map.value?.getBearing() || 0;
+        });
 
         // Register click event for layers (used for place/area names)
         for (const layer of SELECTABLE_LAYERS) {

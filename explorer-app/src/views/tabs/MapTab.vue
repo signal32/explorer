@@ -50,7 +50,7 @@
             <ion-modal
                     :key="selected"
                     :backdropBreakpoint="0.5"
-                    :breakpoints="[0, 0.2, 0.4,1]"
+                    :breakpoints="[0, 0.2, 0.4,0.9,1]"
                     :canDismiss="true"
                     :initialBreakpoint="detailsModalHeight"
                     :is-open="isModalOpenRef"
@@ -203,7 +203,6 @@ import {
     IonAccordionGroup,
     IonButtons,
     IonContent,
-    IonFab,
     IonFabButton,
     IonHeader,
     IonIcon,
@@ -231,6 +230,7 @@ import EntityDetails from '@/components/entity/EntityDetails.vue';
 import {NotificationType} from '@/modules/app/notification';
 import MapView2 from '@/components/MapView2.vue';
 import AppTutorial from '@/components/AppTutorial.vue';
+import {boolean} from 'quadstore/dist/lib/serialization/xsd';
 
 const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', 'large burgh', 'big city', 'human settlement', 'territory', 'neighborhood'];
 
@@ -370,11 +370,11 @@ function isLiked(id: string) {
     });
 }
 
-const noCategoriesSelected = computed(() => {return services.preferenceService.liked.length == 0});
-
 onMounted(() => {
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    style.value = (isDarkMode)? 'dark' : 'light';
+    style.value = (window.matchMedia('(prefers-color-scheme: dark)').matches)? 'dark' : 'light';
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        style.value = (e.matches)? 'dark' : 'light';
+    });
 })
 
 </script>

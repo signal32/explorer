@@ -5,7 +5,7 @@ data/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# .env files ignored. Use .env.dev to be explicit
+# .env files ignored. Use .env to be explicit
 .env
 
 /config

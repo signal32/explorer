@@ -16,7 +16,6 @@
         <explorer.keycloak.version>16.0.0</explorer.keycloak.version>
     </properties>
 
-
     <modules>
         <module>explorer-user</module>
         <module>explorer-app</module>
@@ -127,7 +126,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 
     <build>
         <plugins>

@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {ActionDetailElement} from '@/modules/query/detailsService';
+import {ActionDetailElement} from '@/modules/services/detailsService';
 import {alertController, IonChip, IonItem} from '@ionic/vue';
 
 export default defineComponent({

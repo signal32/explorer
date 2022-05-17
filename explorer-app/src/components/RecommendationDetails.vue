@@ -7,7 +7,7 @@
 import {defineProps} from 'vue';
 import {IonIcon} from '@ionic/vue';
 import {flash} from 'ionicons/icons'
-import {Recommendation} from '@/modules/app/recommendationService';
+import {Recommendation} from '@/modules/services/recommendationService';
 import {round} from 'lodash';
 
 

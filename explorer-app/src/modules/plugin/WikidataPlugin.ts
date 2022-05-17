@@ -1,4 +1,4 @@
-import {QueryService} from '@/modules/query/queryService';
+import {QueryService} from '@/modules/services/queryService';
 import {newEngine} from '@comunica/actor-init-sparql';
 import {LatLngBounds} from '@/modules/geo/types';
 import {FeatureCollection, Geometry} from 'geojson';
@@ -7,19 +7,19 @@ import describeItems from './sparql/describeItems.sparql';
 import {Index} from 'flexsearch';
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
-import {CategoryService} from '@/modules/app/categoryService';
+import {CategoryService} from '@/modules/services/categoryService';
 import {
     ActionDetailElement,
     DetailElement,
     DetailServiceFormatPlugin,
     DetailServiceKnowledgePlugin, ImageDetailElement
-} from '@/modules/query/detailsService';
+} from '@/modules/services/detailsService';
 import {Quad} from '@rdfjs/types';
-import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/services/recommendationService';
 import {
     getArea, getAreaNamed, getCategories,
     getGeoEntity, getLocation, getSimilarByCategory, WikiDataId
-} from '@/modules/query/queryAbstractionLayer';
+} from '@/modules/plugin/queryAbstractionLayer';
 import {toGeoJsonFeature} from '@/modules/geo/geoJson';
 
 const engine = newEngine();

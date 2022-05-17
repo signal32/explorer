@@ -25,7 +25,7 @@ import './theme/variables.css';
 import {createI18n} from "vue-i18n";
 import enUS from './locales/en-us.json';
 
-import './registerServiceWorker';
+import './modules/app/serviceWorker';
 
 // Internationalization
 export type MessageSchema = typeof enUS;

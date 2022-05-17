@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {SectionDetailElement} from '@/modules/query/detailsService';
+import {SectionDetailElement} from '@/modules/services/detailsService';
 import ImageDetails from '@/components/entity/ImageDetails.vue';
 import ActionDetails from '@/components/entity/ActionDetails.vue';
 

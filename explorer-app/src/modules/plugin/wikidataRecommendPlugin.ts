@@ -1,4 +1,4 @@
-import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/services/recommendationService';
 import {Entity} from '@/modules/geo/entity';
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {createAxios} from '@/modules/auth/setup';

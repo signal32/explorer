@@ -1,11 +1,11 @@
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
-import {DetailElement, DetailServiceFormatPlugin} from '@/modules/query/detailsService';
-import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
+import {DetailElement, DetailServiceFormatPlugin} from '@/modules/services/detailsService';
+import {Recommendation, RecommendService} from '@/modules/services/recommendationService';
 import {Services} from '@/modules/app/services';
-import {constants} from '@/constants';
+import {constants} from '@/modules/app/constants';
 import {Entity} from '@/modules/geo/entity';
 import {Quad} from '@rdfjs/types';
-import {getEntity, getSimilarStations, getStationDetails, WikiDataId} from '@/modules/query/queryAbstractionLayer';
+import {getEntity, getSimilarStations, getStationDetails, WikiDataId} from '@/modules/plugin/queryAbstractionLayer';
 
 const DEFAULT_ENDPOINT = 'https://query.wikidata.org/sparql';
 

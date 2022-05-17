@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {TextDetailElement} from '@/modules/query/detailsService';
+import {TextDetailElement} from '@/modules/services/detailsService';
 import {IonItem, IonLabel} from '@ionic/vue';
 
 export default defineComponent({

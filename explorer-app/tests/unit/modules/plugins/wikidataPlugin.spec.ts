@@ -1,4 +1,4 @@
-import {WikiDataPlugin, wikidataPlugin} from '@/modules/query/WikidataPlugin';
+import {WikiDataPlugin, wikidataPlugin} from '@/modules/plugin/WikidataPlugin';
 
 describe('WikiData Plugin', () => {
     let plugin: WikiDataPlugin;

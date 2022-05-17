@@ -2,18 +2,18 @@ import {UserService, userService } from '@/modules/auth/userService';
 import { entityPreferenceService, EntityPreferencesService } from '@/modules/auth/entityPreferencesStore';
 import { useStore } from '@/modules/app/storage';
 import { notificationService, NotificationService } from '@/modules/app/notificationService';
-import { RecommendService, recommendationService } from '@/modules/app/recommendationService';
+import { RecommendService, recommendationService } from '@/modules/services/recommendationService';
 import {AppPluginManager, PluginManager, PluginService} from '@/modules/plugin/pluginManager';
 import {Storage} from '@ionic/storage';
-import {WikiDataRecommendPlugin} from '@/modules/query/wikidataRecommendPlugin';
-import {queryService, QueryService} from '@/modules/query/queryService';
-import {wikidataPlugin} from '@/modules/query/WikidataPlugin';
-import {categoryService, CategoryService} from '@/modules/app/categoryService';
+import {WikiDataRecommendPlugin} from '@/modules/plugin/wikidataRecommendPlugin';
+import {queryService, QueryService} from '@/modules/services/queryService';
+import {wikidataPlugin} from '@/modules/plugin/WikidataPlugin';
+import {categoryService, CategoryService} from '@/modules/services/categoryService';
 import {debugService, DebugService} from '@/modules/app/debugService';
-import {defineDetailService, DetailService} from '@/modules/query/detailsService';
+import {defineDetailService, DetailService} from '@/modules/services/detailsService';
 import {WikipediaPlugin} from '@/modules/plugin/WikipediaPlugin';
 import {Plugin} from '@/modules/plugin/pluginManager'
-import {DummyPlugin} from '@/modules/query/DummyPlugin';
+import {DummyPlugin} from '@/modules/plugin/DummyPlugin';
 import {TransportPlugin} from '@/modules/plugin/transportPlugin';
 import {HistoricPlugin} from '@/modules/plugin/historicPlugin';
 

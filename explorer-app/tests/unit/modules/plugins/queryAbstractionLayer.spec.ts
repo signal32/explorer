@@ -1,4 +1,4 @@
-import * as query from '@/modules/query/queryAbstractionLayer'
+import * as query from '@/modules/plugin/queryAbstractionLayer'
 import {LatLng, LatLngBounds, LatLngBoundsLike} from '@/modules/geo/types';
 
 // These are loose tests to sanity check changes to query and make sure they don't fall begin any upstream changes.

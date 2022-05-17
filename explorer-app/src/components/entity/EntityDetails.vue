@@ -38,7 +38,7 @@
 import {defineComponent, PropType, ref} from 'vue';
 import {services} from '@/modules/app/services';
 import {Entity} from '@/modules/geo/entity';
-import {DetailElement, ImageDetailElement} from '@/modules/query/detailsService';
+import {DetailElement, ImageDetailElement} from '@/modules/services/detailsService';
 import ImageDetails from '@/components/entity/ImageDetails.vue';
 import ActionDetails from '@/components/entity/ActionDetails.vue';
 import TextDetails from '@/components/entity/TextDetails.vue';

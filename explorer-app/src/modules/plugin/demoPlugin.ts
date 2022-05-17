@@ -1,5 +1,5 @@
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
-import {QueryService} from '@/modules/query/queryService';
+import {QueryService} from '@/modules/services/queryService';
 import {services, Services} from '@/modules/app/services';
 import {CategoryEntity, GeoEntity} from '@/modules/geo/entity';
 import {LatLngBounds} from '@/modules/geo/types';

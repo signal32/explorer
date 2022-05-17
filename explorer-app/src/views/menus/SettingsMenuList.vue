@@ -7,11 +7,7 @@
             <ion-label class="ion-text-sm-center" style="padding-top: 50px">
                 <p>Version {{constants.version}}</p>
                 <p>Built at {{constants.buildDate}}</p>
-                <br>
-                <p> Changes in {{changelog[0].version}}:</p>
-                <p v-for="item in changelog[0].changes" :key="item">> {{item}}</p>
             </ion-label>
-
         </ion-content>
     </ion-page>
 </template>

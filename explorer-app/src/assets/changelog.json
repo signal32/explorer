@@ -1,12 +1,21 @@
 [
   {
+    "version" : "0.2.1",
+    "changes" : [
+      "Fix: Details panel no longer gets stuck in position",
+      "Fix: Selecting a new place with a detail panel open now closes and opens a new panel",
+      "Added: Button to re-orientate map to north",
+      "Added: [WikiData] Option to specify max number of concurrent WikiData requests"
+    ]
+  },
+  {
     "version" : "0.2.0",
     "changes" : [
       "Fix: Unable to swipe down to dismiss information panel",
       "Improvement: Made map interactive when information panel is small",
       "Improvement: Details of the last 10 entities details are now cached for faster re-opening",
       "Improvement: Map areas are loaded in parallel (~4x faster)",
-      "New: Added this changelog!",
+      "Added: Added this changelog!",
       "+ Other behind the scenes improvements"
     ]
   },

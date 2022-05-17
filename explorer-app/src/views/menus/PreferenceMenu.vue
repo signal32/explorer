@@ -13,7 +13,7 @@ import {defineComponent} from 'vue';
 import {IonContent, IonPage} from '@ionic/vue';
 import {arrowUndo, colorPalette, heartOutline} from 'ionicons/icons'
 import router from '@/router';
-import StandardHeader from '@/components/headers/StandardHeader.vue';
+import StandardHeader from '@/components/util/StandardHeader.vue';
 import SettingsList, {SettingsItem} from '@/components/menus/SettingsList.vue';
 import {services} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';

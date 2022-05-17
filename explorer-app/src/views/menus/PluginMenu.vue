@@ -67,7 +67,7 @@ import {
     IonInput, IonItem, IonLabel, IonList, IonPage, IonCheckbox, IonSelect, IonSelectOption
 } from '@ionic/vue';
 import {refresh, save, extensionPuzzleOutline} from 'ionicons/icons'
-import StandardHeader from "@/components/headers/StandardHeader.vue";
+import StandardHeader from "@/components/util/StandardHeader.vue";
 import {services} from '@/modules/app/services';
 import {startCase} from 'lodash';
 export default defineComponent({

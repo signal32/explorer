@@ -68,7 +68,7 @@ import {
     IonList, IonItem, IonIcon, IonLabel, IonSegment, IonSegmentButton
 } from '@ionic/vue';
 import router from '@/router';
-import StandardHeader from '@/components/headers/StandardHeader.vue';
+import StandardHeader from '@/components/util/StandardHeader.vue';
 import {services} from '@/modules/app/services';
 import {CategoryEntity, Entity} from '@/modules/geo/entity';
 import {startCase} from 'lodash';

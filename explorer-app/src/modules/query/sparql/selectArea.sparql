@@ -1,9 +1,0 @@
-SELECT ?subject ?location WHERE
-{
-    SERVICE wikibase:box
-    {
-        ?subject wdt:P625 ?location .
-        bd:serviceParam wikibase:cornerSouthWest ?pointSW .
-        bd:serviceParam wikibase:cornerNorthEast ?pointNE .
-    }
-}

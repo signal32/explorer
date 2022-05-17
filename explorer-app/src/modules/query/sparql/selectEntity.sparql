@@ -1,8 +1,0 @@
-SELECT ?subject ?subjectLabel ?subjectLocation ?category ?categoryLabel ?categoryIcon WHERE
-{
-    ?subject wdt:P31 ?category .
-    ?category rdfs:label ?categoryLabel FILTER (LANG(?categoryLabel) = "en") .
-    OPTIONAL {?category wdt:P2910 ?categoryIcon.}
-
-    ?subject rdfs:label ?subjectLabel FILTER (LANG(?subjectLabel) = "en") .
-}

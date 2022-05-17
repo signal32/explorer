@@ -1,6 +1,0 @@
-# Get all places with same geographic regional location (P276)
-SELECT ?subject WHERE {
-	VALUES ?location { ?@locations }
-	?subject wdt:P276 ?location;
-}
-LIMIT 1000

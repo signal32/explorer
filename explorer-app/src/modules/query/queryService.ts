@@ -48,7 +48,7 @@ function defineQueryService() {
 
                 if (cache){
                     console.debug("Updating quads asynchronously");
-                    const quads = tree.findOrCreate(area, 13);
+                    const quads = tree.findOrCreate(area, 14);
                     const allFeatures = await Promise.all(quads.map(async (quad): Promise<Feature<Geometry, GeoEntity>[]> => {
 
                         if (!quad.value || quad.value?.categoriesHash != JSON.stringify(services.preferenceService.liked) || categories || name) {

@@ -27,7 +27,8 @@ const engine = newEngine();
 const DEFAULT_LIKED = 'wd:Q12280 wd:Q811979 wd:Q3947';
 const DEFAULT_DISLIKED = 'wd:Q13276'
 const DEFAULT_ENDPOINT = 'https://query.wikidata.org/sparql';
-
+const DEFAULT_SIMULTANEOUS_REQUESTS = 5;
+const SIMULTANEOUS_REQUEST_DELAY = 1000;
 
 export class WikiDataPlugin implements QueryService, CategoryService, DetailServiceKnowledgePlugin, DetailServiceFormatPlugin, RecommendService, Plugin {
 
@@ -35,11 +36,14 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
     private categories: CategoryEntity[] = [];
     private index?: Index;
 
-    constructor(private services?: Services, private endpoint: string = DEFAULT_ENDPOINT) {}
+    constructor(
+        private services?: Services,
+        private endpoint: string = DEFAULT_ENDPOINT,
+        private simultaneousRequests: number = DEFAULT_SIMULTANEOUS_REQUESTS,
+        private currentRequests: number = 0) {}
 
     initialise(services: Services): PluginConfig {
         this.services = services;
-
         this.getCategoryList().then(result => this.categories = result);
 
         return {
@@ -54,6 +58,14 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
                     default: 'https://query.wikidata.org/sparql',
                     get: () => {return this.endpoint},
                     set: value => {this.endpoint = value}
+                },
+                {
+                    name: 'Max Simultaneous Requests',
+                    description: 'Max number of simultaneous WikiData requests. WikiData limits this to 5',
+                    type: 'number',
+                    default: DEFAULT_SIMULTANEOUS_REQUESTS,
+                    get: () => (this.simultaneousRequests),
+                    set: value => {this.simultaneousRequests = value}
                 }
             ],
             onEnable: () => {
@@ -119,19 +131,31 @@ export class WikiDataPlugin implements QueryService, CategoryService, DetailServ
      * @param name Name of entity to find
      */
     async getByArea(area: LatLngBounds, categories?: CategoryEntity[], name?: string): Promise<FeatureCollection<Geometry, GeoEntity>> {
+        return this.getByAreaRec(area, categories, name, 0)
+    }
 
-        const entityIds = (name)
-            ? await getAreaNamed(area, name, [this.computeIncluded(categories) as WikiDataId], [this.computeExcluded() as WikiDataId], this.endpoint)
-            : await getArea(area, [this.computeIncluded(categories) as WikiDataId], [this.computeExcluded() as WikiDataId], this.endpoint)
-
-        const entities = await getGeoEntity(entityIds, this.endpoint);
-
-        const collection: FeatureCollection<Geometry, GeoEntity> = {
-            type: 'FeatureCollection',
-            features: entities.map(toGeoJsonFeature),
+    async getByAreaRec(area: LatLngBounds, categories?: CategoryEntity[], name?: string, count = 0): Promise<FeatureCollection<Geometry, GeoEntity>> {
+        if ((count * SIMULTANEOUS_REQUEST_DELAY) > 10000) return Promise.reject('timout') // If over 10s wait
+        if (this.currentRequests >= this.simultaneousRequests) {
+            await new Promise(resolve => setTimeout(resolve, SIMULTANEOUS_REQUEST_DELAY))
+            return this.getByAreaRec(area, categories, name, count + 1);
         }
+        else {
+            this.currentRequests += 1;
+            const entityIds = (name)
+                ? await getAreaNamed(area, name, [this.computeIncluded(categories) as WikiDataId], [this.computeExcluded() as WikiDataId], this.endpoint)
+                : await getArea(area, [this.computeIncluded(categories) as WikiDataId], [this.computeExcluded() as WikiDataId], this.endpoint)
 
-        return collection;
+            const entities = await getGeoEntity(entityIds, this.endpoint);
+
+            const collection: FeatureCollection<Geometry, GeoEntity> = {
+                type: 'FeatureCollection',
+                features: entities.map(toGeoJsonFeature),
+            }
+
+            this.currentRequests -= 1;
+            return collection;
+        }
     }
 
     async getbyLocation(location: GeoEntity): Promise<GeoEntity[]> {

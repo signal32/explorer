@@ -62,5 +62,5 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 function latestChanges() {
-  return changelog[0].version + ':\n' + changelog[0].changes.join('\n');
+  return changelog[0].version + ':<br/>' + changelog[0].changes.join('<br/>');
 }

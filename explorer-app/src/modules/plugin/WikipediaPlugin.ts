@@ -46,11 +46,12 @@ export class WikipediaPlugin implements DetailServiceFormatPlugin, Plugin {
 
                 const res = await this.axios.get(`https://en.wikipedia.org/w/api.php?format=json&origin=*&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}`);
                 const data = Object.entries(res.data.query.pages)[0][1] as unknown as any;
+                const description = data?.extract as string;
                 section.elements.push({
                     id: 'wikipedia_excerpt',
                     title: "Description",
                     type: 'text',
-                    body: data?.extract as string,
+                    body: (description.length > 512) ? description.slice(0,512) + '...' : description,
                 });
 
                 actions.actions.push({title: 'View on Wikipedia', url: fact.subject.value})

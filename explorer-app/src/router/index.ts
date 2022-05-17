@@ -4,7 +4,7 @@ import HomePage from '../views/HomePage.vue'
 import AuthPage from '@/views/AuthPage.vue';
 import DebugPage from '@/views/DebugPage.vue';
 import SettingsMenuList from '@/views/menus/SettingsMenuList.vue';
-import EvaluationPage from '@/views/EvaluationPage.vue';
+import EvaluationPage from '@/views/WelcomePage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {

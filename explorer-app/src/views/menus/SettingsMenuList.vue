@@ -17,9 +17,9 @@ import {defineComponent} from 'vue';
 import {IonPage, IonContent, IonLabel, IonRouterOutlet} from '@ionic/vue';
 import {personCircleOutline, extensionPuzzleOutline, bugOutline, optionsOutline} from 'ionicons/icons'
 import router from '@/router';
-import StandardHeader from '@/components/headers/StandardHeader.vue';
+import StandardHeader from '@/components/util/StandardHeader.vue';
 import SettingsList, {SettingsItem} from '@/components/menus/SettingsList.vue';
-import {constants} from '@/constants';
+import {constants} from '@/modules/app/constants';
 import changelog from '@/assets/changelog.json';
 
 export default defineComponent({

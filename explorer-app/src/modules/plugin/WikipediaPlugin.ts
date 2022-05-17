@@ -1,4 +1,4 @@
-import {ActionDetailElement, DetailElement, DetailServiceFormatPlugin} from '@/modules/query/detailsService';
+import {ActionDetailElement, DetailElement, DetailServiceFormatPlugin} from '@/modules/services/detailsService';
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager'
 import {Entity} from '@/modules/geo/entity';
 import {Quad} from '@rdfjs/types';

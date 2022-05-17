@@ -1,11 +1,11 @@
-import {QueryService} from '@/modules/query/queryService';
+import {QueryService} from '@/modules/services/queryService';
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
 import {Services} from '@/modules/app/services';
 import {GeoEntity} from '@/modules/geo/entity';
 import {FeatureCollection, Geometry} from 'geojson';
 import dummyEntityList from './dummyData.json';
 import {asFeature} from '@/modules/geo/utils';
-import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/services/recommendationService';
 
 const entites: GeoEntity[] = dummyEntityList;
 

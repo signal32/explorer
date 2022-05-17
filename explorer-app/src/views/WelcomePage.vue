@@ -11,19 +11,11 @@
                     <IonCardSubtitle>Thanks for helping me out by evaluating this app.</IonCardSubtitle>
                 </IonCardHeader>
 
-
                 <IonCardContent>
                     <p>Explorer is an extensible maps application that uses <a href="https://www.wikidata.org" target="_blank">WikiData</a>, an open source knowledge base to query geospatial information.</p>
-
                     <br>
                     <p>It is designed for mobile devices, where you can install it directly for the best experience. Otherwise it shall run in your web browser.</p>
-                    <IonButton size="small" fill="outline" @click="installApp">Install Explorer</IonButton>
-
-                    <br>
-                    <br>
-                    <p>Before starting please read the <a href=" https://1drv.ms/b/s!ApZPGa9fFqtngzsGWdHJ85MJaUKC?e=jWwh3V" target="_blank">Participant Information Sheet</a> and <a href="https://1drv.ms/b/s!ApZPGa9fFqtngzqRjzIfMLk-8_Tf?e=qPoQqA" target="_blank">Research consent form</a>.</p>
-                    <i>This research complies with the University of Aberdeen Research Ethics Review Policy.</i>
-
+                    <IonButton size="small" fill="outline" expand="block" @click="installApp">Install Explorer</IonButton>
                 </IonCardContent>
 
             </IonCard>
@@ -54,7 +46,7 @@ import {
 } from '@ionic/vue';
 import {informationCircle} from 'ionicons/icons';
 import router from '@/router';
-import AppTutorial from '@/components/AppTutorial.vue';
+import AppTutorial from '@/components/menus/AppTutorial.vue';
 import {ref} from 'vue';
 import {services} from '@/modules/app/services';
 import {NotificationType} from '@/modules/app/notification';

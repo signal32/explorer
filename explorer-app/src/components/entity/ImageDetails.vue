@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {ImageDetailElement} from '@/modules/query/detailsService';
+import {ImageDetailElement} from '@/modules/services/detailsService';
 import ImageCard from '@/components/entity/ImageCard.vue';
 import HorizontalList from '@/components/util/HorizontalList.vue';
 import {IonItem} from '@ionic/vue';

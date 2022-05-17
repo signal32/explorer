@@ -224,13 +224,12 @@ import {close, layersOutline, locateOutline, planet, removeCircle, settingsOutli
 import {startCase} from 'lodash';
 import {MapPosition} from '@/components/MapView.vue';
 import {CategoryEntity, Entity, GeoEntity} from '@/modules/geo/entity';
-import RecommendBlock from '@/components/blocks/RecommendBlock.vue';
+import RecommendBlock from '@/components/entity/RecommendBlock.vue';
 import {services} from '@/modules/app/services';
 import EntityDetails from '@/components/entity/EntityDetails.vue';
 import {NotificationType} from '@/modules/app/notification';
-import MapView2 from '@/components/MapView2.vue';
-import AppTutorial from '@/components/AppTutorial.vue';
-import {boolean} from 'quadstore/dist/lib/serialization/xsd';
+import MapView2 from '@/components/MapView.vue';
+import AppTutorial from '@/components/menus/AppTutorial.vue';
 
 const exploreCategories = ['village', 'town', 'city', 'suburb', 'small burgh', 'large burgh', 'big city', 'human settlement', 'territory', 'neighborhood'];
 

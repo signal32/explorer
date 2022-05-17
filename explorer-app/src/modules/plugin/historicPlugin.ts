@@ -1,9 +1,9 @@
 import {Plugin, PluginConfig} from '@/modules/plugin/pluginManager';
-import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/services/recommendationService';
 import {Services} from '@/modules/app/services';
-import {constants} from '@/constants';
+import {constants} from '@/modules/app/constants';
 import {Entity} from '@/modules/geo/entity';
-import {getEntity, getSimilarArchitecture, WikiDataId} from '@/modules/query/queryAbstractionLayer';
+import {getEntity, getSimilarArchitecture, WikiDataId} from '@/modules/plugin/queryAbstractionLayer';
 
 const DEFAULT_ENDPOINT = 'https://query.wikidata.org/sparql';
 

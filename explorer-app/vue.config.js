@@ -19,4 +19,8 @@ module.exports = {
             ],
         },
     },
+    pwa: {
+        name: 'Explorer',
+        themeColor:'#000000',
+    }
 }

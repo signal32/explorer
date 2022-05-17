@@ -1,5 +1,5 @@
 import {Plugin} from '@/modules/plugin/pluginManager';
-import {Recommendation, RecommendService} from '@/modules/app/recommendationService';
+import {Recommendation, RecommendService} from '@/modules/services/recommendationService';
 import {createAxios} from '@/modules/auth/setup';
 import {Entity} from '@/modules/geo/entity';
 import {Services} from '@/modules/app/services';

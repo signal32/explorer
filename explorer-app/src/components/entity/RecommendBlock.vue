@@ -20,8 +20,8 @@ import {services} from '@/modules/app/services';
 import {defineProps, ref, defineEmits} from 'vue';
 import HorizontalList from '@/components/util/HorizontalList.vue';
 import EntityAbstractCard from '@/components/entity/EntityAbstractCard.vue';
-import {Recommendation} from '@/modules/app/recommendationService';
-import RecommendationDetails from '@/components/RecommendationDetails';
+import {Recommendation} from '@/modules/services/recommendationService';
+import RecommendationDetails from '@/components/RecommendationDetails.vue';
 
 const props = defineProps<{entity: Entity}>();
 
